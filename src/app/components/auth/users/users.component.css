@@ -1,0 +1,27 @@
+::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+   color: #999;
+   opacity: 1; /* Firefox */
+   transition: opacity 0.3s ease;
+ }
+
+ :focus::placeholder {
+   opacity: 0;
+ }
+
+ .table-responsive {
+   border-radius: 15px;
+   overflow: hidden;
+   box-shadow: 0 0 10px rgba(0,0,0,0.15);
+ }
+
+ .table {
+   margin-bottom: 0;
+ }
+
+ .table thead th {
+   font-weight: bold;
+ }
+
+ .btn-sm {
+   margin-right: 5px;
+ }
