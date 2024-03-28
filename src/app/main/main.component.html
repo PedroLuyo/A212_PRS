@@ -1,0 +1,60 @@
+
+<p class="text-center my-4">Bienvenido nuevamente, {{ userName || 'Jhonny Quisperhand' }}</p>
+
+<div class="container">
+   
+   <h1 class="text-center my-4">Bienvenido a nuestro sitio de platos</h1>
+   <p class="lead text-center">Este proyecto tiene como objetivo proporcionar una plataforma donde los usuarios puedan explorar, compartir y disfrutar de una variedad de platos.</p>
+ 
+   <h2 class="text-center my-4">Nuestros platos</h2>
+   
+   <div class="row">
+      <div class="col-sm-4">
+        <h3>Pollo a la Brasa</h3>
+        <img src="https://files.wapa.pe/Wapa/2019/02/27/pollo-a-la-brasa-casero-2-1551283045.jpg" alt="Pollo a la Brasa" class="img-fluid">
+        <p>El pollo a la brasa es un plato popular en muchas culturas. Se trata de un pollo asado en brasa, que se sirve generalmente con papas fritas y ensalada.</p>
+      </div>
+      <div class="col-sm-4">
+        <h3>Arroz Chaufa</h3>
+        <img src="https://www.peru.travel/Contenido/General/Imagen/es/543/1.1/arroz-chaufa.jpg" alt="Arroz Chaufa" class="img-fluid">
+        <p>El arroz chaufa es un plato de origen chino que se ha popularizado en muchas partes del mundo. Consiste en arroz frito con verduras, huevo, y a veces se le añade pollo o camarones.</p>
+      </div>
+      <div class="col-sm-4">
+        <h3>Pizza</h3>
+        <img src="https://images.pexels.com/photos/803290/pexels-photo-803290.jpeg" alt="Pizza" class="img-fluid">
+        <p>La pizza es un plato italiano que se ha convertido en uno de los alimentos más populares del mundo. Consiste en una base de masa de pan, cubierta con salsa de tomate, queso y una variedad de ingredientes.</p>
+      </div>
+    </div>
+ 
+   <h2 class="text-center my-4">Carrusel de imágenes</h2>
+   <div id="carouselExampleIndicators" class="carousel slide" data-bs-ride="carousel">
+     <div class="carousel-inner">
+       <div class="carousel-item active">
+         <img src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg" class="d-block w-100" alt="...">
+       </div>
+       <div class="carousel-item">
+         <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg" class="d-block w-100" alt="...">
+       </div>
+       <div class="carousel-item">
+         <img src="https://images.pexels.com/photos/3026806/pexels-photo-3026806.jpeg" class="d-block w-100" alt="...">
+       </div>
+     </div>
+     <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+       <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+       <span class="visually-hidden">Previous</span>
+     </button>
+     <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+       <span class="carousel-control-next-icon" aria-hidden="true"></span>
+       <span class="visually-hidden">Next</span>
+     </button>
+   </div>
+ </div>
+ 
+ <style>
+   .img-fluid {
+     width: 300px;
+     height: 200px;
+     object-fit: cover;
+   }
+ </style>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
