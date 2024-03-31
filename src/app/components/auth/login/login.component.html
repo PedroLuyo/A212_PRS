@@ -1,0 +1,122 @@
+<div class="container">
+  <div class="row justify-content-center align-items-center" style="height: 100vh">
+    <div class="col-4">
+      <div class="card">
+        <div class="card-body">
+          <div class="text-center mb-1">
+            <div class="image-container">
+              <img src="https://th.bing.com/th/id/R.8d1ea3e893b2c33f6fe77d0d13e19483?rik=HIsWqIx38hEmbg&pid=ImgRaw&r=0"
+                class="mb-1 mi-gif" />
+            </div>
+
+            <h3>Iniciar sesión</h3>
+            <p>Por favor completar los datos</p>
+          </div>
+          <form class="md-float-material form-material" [formGroup]="formLogin" (ngSubmit)="onSubmit()">
+            <div class="form-group mb-3">
+              <input type="email" placeholder="Correo electrónico" class="form-control" formControlName="email" />
+            </div>
+            <div class="form-group mb-2">
+              <input type="password" placeholder="Contraseña" class="form-control" formControlName="password" />
+            </div>
+
+            <div class="col-md-20">
+              <div class="col-md-20">
+                <input type="submit" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20"
+                  name="submit" value="Iniciar sesión">
+              </div>
+              <div class="col-md-20">
+                <a class="btn btn-lg btn-google btn-block text-uppercase btn-outline separacion-btn"
+                  (click)="onClick()">
+                  <img src="https://img.icons8.com/color/16/000000/google-logo.png"> Iniciar con Google
+                </a>
+              </div>
+            </div>
+
+            <div class="or-container">
+              <div class="line-separator"></div>
+              <div class="or-label">Registrarse es fácil ;)</div>
+              <div class="line-separator"></div>
+            </div>
+
+            <div class="seccion-registro">
+              <firebase-ui (signInSuccessWithAuthResult)="onSignInSuccess($event)"></firebase-ui>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="login-block">
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-sm-12">
+        <form class="md-float-material form-material" action="#" method="POST">
+          <div class="auth-box card">
+            <div class="card-block">
+              <div class="row">
+                <div class="col-md-12">
+                  <h3 class="text-center heading">Esto es una prueba de mi proximo formulario NO TOCAR.</h3>
+
+                </div>
+              </div>
+
+              <div class="form-group form-primary">
+                <input type="text" class="form-control" name="email" value="" placeholder="Email" id="email">
+              </div>
+
+              <div class="form-group form-primary">
+
+                <input type="text" class="form-control" name="first_name" value="" placeholder="Coloca tu nombre"
+                  id="first_name">
+              </div>
+
+              <div class="form-group form-primary">
+                <input type="password" class="form-control" name="password" placeholder="Contraseña" value=""
+                  id="password">
+
+              </div>
+
+              <div class="form-group form-primary">
+                <input type="password" class="form-control" name="password_confirm" placeholder="Repite la contraseña"
+                  value="" id="password_confirm">
+
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-12">
+
+                  <input type="submit" class="btn btn-primary btn-md btn-block waves-effect text-center m-b-20"
+                    name="submit" value="Registrarse ahora">
+
+                </div>
+              </div>
+
+              <div class="or-container">
+                <div class="line-separator"></div>
+                <div class="or-label">Alternativas</div>
+                <div class="line-separator"></div>
+              </div>
+
+
+              <div class="row">
+                <div class="col-md-12">
+                  <a class="btn btn-lg btn-google btn-block text-uppercase btn-outline" href="#"><img
+                      src="https://img.icons8.com/color/16/000000/google-logo.png"> Registrarse con Google</a>
+
+                </div>
+              </div>
+              <br>
+
+              <p class="text-inverse text-center">Ya tenias cuenta? <a href="/login" data-abc="true">Iniciar sesión</a>
+              </p>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
