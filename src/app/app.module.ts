@@ -19,6 +19,7 @@ import { Auth } from '@angular/fire/auth';
 import { LoginComponent } from './components/auth/login/login.component';
 import { MainComponent } from './main/main.component';
 import { FirebaseUIModule, firebase, firebaseui } from 'firebaseui-angular';
+import { PlatosComponent } from './components/platos/platos.component';
 
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
@@ -38,6 +39,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     UsersComponent,
     LoginComponent,
     MainComponent,
+    PlatosComponent,
   ],
   imports: [
     BrowserModule,
