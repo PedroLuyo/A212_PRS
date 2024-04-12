@@ -51,7 +51,7 @@ export class UsersComponent implements OnInit {
     this.userService
       .loginWithGoogle()
       .then(() => {
-        console.log('Logged in with Google');
+        console.log('Logeado con Google');
       })
       .catch((error) => {
         console.log(error);

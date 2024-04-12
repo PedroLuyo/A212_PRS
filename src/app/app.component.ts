@@ -26,7 +26,7 @@ export class AppComponent implements OnInit, OnDestroy {
           try {
             this.userName = await this.userService.getUserName();
           } catch (error) {
-            console.error('Error getting user name', error);
+            console.error('Error al conseguir el nombre', error);
             this.userName = ''; // colocar algo si hay un error, por el momento lo dejo en vacio
           }
         } else {

@@ -32,7 +32,8 @@ export class UserService {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          resolve(user.displayName || '');
+          const firstName = (user.displayName || '').split(' ')[0];
+          resolve(firstName);
         } else {
           reject('No hay usuario');
         }

@@ -3,10 +3,6 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { AddTutorialComponent } from './components/add-tutorial/add-tutorial.component';
-import { TutorialDetailsComponent } from './components/tutorial-details/tutorial-details.component';
-import { TutorialsListComponent } from './components/tutorials-list/tutorials-list.component';
-import { AngularFireModule } from '@angular/fire/compat';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
@@ -19,8 +15,7 @@ import { Auth } from '@angular/fire/auth';
 import { LoginComponent } from './components/auth/login/login.component';
 import { MainComponent } from './main/main.component';
 import { FirebaseUIModule, firebase, firebaseui } from 'firebaseui-angular';
-import { PlatosComponent } from './components/platos/platos.component';
-
+import { AngularFireModule } from '@angular/fire/compat';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -33,24 +28,19 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
 @NgModule({
   declarations: [
     AppComponent,
-    AddTutorialComponent,
-    TutorialDetailsComponent,
-    TutorialsListComponent,
     UsersComponent,
     LoginComponent,
     MainComponent,
-    PlatosComponent,
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule,
-    AngularFireModule.initializeApp(environment.firebase),
-    AngularFireDatabaseModule,
+    FormsModule,    
     AngularFirestoreModule,
     AngularFireAuthModule,
     ReactiveFormsModule,
-    FirebaseUIModule.forRoot(firebaseUiAuthConfig)
+    FirebaseUIModule.forRoot(firebaseUiAuthConfig),
+    AngularFireModule.initializeApp(environment.firebase), // Añade esta línea
   ],
   providers: [
     { provide: Auth, useValue: getAuth(initializeApp(environment.firebase)) },
