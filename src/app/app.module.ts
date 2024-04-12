@@ -16,6 +16,14 @@ import { LoginComponent } from './components/auth/login/login.component';
 import { MainComponent } from './main/main.component';
 import { FirebaseUIModule, firebase, firebaseui } from 'firebaseui-angular';
 import { AngularFireModule } from '@angular/fire/compat';
+import { HttpClientModule } from '@angular/common/http';
+import { PlatocartaComponent } from './components/platocarta/platocarta.component';
+import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
+import { NgSelectModule } from '@ng-select/ng-select';
+import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { MatInputModule } from '@angular/material/input';
+import { MatFormFieldModule } from '@angular/material/form-field';
+
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -31,6 +39,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     UsersComponent,
     LoginComponent,
     MainComponent,
+    PlatocartaComponent
   ],
   imports: [
     BrowserModule,
@@ -41,9 +50,16 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     ReactiveFormsModule,
     FirebaseUIModule.forRoot(firebaseUiAuthConfig),
     AngularFireModule.initializeApp(environment.firebase), // Añade esta línea
+    HttpClientModule,
+    NgSelectModule,
+    MatAutocompleteModule,
+    MatFormFieldModule,
+    MatInputModule
+    
   ],
   providers: [
     { provide: Auth, useValue: getAuth(initializeApp(environment.firebase)) },
+    provideAnimationsAsync(),
   ],
   bootstrap: [AppComponent],
 })

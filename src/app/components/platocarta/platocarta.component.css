@@ -1,0 +1,34 @@
+thead {
+    background-color: #5d595d;
+    border-bottom: solid 5px #666267;
+    color: white;
+}
+
+tr:nth-child(even) {
+    background-color: #dbd8d8;
+}
+
+tr:hover td {
+    background-color: #5a5858;
+    color: white;
+}
+
+
+
+
+.custom-ng-select .ng-dropdown-panel {
+    background-color: #ffffff; /* Fondo blanco para las opciones */
+    border: 1px solid #ced4da; /* Borde para las opciones */
+  }
+  
+  .custom-ng-select .ng-option {
+    padding: 8px 12px; /* Ajuste del espaciado interno de las opciones */
+  }
+  
+  .custom-ng-select .ng-option-marked {
+    background-color: #007bff; /* Color de fondo cuando se selecciona una opción */
+    color: #ffffff; /* Color del texto cuando se selecciona una opción */
+  }
+  
+  
+  

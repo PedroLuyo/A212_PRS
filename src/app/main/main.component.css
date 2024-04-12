@@ -1,0 +1,53 @@
+/* Estilos para cards */
+.card {
+  position: relative;
+  height: auto; /* Cambiado a 'auto' para adaptarse al contenido */
+  border-radius: 0.5rem;
+  width: 310px;
+  margin: 20px; /* Usa 'margin' normal en lugar de '!important' */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra suave */
+}
+
+.card-img-top {
+  height: 200px;
+  object-fit: cover;
+  border-top-left-radius: 0.5rem;
+  border-top-right-radius: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.card-img-top:hover {
+  transform: scale(1.05); /* Aumenta el tamaño al hacer hover */
+}
+
+.card-body {
+  padding: 1.5rem;
+}
+
+.price-tag, .price-value {
+  padding: 0.5rem;
+  border-radius: 0.25rem;
+  color: white;
+}
+
+.price-tag {
+  background-color: rgb(48, 151, 0); /* Color de fondo verde */
+}
+
+.price-value {
+  background-color: #71ff82; /* Color de fondo verde más claro */
+}
+
+.card-footer {
+  background-color: #f8f9fa;
+  padding: 1rem;
+}
+
+.tag {
+  padding: 0.25rem;
+  border-radius: 0.25rem;
+  margin-right: 0.5rem;
+  font-weight: 400;
+  color: white;
+  font-size: 0.75rem;
+}
