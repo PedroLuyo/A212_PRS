@@ -23,6 +23,11 @@ import { NgSelectModule } from '@ng-select/ng-select';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
+import { SelectorComponent } from './components/roles/selector/selector.component';
+import { GestorComponent } from './components/roles/gestor/gestor.component';
+import { ComensalComponent } from './components/roles/comensal/comensal.component';
+import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
+
 
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
@@ -39,7 +44,11 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     UsersComponent,
     LoginComponent,
     MainComponent,
-    PlatocartaComponent
+    PlatocartaComponent,
+    SelectorComponent,
+    GestorComponent,
+    ComensalComponent,
+    RestauranteComponent
   ],
   imports: [
     BrowserModule,

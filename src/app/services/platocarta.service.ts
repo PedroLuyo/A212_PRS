@@ -7,7 +7,7 @@ import { Observable } from 'rxjs';
 })
 export class PlatocartaService {
 
-  private apiUrl = 'https://8086-vallegrande-msrestauran-jr8yds39xxz.ws-us110.gitpod.io/api/v1/platos-carta/obtener';
+  private apiUrl = 'https://8086-vallegrande-msrestauran-jr8yds39xxz.ws-us110.gitpod.io/api/v1/products/obtener/carta';
 
   constructor(private http: HttpClient) { }
 
