@@ -27,7 +27,7 @@ import { SelectorComponent } from './components/roles/selector/selector.componen
 import { GestorComponent } from './components/roles/gestor/gestor.component';
 import { ComensalComponent } from './components/roles/comensal/comensal.component';
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
-
+import {MatIconModule} from '@angular/material/icon';
 
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
@@ -63,7 +63,8 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     NgSelectModule,
     MatAutocompleteModule,
     MatFormFieldModule,
-    MatInputModule
+    MatInputModule,
+    MatIconModule
     
   ],
   providers: [
