@@ -137,7 +137,7 @@
                                     <div class="form-group">
                                         <label for="id_categoria">Categoría:</label>
                                         <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
-                                            placeholder="Selecciona una categoría" [(ngModel)]="plato.id_categoria"
+                                             [(ngModel)]="plato.id_categoria"
                                             name="id_categoria" required
                                             style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
                                         </ng-select>
@@ -152,7 +152,7 @@
                                     <div class="form-group">
                                         <label for="id_presentacion">Presentación:</label>
                                         <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
-                                            placeholder="Selecciona una presentación"
+                                            
                                             [(ngModel)]="plato.id_presentacion" name="id_presentacion" required
                                             style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
                                         </ng-select>
@@ -250,7 +250,7 @@
 <div class="form-group">
     <label for="categoria">Categoría:</label>
     <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
-               placeholder="Selecciona una categoría" [(ngModel)]="plato.id_categoria"
+                [(ngModel)]="plato.id_categoria"
                (ngModelChange)="onCategoriaChange($event)" name="categoria" required
                style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
     </ng-select>
@@ -262,7 +262,7 @@
   <div class="form-group">
     <label for="presentacion">Presentación:</label>
     <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
-               placeholder="Selecciona una presentación"
+               
                [(ngModel)]="plato.id_presentacion" (ngModelChange)="onPresentacionChange($event)"
                name="presentacion" required
                style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">

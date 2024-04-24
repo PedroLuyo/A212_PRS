@@ -63,4 +63,4 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {}
+export class AppModule {} 

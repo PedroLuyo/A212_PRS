@@ -16,8 +16,9 @@ export class MainComponent implements OnInit{
   
   async ngOnInit(): Promise<void> {
     this.updatePage();
-    this.platocartaService.getPlatosCarta().subscribe(platos => this.platos = platos);
-
+    this.platocartaService.getPlatosCarta().subscribe((platos: any[]) => {
+      this.platos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+    });
   }
 
   getPrecioTachado(precio: number): number {
