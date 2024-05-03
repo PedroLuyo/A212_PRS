@@ -20,7 +20,7 @@
         <a class="nav-link">Organizar</a>
       </li>
       <li class="nav-item" *ngIf="userName">
-        <a class="nav-link">Gestionar</a>
+        <a routerLink="selector" class="nav-link">Gestionar</a>
       </li>
     </div>
     <div *ngIf="userName; else login">

@@ -14,10 +14,10 @@ declare var $: any;
 })
 export class PlatocartaComponent {
 
-  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-9hjiavi0bdu.ws-us110.gitpod.io/api/v1/plato-carta';
-  private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-9hjiavi0bdu.ws-us110.gitpod.io/api/v1/presentacion';
-  private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-9hjiavi0bdu.ws-us110.gitpod.io/api/v1/categoria'
-  private readonly estadoActivo = 'A';
+  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-xpuggz34l6h.ws-us110.gitpod.io/api/v1/plato-carta';
+  private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-xpuggz34l6h.ws-us110.gitpod.io/api/v1/presentacion';
+  private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-xpuggz34l6h.ws-us110.gitpod.io/api/v1/categoria'
+  private readonly estadoActivo = 'A'; 
   private readonly estadoInactivo = 'I';
 
 
