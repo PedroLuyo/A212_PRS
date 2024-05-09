@@ -1,7 +1,12 @@
 .container h3 {
   text-align: center;
-  margin: 25px auto;
+  margin: 70px auto;
 }
 
 
-
+.navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  z-index: 1000; /* Esto asegura que la cabecera esté siempre en la parte superior de otros elementos */
+}

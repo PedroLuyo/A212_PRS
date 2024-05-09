@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { UserService } from '../../../services/users.service';
+import { AuthService } from '../../../services/authService';
 import { Users } from '../../../models/users.model';
 import { map } from 'rxjs/operators';
 import { FormGroup, FormControl } from '@angular/forms';
@@ -13,7 +13,7 @@ export class UsersComponent implements OnInit {
   currentUser?: Users;
   currentIndex = -1;
   formRegister: FormGroup;
-  constructor(private userService: UserService) {
+  constructor(private userService: AuthService) {
     this.formRegister = new FormGroup({
       nombre: new FormControl(),
       apellidos: new FormControl(),
@@ -72,9 +72,9 @@ export class UsersComponent implements OnInit {
     try {
       const user = this.formRegister.value;
       await this.userService.register({
-        email: user.email, // Asegúrate de que el formulario tenga un campo de correo electrónico
+        email: user.email, 
         name: user.nombre,
-        password: user.password, // Asegúrate de que el formulario tenga un campo de contraseña
+        password: user.password, 
         rol: user.rol,
       });
       console.log('Usuario registrado con éxito');

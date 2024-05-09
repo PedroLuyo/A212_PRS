@@ -1,20 +1,23 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { UserService } from '../app/services/users.service';
+import { AuthService } from './services/authService';
 import { Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
-
+import { Router } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-})
+}) 
 export class AppComponent implements OnInit, OnDestroy {
   userName: string = '';
+  userRole: string = ''; //aun falta la logica para el rol o eliminar esto si es necesario 
   showMenu = true;
   private subscription: Subscription;
+  
 
-  constructor(private userService: UserService, private auth: AngularFireAuth) {
+  constructor(private authService: AuthService, private auth: AngularFireAuth, private router:Router, private toastr: ToastrService) {
     this.subscription = new Subscription();
   }
 
@@ -24,14 +27,18 @@ export class AppComponent implements OnInit, OnDestroy {
         if (user) {
           // El usuario ha iniciado sesión.
           try {
-            this.userName = await this.userService.getUserName();
+            this.userName = await this.authService.getUserName();
+            this.userRole = await this.authService.getUserRole();
+            console.log('Rol del usuario:', this.userRole);
           } catch (error) {
-            console.error('Error al conseguir el nombre', error);
+            console.error('Error al conseguir el nombre o rol', error);
             this.userName = ''; // colocar algo si hay un error, por el momento lo dejo en vacio
+            this.userRole = ''; // colocar algo si hay un error, por el momento lo dejo en vacio
           }
         } else {
           // El usuario ha cerrado sesión.
           this.userName = '';
+          this.userRole = '';
         }
       })
     );
@@ -42,14 +49,18 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   logout() {
-    this.userService
+    this.authService
       .logout()
       .then(() => {
-        console.log('Salir de Google');
+        this.toastr.success('Cierre de sesión exitoso', 'Cerrando sesión');
+        console.log('Salir de sesión exitoso');
         this.userName = '';
+        this.router.navigate(['main']).then();
       })
       .catch((error) => {
+        this.toastr.warning('Cierre de sesión erroneo', 'Error al cerrar sesión');
         console.log(error);
       });
   }
+
 }

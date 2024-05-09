@@ -1,5 +1,6 @@
 export class Users {
   email?: string;
   name?: string;
-  rol?: string;
+  password?: string;
+  role?: string;
 }

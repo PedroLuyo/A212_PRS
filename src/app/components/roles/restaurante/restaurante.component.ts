@@ -99,7 +99,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, agregar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         this.restauranteService.crearRestaurante(nuevoRestaurante).subscribe(
           () => {
@@ -129,7 +129,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, confirmar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         this.restauranteService.editarRestaurante(restaurante.id, restaurante).subscribe(
           () => {
@@ -174,7 +174,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, desactivar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         this.restauranteService.desactivarRestaurante(restaurante.id).subscribe(
           () => {
@@ -199,7 +199,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, restaurar',
       cancelButtonText: 'Cancelar',
-    }).then((result) => {
+    }).then((result: { isConfirmed: boolean }) => {
       if (result.isConfirmed) {
         this.restauranteService.restaurarRestaurante(restaurante.id).subscribe(
           () => {

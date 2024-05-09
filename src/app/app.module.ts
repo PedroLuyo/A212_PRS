@@ -1,6 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { FormsModule } from '@angular/forms';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
@@ -16,18 +15,24 @@ import { LoginComponent } from './components/auth/login/login.component';
 import { MainComponent } from './main/main.component';
 import { FirebaseUIModule, firebase, firebaseui } from 'firebaseui-angular';
 import { AngularFireModule } from '@angular/fire/compat';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ToastrModule } from 'ngx-toastr';
 import { HttpClientModule } from '@angular/common/http';
+import { FormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { PlatocartaComponent } from './components/platocarta/platocarta.component';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import { NgSelectModule } from '@ng-select/ng-select';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
-import { MatFormFieldModule } from '@angular/material/form-field';
 import { SelectorComponent } from './components/roles/selector/selector.component';
 import { GestorComponent } from './components/roles/gestor/gestor.component';
 import { ComensalComponent } from './components/roles/comensal/comensal.component';
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
 import {MatIconModule} from '@angular/material/icon';
+import { NgSelectModule } from '@ng-select/ng-select';
+
+
+
 
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
@@ -45,32 +50,33 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     LoginComponent,
     MainComponent,
     PlatocartaComponent,
-    SelectorComponent,
     GestorComponent,
-    ComensalComponent,
-    RestauranteComponent
+    RestauranteComponent,
+    SelectorComponent,
   ],
   imports: [
     BrowserModule,
+    FormsModule,    
     AppRoutingModule,
     FormsModule,    
     AngularFirestoreModule,
     AngularFireAuthModule,
     ReactiveFormsModule,
     FirebaseUIModule.forRoot(firebaseUiAuthConfig),
-    AngularFireModule.initializeApp(environment.firebase), // Añade esta línea
+    AngularFireModule.initializeApp(environment.firebase),
+    BrowserAnimationsModule,
+    ToastrModule.forRoot(),
     HttpClientModule,
-    NgSelectModule,
-    MatAutocompleteModule,
     MatFormFieldModule,
+    NgSelectModule,
+    AngularFireDatabaseModule,
+    MatAutocompleteModule,
     MatInputModule,
-    MatIconModule
-    
+    MatIconModule,
   ],
   providers: [
     { provide: Auth, useValue: getAuth(initializeApp(environment.firebase)) },
-    provideAnimationsAsync(),
   ],
   bootstrap: [AppComponent],
 })
-export class AppModule {} 
+export class AppModule {}

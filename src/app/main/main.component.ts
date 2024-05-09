@@ -1,4 +1,4 @@
-import { UserService } from './../services/users.service';
+import { AuthService } from './../services/authService';
 import { Component, OnInit } from '@angular/core';
 import { Users } from '../models/users.model';
 import { PlatocartaService } from '../services/platocarta.service';
@@ -12,7 +12,7 @@ export class MainComponent implements OnInit{
   userName: string = '';
   platos: any[] = [];
 
-  constructor(private userService: UserService, private platocartaService: PlatocartaService) { }
+  constructor(private authService: AuthService, private platocartaService: PlatocartaService) { }
   
   async ngOnInit(): Promise<void> {
     this.updatePage();
@@ -27,7 +27,7 @@ export class MainComponent implements OnInit{
 
   async updatePage(): Promise<void> {
     try {
-      this.userName = await this.userService.getUserName();
+      this.userName = await this.authService.getUserName();
     } catch (error) {
       console.error('Error getting user name', error);
       this.userName = ''; // Establece userName a 'Jhonn Sotomayor Quispe' si hay un error

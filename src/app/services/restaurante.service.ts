@@ -8,7 +8,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-4cxmnvvty2v.ws-us110.gitpod.io/api/restaurants/v1';
+  private apiUrl = 'https://8090-vallegrande-msrestauran-2o8krxsxi6c.ws-us110.gitpod.io/api/restaurants/v1';
 
   constructor(private http: HttpClient, private snackBar: MatSnackBar) { }
 
@@ -19,7 +19,7 @@ export class RestauranteService {
       );
   }
 
-
+   
   crearRestaurante(restaurante: any): Observable<void> {
     return this.http.post<void>(`${this.apiUrl}/crear`, restaurante)
       .pipe(
