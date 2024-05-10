@@ -5,6 +5,7 @@ import { Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
 import { Router } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
+
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',

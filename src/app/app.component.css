@@ -9,4 +9,13 @@
   top: 0;
   width: 100%;
   z-index: 1000; /* Esto asegura que la cabecera esté siempre en la parte superior de otros elementos */
+  background-color: #343a40;
+}
+
+.colorAdmin {
+  background-color: blue;
+}
+
+.colorGestor {
+  background-color: red;
 }
