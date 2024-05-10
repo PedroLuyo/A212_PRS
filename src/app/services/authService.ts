@@ -55,15 +55,19 @@ export class AuthService {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
-            if (doc.exists) {
-              const userData = doc.data() as { name?: string };
-              const firstName = userData.name?.split(' ')[0] || '';
-              resolve(firstName);
-            } else {
-              reject('No se encontró el usuario en Firestore');
-            }
-          });
+          this.db
+            .collection('users')
+            .doc(user.uid)
+            .get()
+            .subscribe((doc) => {
+              if (doc.exists) {
+                const userData = doc.data() as { name?: string };
+                const firstName = userData.name?.split(' ')[0] || '';
+                resolve(firstName);
+              } else {
+                reject('No se encontró el usuario en Firestore');
+              }
+            });
         } else {
           reject('No hay usuario');
         }
@@ -92,9 +96,8 @@ export class AuthService {
     if (user) {
       const userData = {
         uid: user.uid,
-        email: user.email, //
+        email: user.email,
         name: user.displayName,
-        role: 'comensal',
       };
 
       await this.db
@@ -105,6 +108,7 @@ export class AuthService {
 
     return user;
   }
+
   logout() {
     return signOut(this.auth);
   }
