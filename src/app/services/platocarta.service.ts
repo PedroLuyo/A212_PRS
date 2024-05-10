@@ -18,4 +18,8 @@ export class PlatocartaService {
   logPlatosCarta(): void {
     this.getPlatosCarta().subscribe(platos => console.log(platos));
   }
+
+  getFilteredPlatos(searchTerm: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}?search=${searchTerm}`);
+  }
 }

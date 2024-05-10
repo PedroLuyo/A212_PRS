@@ -1,6 +1,15 @@
 <div class="container">
-  <h1 class="text-center my-4">Bienvenido a nuestro sitio de platos</h1>
-  <p class="lead text-center">Explora y disfruta de nuestra selección de platos.</p>
+  <div class="d-flex justify-content-between align-items-center my-4">
+    <h1>Bienvenido a nuestro sitio de platos</h1>
+    <div class="input-group search-bar">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar plato" (input)="searchPlatos()" class="form-control">
+      <div class="input-group-append">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+      </div>
+    </div>
+  </div>
+  <p class="lead">Explora y disfruta de nuestra selección de platos.</p>
+
 
   <div class="row">
     <div class="col-md-4 mb-4" *ngFor="let plato of platos">
@@ -24,27 +33,11 @@
     </div>
   </div>
 
-  <h2 class="text-center my-4">Carrusel de imágenes</h2>
-  <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
-    <div class="carousel-inner">
-      <div class="carousel-item active">
-        <img src="https://images.pexels.com/photos/674010/pexels-photo-674010.jpeg" class="d-block w-100" alt="Plato 1">
-      </div>
-      <div class="carousel-item">
-        <img src="https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg" class="d-block w-100" alt="Plato 2">
-      </div>
-      <div class="carousel-item">
-        <img src="https://images.pexels.com/photos/3026806/pexels-photo-3026806.jpeg" class="d-block w-100" alt="Plato 3">
-      </div>
-    </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Previous</span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
-      <span class="carousel-control-next-icon" aria-hidden="true"></span>
-      <span class="visually-hidden">Next</span>
-    </button>
-  </div>
+
 </div>
 
+<footer class="footer">
+  <div class="container">
+    <p class="text-muted text-center">© 2024 AS212. Todos los derechos reservados.</p>
+  </div>
+</footer>
