@@ -58,7 +58,8 @@ export class AuthService {
           this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
             if (doc.exists) {
               const userData = doc.data() as { name?: string };
-              resolve(userData.name || '');
+              const firstName = userData.name?.split(' ')[0] || '';
+              resolve(firstName);
             } else {
               reject('No se encontró el usuario en Firestore');
             }
