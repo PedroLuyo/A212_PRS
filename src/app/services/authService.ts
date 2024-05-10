@@ -19,8 +19,8 @@ import { EventEmitter } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 
-// No debemos guardar las contraseñas en Firestore porque Firebase Auth maneja la autenticación y el almacenamiento seguro de contraseñas por nosotros. 
-// Almacenar las contraseñas en nuestra base de datos podría representar un riesgo de seguridad si la base de datos es comprometida. 
+// No debemos guardar las contraseñas en Firestore porque Firebase Auth maneja la autenticación y el almacenamiento seguro de contraseñas por nosotros.
+// Almacenar las contraseñas en nuestra base de datos podría representar un riesgo de seguridad si la base de datos es comprometida.
 // Además, no necesitamos las contraseñas para identificar a los usuarios una vez que se han autenticado.
 
 @Injectable({
@@ -55,8 +55,14 @@ export class AuthService {
       const auth = getAuth();
       onAuthStateChanged(auth, (user) => {
         if (user) {
-          const firstName = (user.displayName || '').split(' ')[0];
-          resolve(firstName);
+          this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
+            if (doc.exists) {
+              const userData = doc.data() as { name?: string };
+              resolve(userData.name || '');
+            } else {
+              reject('No se encontró el usuario en Firestore');
+            }
+          });
         } else {
           reject('No hay usuario');
         }
@@ -81,18 +87,21 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(this.auth, provider);
     const user = credential.user;
-  
+
     if (user) {
       const userData = {
         uid: user.uid,
         email: user.email, //
         name: user.displayName,
-        role: 'comensal'
+        role: 'comensal',
       };
-  
-      await this.db.collection('users').doc(user.uid).set(userData, { merge: true });
+
+      await this.db
+        .collection('users')
+        .doc(user.uid)
+        .set(userData, { merge: true });
     }
-  
+
     return user;
   }
   logout() {
@@ -104,20 +113,27 @@ export class AuthService {
   }
 
   async register({ email, password, name, role }: any) {
-    const credential = await createUserWithEmailAndPassword(this.auth, email, password);
+    const credential = await createUserWithEmailAndPassword(
+      this.auth,
+      email,
+      password
+    );
     const user = credential.user;
-  
+
     if (user) {
       await updateProfile(user, { displayName: name });
-  
+
       const userData = {
         uid: user.uid,
         email,
         name,
         role,
       };
-  
-      await this.db.collection('users').doc(user.uid).set(userData, { merge: true });
+
+      await this.db
+        .collection('users')
+        .doc(user.uid)
+        .set(userData, { merge: true });
     }
   }
 

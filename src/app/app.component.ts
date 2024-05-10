@@ -14,6 +14,7 @@ export class AppComponent implements OnInit, OnDestroy {
   userName: string = '';
   userRole: string = ''; //aun falta la logica para el rol o eliminar esto si es necesario 
   showMenu = true;
+  user: User | null = null;
   private subscription: Subscription;
   
 
@@ -39,6 +40,7 @@ export class AppComponent implements OnInit, OnDestroy {
           // El usuario ha cerrado sesión.
           this.userName = '';
           this.userRole = '';
+          this.user = user;
         }
       })
     );
