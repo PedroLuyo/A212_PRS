@@ -88,25 +88,31 @@ export class AuthService {
     return result;
   }
 
-  async loginWithGoogle() {
+  loginWithGoogle() {
     const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(this.auth, provider);
-    const user = credential.user;
-
-    if (user) {
-      const userData = {
-        uid: user.uid,
-        email: user.email,
-        name: user.displayName,
-      };
-
-      await this.db
-        .collection('users')
-        .doc(user.uid)
-        .set(userData, { merge: true });
-    }
-
-    return user;
+    return signInWithPopup(this.auth, provider).then(credential => {
+      const user = credential.user;
+  
+      if (user) {
+        this.db.collection('users').doc(user.uid).get().subscribe(userDoc => {
+          if (!userDoc.exists) {
+            const userData = {
+              uid: user.uid,
+              email: user.email,
+              name: user.displayName,
+              role: 'comensal'
+            };
+  
+            this.db
+              .collection('users')
+              .doc(user.uid)
+              .set(userData, { merge: true });
+          }
+        });
+      }
+  
+      return user;
+    });
   }
 
   logout() {
