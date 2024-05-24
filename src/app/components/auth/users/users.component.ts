@@ -82,4 +82,25 @@ export class UsersComponent implements OnInit {
       console.log('Error al registrar el usuario', error);
     }
   }
+
+  exportCSV(): void {
+    let csvData = 'Correo,Nombre,Rol\n';
+    if (this.users) {
+      this.users.forEach(user => {
+        csvData += `${user.email},${user.name},${user.role}\n`;
+      });
+    }
+  
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url= window.URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'reporte_usuarios.csv');
+    link.style.visibility = 'hidden';
+  
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }
