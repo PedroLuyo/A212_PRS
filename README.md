@@ -1,4 +1,4 @@
 ```
-git clone https://gitlab.com/vallegrande/as212s5/as212-fe-prs.git
+git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git
 ```
 
