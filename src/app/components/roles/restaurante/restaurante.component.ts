@@ -9,7 +9,7 @@ import { GestorService } from '../../../services/gestor.service';
 @Component({
   selector: 'app-restaurante',
   templateUrl: './restaurante.component.html',
-  styleUrl: './restaurante.component.css'
+  styleUrls: ['./restaurante.component.css']
 })
 export class RestauranteComponent implements OnInit {
   restaurantes: any[] = [];
@@ -19,14 +19,13 @@ export class RestauranteComponent implements OnInit {
   itemsPerPage = 5;
   currentPage = 1;
   mostrarFormulario: boolean = false; 
+  restauranteCreado: any = {}; // Inicializamos restauranteCreado como un objeto vacío
 
-  
   constructor(
     private gestorService: GestorService,
     private restauranteService: RestauranteService,
     private fb: FormBuilder,
     private router: Router
-    
   ) {}
 
   ngOnInit(): void {
@@ -58,6 +57,7 @@ export class RestauranteComponent implements OnInit {
       }
     );
   }
+
   changePage(page: number): void {
     this.currentPage = page;
   }
@@ -77,7 +77,6 @@ export class RestauranteComponent implements OnInit {
       }
     );
   }
-  
 
   crearRestaurante(): void {
     const nuevoRestaurante = this.restauranteForm.value;
@@ -99,13 +98,14 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, agregar',
       cancelButtonText: 'Cancelar',
-    }).then((result: { isConfirmed: boolean }) => {
+    }).then((result) => {
       if (result.isConfirmed) {
         this.restauranteService.crearRestaurante(nuevoRestaurante).subscribe(
           () => {
             console.log('Restaurante creado exitosamente');
             this.obtenerRestaurantes();
             this.restauranteForm.reset();
+            this.restauranteCreado = nuevoRestaurante;
           },
           (error: any) => {
             console.error('Error al crear restaurante', error);
@@ -129,7 +129,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, confirmar',
       cancelButtonText: 'Cancelar',
-    }).then((result: { isConfirmed: boolean }) => {
+    }).then((result) => {
       if (result.isConfirmed) {
         this.restauranteService.editarRestaurante(restaurante.id, restaurante).subscribe(
           () => {
@@ -158,12 +158,7 @@ export class RestauranteComponent implements OnInit {
       this.obtenerRestaurantes();
     }
   }
-  
-  
-  
 
-
-  
   desactivarRestaurante(restaurante: any): void {
     Swal.fire({
       title: '¿Desactivar Restaurante?',
@@ -174,7 +169,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, desactivar',
       cancelButtonText: 'Cancelar',
-    }).then((result: { isConfirmed: boolean }) => {
+    }).then((result) => {
       if (result.isConfirmed) {
         this.restauranteService.desactivarRestaurante(restaurante.id).subscribe(
           () => {
@@ -199,7 +194,7 @@ export class RestauranteComponent implements OnInit {
       cancelButtonColor: '#d33',
       confirmButtonText: 'Sí, restaurar',
       cancelButtonText: 'Cancelar',
-    }).then((result: { isConfirmed: boolean }) => {
+    }).then((result) => {
       if (result.isConfirmed) {
         this.restauranteService.restaurarRestaurante(restaurante.id).subscribe(
           () => {

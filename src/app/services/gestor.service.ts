@@ -7,7 +7,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class GestorService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-4cxmnvvty2v.ws-us110.gitpod.io/api/v1/gestor'; // Reemplaza con tu URL de la API
+  private apiUrl = 'https://8090-vallegrande-msrestauran-ruo73ga67f5.ws-us114.gitpod.io/api/v1/gestor'; // Reemplaza con tu URL de la API
   getGestores: any;
   gestores: any[] = [];
 

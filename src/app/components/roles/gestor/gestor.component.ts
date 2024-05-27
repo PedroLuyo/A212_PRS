@@ -8,7 +8,7 @@ import { GestorService } from '../../../services/gestor.service';
 @Component({
   selector: 'app-gestor',
   templateUrl: './gestor.component.html',
-  styleUrl: './gestor.component.css'
+  styleUrls: ['./gestor.component.css']
 })
 export class GestorComponent implements OnInit {
   gestores: any[] = [];
