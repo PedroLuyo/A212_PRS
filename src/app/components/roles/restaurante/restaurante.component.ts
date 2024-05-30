@@ -213,4 +213,25 @@ export class RestauranteComponent implements OnInit {
   irACrearGestor(): void {
     this.router.navigate(['/crear-gestor']);
   }
+
+  exportarCSV(): void {
+    let csvData = 'Nombre,Tipo de Cocina,Dirección,Teléfono,Horario de Funcionamiento,Categoría,Gestor\n';
+    if (this.restaurantes) {
+      this.restaurantes.forEach(restaurante => {
+        csvData += `${restaurante.nombre},${restaurante.tipoCocina},${restaurante.direccion},${restaurante.telefono},${restaurante.horarioFuncionamiento},${restaurante.categoria},${restaurante.gestor}\n`;
+      });
+    }
+  
+    const blob = new Blob([csvData], { type: 'text/csv' });
+    const url= window.URL.createObjectURL(blob);
+  
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'reporte_restaurantes.csv');
+    link.style.visibility = 'hidden';
+  
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
 }

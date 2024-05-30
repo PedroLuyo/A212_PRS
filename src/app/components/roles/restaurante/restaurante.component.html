@@ -107,6 +107,8 @@
         <h2 class="mb-0 d-flex justify-content-between align-items-center">
           Listado de Restaurantes
           <div class="btn-group" role="group">
+            <!-- Botón de exportación a CSV -->
+  <button type="button" class="btn btn-success" (click)="exportarCSV()">Exportar CSV</button>
             <button type="button" class="btn btn-primary" (click)="filtrarPorEstado('Activos')">Activos</button>
             <button type="button" class="btn btn-danger" (click)="filtrarPorEstado('Inactivos')">Inactivos</button>
             <button type="button" class="btn btn-secondary" (click)="filtrarPorEstado('Todos')">Todos</button>
