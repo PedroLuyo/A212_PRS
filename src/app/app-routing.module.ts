@@ -16,7 +16,7 @@ const routes: Routes = [
   { path: 'users', component: UsersComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
   { path: 'login', component: LoginComponent },
 
-  { path: 'main', component: MainComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'comensal', 'gestor'] } },
+  { path: 'main', component: MainComponent},
   { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
