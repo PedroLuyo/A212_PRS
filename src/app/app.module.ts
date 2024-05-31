@@ -30,10 +30,7 @@ import { ComensalComponent } from './components/roles/comensal/comensal.componen
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
 import {MatIconModule} from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
-
-
-
-
+import { ToastrService } from 'ngx-toastr';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',

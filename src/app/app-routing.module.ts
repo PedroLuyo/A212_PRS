@@ -11,21 +11,17 @@ import { RestauranteComponent } from './components/roles/restaurante/restaurante
 import { ComensalComponent } from './components/roles/comensal/comensal.component';
 import { GestorComponent } from './components/roles/gestor/gestor.component';
 
-
 const routes: Routes = [
   { path: '', redirectTo: 'main', pathMatch: 'full' },
-  { path: 'users', component: UsersComponent, canActivate:[authGuard, RoleGuard], data: { role: 'admin' } },
+  { path: 'users', component: UsersComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
   { path: 'login', component: LoginComponent },
-  { path: 'main', component: MainComponent },
 
-  { path: 'plato', component: PlatocartaComponent },
-  { path: 'selector', component: SelectorComponent},
-  { path: 'restaurante', component: RestauranteComponent },
-  { path: 'comensal', component: ComensalComponent },
-  { path: 'gestor', component: GestorComponent },
-  //{ path: 'gestor', canActivate: [RoleGuard], data: { role: 'g' } },
-  //{ path: 'comensal', canActivate: [RoleGuard], data: { role: 'c' } },
-
+  { path: 'main', component: MainComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'comensal', 'gestor'] } },
+  { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
+  { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  { path: 'comensal', component: ComensalComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
 ];
 
 @NgModule({

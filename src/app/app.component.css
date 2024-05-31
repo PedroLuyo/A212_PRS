@@ -1,21 +1,56 @@
-.container h3 {
-  text-align: center;
-  margin: 70px auto;
+/* Añadimos animaciones */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
-
 
 .navbar {
   position: fixed;
   top: 0;
   width: 100%;
-  z-index: 1000; /* Esto asegura que la cabecera esté siempre en la parte superior de otros elementos */
+  z-index: 1000;
   background-color: #343a40;
+  animation: fadeIn 1s ease-in-out;
 }
 
 .colorAdmin {
-  background-color: #6288ad;
+  background-color: #35587a;
+  transition: background-color 0.3s ease;
 }
 
 .colorGestor {
-  background-color: #5dad7c;
+  background-color: #295c3c;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link {
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #f8f9fa;
+  transform: scale(1.1);
+}
+
+.btn {
+  transition: background-color 0.3s ease, transform 0.3s ease;
+}
+
+.btn:hover {
+  background-color: #dc3545;
+  transform: scale(1.1);
+}
+
+.container {
+  margin-top: 80px; /* Ajusta este valor según sea necesario */
+}
+
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    text-align: center;
+  }
+}
+
+.navbar-toggler {
+  border-color: rgba(255, 255, 255, 0.1);
 }

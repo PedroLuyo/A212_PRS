@@ -31,6 +31,7 @@ export class AuthService {
   private userData: any;
 
   userLoggedIn = new EventEmitter<void>();
+  
   constructor(
     private db: AngularFirestore,
     private auth: Auth,
@@ -42,10 +43,8 @@ export class AuthService {
       if (user) {
         this.userData = user;
         localStorage.setItem('user', JSON.stringify(this.userData));
-        JSON.parse(localStorage.getItem('user')!);
       } else {
         localStorage.setItem('user', 'null');
-        JSON.parse(localStorage.getItem('user')!);
       }
     });
   }
@@ -74,6 +73,7 @@ export class AuthService {
       });
     });
   }
+
   create(user: Users) {
     return this.usersCollection.add(user);
   }
@@ -92,7 +92,6 @@ export class AuthService {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(this.auth, provider).then(credential => {
       const user = credential.user;
-  
       if (user) {
         this.db.collection('users').doc(user.uid).get().subscribe(userDoc => {
           if (!userDoc.exists) {
@@ -102,7 +101,6 @@ export class AuthService {
               name: user.displayName,
               role: 'comensal'
             };
-  
             this.db
               .collection('users')
               .doc(user.uid)
@@ -110,7 +108,6 @@ export class AuthService {
           }
         });
       }
-  
       return user;
     });
   }
@@ -133,14 +130,12 @@ export class AuthService {
 
     if (user) {
       await updateProfile(user, { displayName: name });
-
       const userData = {
         uid: user.uid,
         email,
         name,
         role,
       };
-
       await this.db
         .collection('users')
         .doc(user.uid)
@@ -150,33 +145,24 @@ export class AuthService {
 
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user')!);
-    if (user == null) {
-      return false;
-    } else {
-      return true;
-    }
+    return user != null;
   }
 
   async getUserRole(): Promise<string> {
     return new Promise((resolve, reject) => {
-      this.afAuth.authState.subscribe((user) => {
-        if (user) {
-          this.db
-            .collection('users')
-            .doc(user.uid)
-            .get()
-            .subscribe((doc) => {
-              if (doc.exists) {
-                const userData = doc.data() as { role?: string };
-                resolve(userData.role || '');
-              } else {
-                reject('No se encontró el rol del usuario');
-              }
-            });
-        } else {
-          reject('No hay usuario');
-        }
-      });
+      const user = JSON.parse(localStorage.getItem('user')!);
+      if (user) {
+        this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
+          if (doc.exists) {
+            const userData = doc.data() as { role?: string };
+            resolve(userData.role || '');
+          } else {
+            reject('No se encontró el rol del usuario');
+          }
+        });
+      } else {
+        reject('No hay usuario');
+      }
     });
   }
 

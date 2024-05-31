@@ -7,12 +7,12 @@ export const authGuard: CanActivateFn = (route, state) => {
   const authService = inject(AuthService);
   const router = inject(Router);
   const toastr = inject(ToastrService);
-
   if (authService.isLoggedIn !== true) {
+    toastr.warning('ADVERTENCIA', 'No tienes un rol para acceder a esta página.');
     router.navigate(['main']);
     
-    toastr.warning('ADVERTENCIA', 'No tienes un rol para acceder a esta página.');
   }
-  //alert('No tienes permiso para acceder a esta página'); //test
+  
   return true;
-};  
+  
+};
