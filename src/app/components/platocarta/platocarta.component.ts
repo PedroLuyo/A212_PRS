@@ -2,8 +2,9 @@ import { Component, ElementRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormControl, NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
+import jsPDF from 'jspdf';
 import { FormsModule } from '@angular/forms';
-
+import 'jspdf-autotable';
 
 
 declare var $: any;
@@ -15,18 +16,17 @@ declare var $: any;
 })
 export class PlatocartaComponent {
 
-  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-xpuggz34l6h.ws-us110.gitpod.io/api/v1/plato-carta';
-  private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-xpuggz34l6h.ws-us110.gitpod.io/api/v1/presentacion';
-  private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-xpuggz34l6h.ws-us110.gitpod.io/api/v1/categoria'
+  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/plato-carta';
+  private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/presentacion';
+  private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/categoria'
   private readonly estadoActivo = 'A'; 
   private readonly estadoInactivo = 'I';
-
 
   platos: any[] = [];
   plato: any = {};
   modoEdicion = false;
   filtroPlatos: string = '';
-  
+
   presentaciones: any[] = [];
   categorias: any[] = [];
 
@@ -39,8 +39,8 @@ export class PlatocartaComponent {
   presentacionControl = new FormControl();
 
 
-  
-  
+
+
   ngOnInit() {
     this.getPlatos();
     this.filtrarPlatos('/activo');
@@ -48,49 +48,165 @@ export class PlatocartaComponent {
     this.getPresentacionesActivas();
     console.log('Categorías:', this.categorias);
     console.log('Presentaciones:', this.presentaciones);
-  
+
     this.categoriaControl.setValue(this.categorias[0]); // Establece el valor inicial
     this.presentacionControl.setValue(this.presentaciones[0]);
   }
 
-  
+  generarReportePDF() {
+    const logoUrl = 'https://marketplace.canva.com/EAFVq1ge0ZU/1/0/1600w/canva-logo-restaurante-circular-sencillo-negro-blanco-QEgdJHSl6GE.jpg';
+    const nombreRestaurante = 'Grill House';
+
+    // Crear el documento jsPDF
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    // Establecer la fecha de creación del reporte
+    const fecha = new Date().toLocaleDateString();
+
+    // Configurar la posición y tamaño del logo
+    const imgWidth = 45;
+    const imgHeight = 45;
+    const margin = 10;
+    const imgX = margin; // Ajusta la posición X del logo
+    const imgY = margin; // Ajusta la posición Y del logo
+
+    // Cargar el logo
+    const img = new Image();
+    img.src = logoUrl;
+
+    img.onload = () => {
+      // Añadir el logo al documento
+      doc.addImage(img, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+
+      // Agregar el texto "Restaurante"
+      doc.setFont('courier', 'normal'); // Cambia el tipo de fuente a Courier sin negrita
+      doc.setFontSize(13); // Cambia el tamaño de la fuente a 13
+      const restauranteText = 'Restaurante';
+      const restauranteX = imgX + imgWidth + 10; // Posiciona el texto "Restaurante" a la derecha del logo
+      const restauranteY = imgY + imgHeight / 2 - doc.getFontSize() / 2; // Centra verticalmente el texto "Restaurante" con respecto al logo
+      doc.text(restauranteText, restauranteX, restauranteY);
+
+      // Agregar el título del reporte
+      doc.setFont('courier', 'bold'); // Cambia el tipo de fuente a Courier Bold
+      doc.setFontSize(45);
+      const tituloX = imgX + imgWidth + 10; // Posiciona el título a la derecha del logo
+      const tituloY = restauranteY + doc.getFontSize() - 30; // Posiciona el título justo debajo del texto "Restaurante"
+      doc.text(nombreRestaurante, tituloX, tituloY);
+      doc.setFont('courier'); // Cambia el tipo de fuente a Courier para el resto del documento
+
+      // Agregar el subtítulo del reporte
+      const subtitulo = 'Reporte de platos:';
+      const subtituloY = imgY + imgHeight + 5; // Ajusta la posición Y del subtítulo
+      doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
+      doc.setFontSize(10);
+      doc.text(subtitulo, imgX+4, subtituloY);
+
+
+      // Configurar la tabla de datos
+      const head = [['Nro', 'Nombre', 'Descripción', 'Precio', 'Categoría', 'Presentación', 'Stock', 'Estado']];
+      const data = this.platos.map((plato, index) => [
+        index + 1,
+        plato.nombre,
+        plato.descripcion,
+        `S/ ${plato.precio.toFixed(2)}`,
+        this.getNombreCategoria(plato.id_categoria),
+        this.getTipoPresentacion(plato.id_presentacion),
+        plato.stock,
+        plato.estado === 'A' ? 'Activo' : 'Inactivo'
+      ]);
+
+      // Generar la tabla de datos
+      (doc as any).autoTable({
+        head: head,
+        body: data,
+        startY: imgY + imgHeight + 10, // Ajusta la posición de inicio de la tabla
+        styles: {
+          cellWidth: 'auto',
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [0, 0, 0],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+          textColor: 0
+        },
+        alternateRowStyles: {
+          fillColor: [235, 235, 235]
+        },
+        columnStyles: {
+          0: { cellWidth: 'auto' },
+          1: { cellWidth: '30' },
+          2: { cellWidth: 'auto' },
+          3: { cellWidth: 18 },
+          4: { cellWidth: 23 },
+          5: { cellWidth: 27 },
+          6: { cellWidth: '8' },
+          7: { cellWidth: 'auto' },
+
+        }
+      });
+
+      // Establecer la fecha en todas las páginas del documento
+      const fechaX = doc.internal.pageSize.width - margin; // Ajusta la posición X de la fecha
+      const fechaY = doc.internal.pageSize.height - margin; // Ajusta la posición Y de la fecha
+      doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
+      doc.setFontSize(10);
+      for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+        doc.setPage(i);
+        doc.text(`Fecha de creación: ${fecha}`, fechaX, fechaY, { align: 'right' });
+      }
+
+      // Guardar el documento PDF
+      doc.save('reporte_platos.pdf');
+    };
+  }
+
+
+
 
   getNombreCategoria(idCategoria: number): string {
     const categoria = this.categorias.find(c => c.id === idCategoria);
     return categoria ? categoria.nombre : '';
   }
-  
+
   getTipoPresentacion(idPresentacion: number): string {
     const presentacion = this.presentaciones.find(p => p.id === idPresentacion);
     return presentacion ? presentacion.tipo : '';
   }
-  
 
-    // Método para obtener presentaciones activas y almacenarlas en el array
-    getPresentacionesActivas() {
-      this.http.get(this.baseUrlPresentacion + '/obtener/activo').subscribe(
-        (data: any) => {
-          this.presentaciones = data;
-          console.log('Presentaciones activas:', this.presentaciones);
-        },
-        (error) => {
-          console.error('Error al obtener presentaciones:', error);
-        }
-      );
-    }
-  
-    // Método para obtener categorías activas y almacenarlas en el array
-    getCategoriasActivas() {
-      this.http.get(this.baseUrlCategoria + '/obtener/activo').subscribe(
-        (data: any) => {
-          this.categorias = data;
-          console.log('Categorías activas:', this.categorias);
-        },
-        (error) => {
-          console.error('Error al obtener categorías:', error);
-        }
-      );
-    }
+
+  // Método para obtener presentaciones activas y almacenarlas en el array
+  getPresentacionesActivas() {
+    this.http.get(this.baseUrlPresentacion + '/obtener/activo').subscribe(
+      (data: any) => {
+        this.presentaciones = data;
+        console.log('Presentaciones activas:', this.presentaciones);
+      },
+      (error) => {
+        console.error('Error al obtener presentaciones:', error);
+      }
+    );
+  }
+
+  // Método para obtener categorías activas y almacenarlas en el array
+  getCategoriasActivas() {
+    this.http.get(this.baseUrlCategoria + '/obtener/activo').subscribe(
+      (data: any) => {
+        this.categorias = data;
+        console.log('Categorías activas:', this.categorias);
+      },
+      (error) => {
+        console.error('Error al obtener categorías:', error);
+      }
+    );
+  }
 
   filtrarPlatos(estado: string) {
     this.filtroPlatos = estado;
@@ -101,15 +217,15 @@ export class PlatocartaComponent {
     let url = `${this.baseUrl}/obtener`;
 
     if (this.filtroPlatos) {
-        url += `${this.filtroPlatos}`;
+      url += `${this.filtroPlatos}`;
     }
 
     url += '?sort=-id';
 
     this.http.get(url).subscribe(
-        (data: any) => {
-            this.platos = data.sort((a: any, b: any) => b.id - a.id);
-        },
+      (data: any) => {
+        this.platos = data.sort((a: any, b: any) => b.id - a.id);
+      },
       (error) => {
         console.error('Error en la solicitud HTTP:', error);
         this.showErrorAlert('Error', 'Hubo un error en la solicitud. Por favor, inténtelo de nuevo.');
@@ -129,7 +245,7 @@ export class PlatocartaComponent {
       image: '' // Agrega esta línea
     };
     this.modoEdicion = false;
-}
+  }
 
   guardarPlato() {
     if (this.camposVacios()) {
@@ -188,42 +304,42 @@ export class PlatocartaComponent {
     try {
       // Copia profunda del objeto para evitar enlaces no deseados
       this.plato = JSON.parse(JSON.stringify(plato));
-      
+
       // Convertir el estado a formato 'Activo' o 'Inactivo'
       this.plato.estado = this.plato.estado === 'A' ? 'Activo' : 'Inactivo';
 
       // Agrega esta línea para asegurarte de que imagenUrl está definido
       this.plato.image = this.plato.image || '';
-  
+
       // Actualiza las categorías y presentaciones existentes
       this.getCategoriasActivas();
       this.getPresentacionesActivas();
-  
+
       // Asigna valores a los controles de categoría y presentación
       this.categoriaControl.setValue(this.categorias.find(c => c.id === this.plato.id_categoria));
       this.presentacionControl.setValue(this.presentaciones.find(p => p.id === this.plato.id_presentacion));
-  
+
       this.modoEdicion = true; // Asegúrate de que modoEdicion es verdadero cuando editas un plato
-  
+
       $('#editarPlatoModal').modal('show'); // Muestra el modal de edición
     } catch (error) {
       console.log('--ERROR Datos del plato:', this.plato);
     }
   }
-  
-  
+
+
   onCategoriaChange(event: any) {
     // Puedes realizar acciones adicionales cuando cambia la categoría
     console.log('Categoría cambiada:', event);
   }
-  
+
   onPresentacionChange(event: any) {
     // Puedes realizar acciones adicionales cuando cambia la presentación
     console.log('Presentación cambiada:', event);
   }
-  
-  
-  
+
+
+
 
   private getEstadoAbreviado(estado: string): string {
     return estado === 'Activo' ? this.estadoActivo : this.estadoInactivo;

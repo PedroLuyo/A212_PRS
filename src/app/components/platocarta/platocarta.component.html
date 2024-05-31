@@ -1,10 +1,13 @@
-<div class="container">
+<div class="container-fluid px-3">
+
     <br>
     <br>
     <div class="row">
         <div class="col-12">
             <button class="btn btn-success float-right" data-toggle="modal" data-target="#agregarPlatoModal"
                 (click)="nuevoPlato()">Agregar Plato</button>
+                <button class="btn btn-danger float-right mr-2" (click)="generarReportePDF()">Generar Reporte PDF</button>
+
             <div class="dropdown float-right mr-2">
                 <button class="btn btn-primary dropdown-toggle" type="button" id="filtroDropdown" data-toggle="dropdown"
                     aria-haspopup="true" aria-expanded="false">
@@ -49,7 +52,7 @@
                         </td>
                         <td>{{ plato.nombre }}</td>
                         <td>{{ plato.descripcion }}</td>
-                        <td>S/ {{ plato.precio.toFixed(2) }}</td>
+                        <td>S/{{ plato.precio.toFixed(2) }}</td>
                         <td>{{ getNombreCategoria(plato.id_categoria) }}</td>
                         <td>{{ getTipoPresentacion(plato.id_presentacion) }}</td>
                         <td>{{ plato.stock }}</td>
@@ -137,7 +140,7 @@
                                     <div class="form-group">
                                         <label for="id_categoria">Categoría:</label>
                                         <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
-                                             [(ngModel)]="plato.id_categoria"
+                                            placeholder="Selecciona una categoría" [(ngModel)]="plato.id_categoria"
                                             name="id_categoria" required
                                             style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
                                         </ng-select>
@@ -152,7 +155,7 @@
                                     <div class="form-group">
                                         <label for="id_presentacion">Presentación:</label>
                                         <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
-                                            
+                                            placeholder="Selecciona una presentación"
                                             [(ngModel)]="plato.id_presentacion" name="id_presentacion" required
                                             style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
                                         </ng-select>
@@ -250,7 +253,7 @@
 <div class="form-group">
     <label for="categoria">Categoría:</label>
     <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
-                [(ngModel)]="plato.id_categoria"
+               placeholder="Selecciona una categoría" [(ngModel)]="plato.id_categoria"
                (ngModelChange)="onCategoriaChange($event)" name="categoria" required
                style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
     </ng-select>
@@ -262,7 +265,7 @@
   <div class="form-group">
     <label for="presentacion">Presentación:</label>
     <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
-               
+               placeholder="Selecciona una presentación"
                [(ngModel)]="plato.id_presentacion" (ngModelChange)="onPresentacionChange($event)"
                name="presentacion" required
                style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
