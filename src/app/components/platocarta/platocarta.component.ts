@@ -19,7 +19,7 @@ export class PlatocartaComponent {
   private readonly baseUrl = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/plato-carta';
   private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/presentacion';
   private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/categoria'
-  private readonly estadoActivo = 'A'; 
+  private readonly estadoActivo = 'A';
   private readonly estadoInactivo = 'I';
 
   platos: any[] = [];
@@ -29,6 +29,11 @@ export class PlatocartaComponent {
 
   presentaciones: any[] = [];
   categorias: any[] = [];
+
+
+  // Declarar una nueva variable para almacenar el ID del plato seleccionado y la cantidad de reserva
+  platoSeleccionadoId: number = 0;
+  cantidadReserva: number = 0;
 
   @ViewChild('agregarPlatoModal') agregarPlatoModal!: ElementRef;
   @ViewChild('editarPlatoModal') editarPlatoModal!: ElementRef;
@@ -101,7 +106,7 @@ export class PlatocartaComponent {
       const subtituloY = imgY + imgHeight + 5; // Ajusta la posición Y del subtítulo
       doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
       doc.setFontSize(10);
-      doc.text(subtitulo, imgX+4, subtituloY);
+      doc.text(subtitulo, imgX + 4, subtituloY);
 
 
       // Configurar la tabla de datos
@@ -385,4 +390,60 @@ export class PlatocartaComponent {
   private showErrorAlert(title: string, message: string): void {
     Swal.fire(title, message, 'error');
   }
+
+
+
+
+
+
+ // Método para manejar la selección de un plato
+seleccionarPlato(platoId: number) {
+  this.platoSeleccionadoId = platoId;
 }
+
+// Método para manejar la reserva rápida
+reservarPlato() {
+  // Verificar que se haya seleccionado un plato y se haya especificado una cantidad de reserva
+  if (this.platoSeleccionadoId && this.cantidadReserva > 0) {
+      // Buscar el plato seleccionado en la lista de platos
+      const platoSeleccionado = this.platos.find(plato => plato.id === this.platoSeleccionadoId);
+      if (platoSeleccionado) {
+          // Calcular la nueva cantidad de stock
+          const nuevoStock = platoSeleccionado.stock - this.cantidadReserva;
+          // Verificar que el stock no sea negativo
+          if (nuevoStock >= 0) {
+              // Actualizar el plato con el nuevo stock
+              this.editarPlatos(platoSeleccionado, nuevoStock);
+              // Restablecer los valores de selección
+              this.platoSeleccionadoId = 0;
+              this.cantidadReserva = 0;
+          } else {
+              alert('La cantidad a reservar supera el stock disponible.');
+          }
+      }
+  } else {
+      alert('Por favor, seleccione un plato y especifique la cantidad a reservar.');
+  }
+}
+
+// Método para editar un plato con el nuevo stock
+editarPlatos(plato: any, nuevoStock: number) {
+  plato.stock = nuevoStock;
+  this.actualizarPlatos(plato.id, plato);
+}
+
+// Método para actualizar un plato
+actualizarPlatos(id: number, plato: any) {
+  const url = `${this.baseUrl}/editar/${id}`;
+  this.http.put(url, plato).subscribe(
+      (data: any) => {
+          // Manejar la respuesta si es necesario
+          this.showSuccessAlert('Éxito', 'Reserva realizada exitosamente.');
+      },
+      (error) => {
+          console.error('Error en la solicitud HTTP:', error);
+          this.showErrorAlert('Error', 'Error al editar el plato.');
+      }
+  );
+}}
+
