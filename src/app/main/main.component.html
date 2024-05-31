@@ -1,5 +1,5 @@
-<div class="container">
-  <div class="d-flex justify-content-between align-items-center my-4">
+<div class="container-fluid px-5">
+  <div class="d-flex justify-content-between align-items-center my-3">
     <h1>Bienvenido a nuestro sitio de platos</h1>
     <div class="input-group search-bar">
       <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar plato" (input)="searchPlatos()" class="form-control">
@@ -10,9 +10,8 @@
   </div>
   <p class="lead">Explora y disfruta de nuestra selección de platos.</p>
 
-
   <div class="row">
-    <div class="col-md-4 mb-4" *ngFor="let plato of platos">
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let plato of platos">
       <div class="card shadow-sm">
         <img class="card-img-top" [src]="plato.image" alt="Imagen de plato">
         <div class="card-body">
@@ -32,8 +31,6 @@
       </div>
     </div>
   </div>
-
-
 </div>
 
 <footer class="footer">
