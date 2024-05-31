@@ -2,13 +2,75 @@
   <div class="d-flex justify-content-between align-items-center my-3">
     <h1>Bienvenido a nuestro sitio de platos</h1>
     <div class="input-group search-bar">
-      <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar plato" (input)="searchPlatos()" class="form-control">
+      <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar plato" (input)="searchPlatos()"
+        class="form-control">
       <div class="input-group-append">
         <span class="input-group-text"><i class="bi bi-search"></i></span>
       </div>
     </div>
   </div>
+
+  <!-- Cuadro flotante de resultados de búsqueda -->
+  <div class="row" *ngIf="showResultBox && searchResults.length > 0">
+    <div class="col-md-6 offset-md-9">
+      <div class="result-box">
+        <div *ngFor="let result of searchResults" class="result-item">
+          <img [src]="result.image" alt="Imagen de plato" class="result-image">
+          <div class="result-info">
+            <h4>{{ result.nombre }}</h4>
+            <p>S/ {{ result.precio.toFixed(2) }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mensaje de "No se ha encontrado resultados" -->
+  <div class="row" *ngIf="showResultBox && searchResults.length === 0">
+    <div class="col-md-6 offset-md-9">
+      <div class="result-box">
+        <div class="no-results">
+          <p>No se ha encontrado resultados.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+
   <p class="lead">Explora y disfruta de nuestra selección de platos.</p>
+
+
+
+
+  <div id="platoCarousel" class="carousel slide" data-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item" *ngFor="let image of carouselImages; let i = index" [ngClass]="{'active': i === 0}">
+        <img class="d-block w-100" [src]="image.src" [alt]="image.alt">
+      </div>
+    </div>
+    <a class="carousel-control-prev" href="#platoCarousel" role="button" data-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+      <span class="sr-only">Previous</span>
+    </a>
+    <a class="carousel-control-next" href="#platoCarousel" role="button" data-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+      <span class="sr-only">Next</span>
+    </a>
+  </div>
+
+
+  <!-- Línea horizontal con texto -->
+  <div class="separator container-fluid px-5">
+    <hr>
+    <div class="category-text"> Categoria 1</div>
+  </div>
+
+
+
+
 
   <div class="row">
     <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let plato of platos">
@@ -19,19 +81,73 @@
           <p class="card-text">{{ plato.descripcion }}</p>
           <div class="d-flex justify-content-between align-items-center">
             <div style="color: red; font-weight: 600;">S/ {{ plato.precio.toFixed(2) }}</div>
-            <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(plato.precio).toFixed(2) }}</div>
+            <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(plato.precio).toFixed(2) }}
+            </div>
           </div>
         </div>
         <div class="card-footer">
           <div class="d-flex">
-            <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{ plato.categoria_detalle.nombre }}</div>
-            <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{ plato.presentacion_detalle.tipo }}</div>
+            <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{
+              plato.categoria_detalle.nombre }}</div>
+            <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{
+              plato.presentacion_detalle.tipo }}</div>
+            <div class="tag" style="background-color: #112e13;"><i class="bi bi-tags-fill"></i> {{ plato.stock }}</div>
+
           </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- Mensaje cuando no hay platos -->
+<div class="row container" *ngIf="platos.length === 0">
+  <div class="col">
+    <p>Not Working...</p>
+  </div>
+</div>
+
+<!-- Línea horizontal con texto -->
+<div class="separator container-fluid px-5">
+  <div class="category-text">Categoria 2</div>
+  <hr>
+</div>
+
+
+<div class="row container-fluid px-5">
+  <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let plato of platos">
+    <div class="card shadow-sm">
+      <img class="card-img-top" [src]="plato.image" alt="Imagen de plato">
+      <div class="card-body">
+        <h5 class="card-title">{{ plato.nombre }}</h5>
+        <p class="card-text">{{ plato.descripcion }}</p>
+        <div class="d-flex justify-content-between align-items-center">
+          <div style="color: red; font-weight: 600;">S/ {{ plato.precio.toFixed(2) }}</div>
+          <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(plato.precio).toFixed(2) }}
+          </div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <div class="d-flex">
+          <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{
+            plato.categoria_detalle.nombre }}</div>
+          <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{
+            plato.presentacion_detalle.tipo }}</div>
+          <div class="tag" style="background-color: #112e13;"><i class="bi bi-tags-fill"></i> {{ plato.stock }}</div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mensaje cuando no hay platos -->
+<div class="row container" *ngIf="platos.length === 0">
+  <div class="col">
+    <p>Not Working...</p>
+  </div>
+</div>
+
 
 <footer class="footer">
   <div class="container">

@@ -22,6 +22,7 @@
     "@angular/router": "^17.0.0",
     "@ng-select/ng-select": "^12.0.7",
     "bootstrap": "^4.6.2",
+    "bootstrap-icons": "^1.11.3",
     "firebase": "^10.9.0",
     "firebaseui": "^6.1.0",
     "firebaseui-angular": "^6.2.1",
