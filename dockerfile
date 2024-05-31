@@ -1,12 +1,14 @@
-# Etapa de construcción
-FROM node:20.11.1 AS build
+# Usar nginx como base
+FROM nginx:alpine
 
-WORKDIR /usr/local/app
-COPY ./ /usr/local/app
-RUN npm install
-RUN npm run build
+# Copiar la carpeta de construcción al directorio correcto para nginx
+COPY dist/angular-17-firebase-crud/browser /usr/share/nginx/html
 
-# Etapa de producción
-FROM nginx:latest
-COPY --from=build /usr/local/app/dist/angular-17-firebase-crud /usr/share/nginx/html
-EXPOSE 80
+# Exponer el puerto 4200
+EXPOSE 4200
+
+# Modificar la configuración de nginx para escuchar en el puerto 4200
+RUN echo "server { listen 4200; root /usr/share/nginx/html; index index.html index.htm; location / { try_files \$uri \$uri/ /index.html; } }" > /etc/nginx/conf.d/default.conf
+
+#docker build -t angelolm/unificado .
+#docker run -p 4200:4200 angelolm/unificado
