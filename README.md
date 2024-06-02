@@ -1,6 +1,3 @@
-# A212_PRS
-TEST
-
 # Para clonar esta rama, utiliza el siguiente comando:
 
 ```bash
