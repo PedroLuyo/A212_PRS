@@ -314,28 +314,22 @@
 
 
 
-
-
-
-<!-- Agregar después del cierre del div 'table-responsive' -->
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <h2>Reserva Rápida</h2>
-            <div class="form-group">
-                <label for="platoSeleccionado">Seleccionar Plato:</label>
-                <select class="form-control" id="platoSeleccionado" [(ngModel)]="platoSeleccionadoId">
-                    <option *ngFor="let plato of platos" [value]="plato.id">{{ plato.nombre }}</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <label for="cantidadReserva">Cantidad a Reservar:</label>
-                <input type="number" class="form-control" id="cantidadReserva" [(ngModel)]="cantidadReserva">
-            </div>
-            <button class="btn btn-primary" (click)="reservarPlato()">Reservar</button>
+    <form (ngSubmit)="reservarPlato(platoSeleccionado, cantidadReserva)">
+        <div class="form-group">
+          <label for="plato">Plato:</label>
+          <select id="plato" [(ngModel)]="platoSeleccionado" name="platoSeleccionado" class="form-control">
+            <option *ngFor="let plato of platos" [value]="plato.id">{{plato.nombre}}</option>
+          </select>
         </div>
-    </div>
-</div>
+        <div class="form-group">
+          <label for="cantidad">Cantidad:</label>
+          <input type="number" id="cantidad" [(ngModel)]="cantidadReserva" name="cantidadReserva" class="form-control" min="1">
+        </div>
+        <button type="submit" class="btn btn-primary">Reservar</button>
+      </form>
+
+
+
 
 
 </div>
