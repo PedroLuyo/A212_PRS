@@ -424,7 +424,7 @@ reservarPlato(idPlato: number, cantidad: number) {
     (data: any) => {
       console.log('Reserva realizada:', data);
       this.showSuccessAlert('Éxito', 'La reserva se realizó correctamente.');
-      this.getPlatos
+      this.getPlatos();
     },
     (error) => {
       console.error('Error al realizar la reserva:', error);
