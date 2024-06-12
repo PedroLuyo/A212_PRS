@@ -1,8 +1,20 @@
 <div class="container mt-3">
   <h3 class="text-center mb-4">Listado de Usuarios</h3>
   <div class="d-flex justify-content-end mb-3">
-    <button class="btn btn-success mr-4" (click)="exportCSV()">
-      <i class="fas fa-download mr-2"></i>Descargar CSV
+    <form [formGroup]="searchForm" (ngSubmit)="filterUsers()">
+      <div class="form-group">
+        <label for="rol">Filtrar por Rol:</label>
+        <select class="form-control" id="rol" formControlName="rol">
+          <option value="">Todos</option>
+          <option value="admin">Admin</option>
+          <option value="gestor">Gestor</option>
+          <option value="comensal">Comensal</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary btn-sm mr-2">Filtrar</button>
+    </form>
+    <button class="btn btn-success btn-sm ml-2" (click)="exportCSV()">
+      <i class="fas fa-download mr-1"></i> Descargar CSV
     </button>
   </div>
   <div class="table-responsive">
@@ -12,19 +24,36 @@
           <th>Correo</th>
           <th>Nombre</th>
           <th>Rol</th>
+          <th>Dirección</th>
+          <th>DNI</th>
+          <th>Estado</th>
+          <th>RUC</th>
           <th class="text-center">Acciones</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users; index as i">
-          <td>{{ user.email }}</td>
-          <td>{{ user.name }}</td>
-          <td>{{ user.role }}</td>
-          <td class="text-center">
-            <button class="btn btn-primary btn-sm" (click)="setActiveUser(user, i)">
-              Editar
+        <tr *ngFor="let user of filteredUsers; index as i">
+          <td *ngIf="!user.editable">{{ user.email }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.email" class="form-control"></td>
+          <td *ngIf="!user.editable">{{ user.name }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.name" class="form-control"></td>
+          <td *ngIf="!user.editable">{{ user.role }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.role" class="form-control"></td>
+          <td *ngIf="!user.editable">{{ user.direccion }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.direccion" class="form-control"></td>
+          <td *ngIf="!user.editable">{{ user.dni }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.dni" class="form-control"></td>
+          <td *ngIf="!user.editable">{{ user.estado }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.estado" class="form-control"></td>
+          <td *ngIf="!user.editable">{{ user.ruc }}</td>
+          <td *ngIf="user.editable"><input [(ngModel)]="user.ruc" class="form-control"></td>
+          <td>
+            <button class="btn btn-primary" *ngIf="!user.editable" (click)="editarUsuario(user)">Editar</button>
+            <button class="btn btn-success" *ngIf="user.editable" (click)="confirmarEdicion(user)">Confirmar</button>
+            <button class="btn btn-danger" (click)="eliminarOrestaurarUsuario(user)">
+              {{ user.estado === 'A' ? 'Eliminar' : 'Restaurar' }}
             </button>
-            <button class="btn btn-danger btn-sm">Eliminar</button>
+            <button class="btn btn-secondary" *ngIf="user.editable" (click)="cancelarEdicion(user)">Cancelar</button>
           </td>
         </tr>
       </tbody>

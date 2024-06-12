@@ -19,10 +19,6 @@ import { EventEmitter } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
 
-// No debemos guardar las contraseñas en Firestore porque Firebase Auth maneja la autenticación y el almacenamiento seguro de contraseñas por nosotros.
-// Almacenar las contraseñas en nuestra base de datos podría representar un riesgo de seguridad si la base de datos es comprometida.
-// Además, no necesitamos las contraseñas para identificar a los usuarios una vez que se han autenticado.
-
 @Injectable({
   providedIn: 'root',
 })
@@ -31,7 +27,7 @@ export class AuthService {
   private userData: any;
 
   userLoggedIn = new EventEmitter<void>();
-  
+
   constructor(
     private db: AngularFirestore,
     private auth: Auth,
@@ -99,7 +95,11 @@ export class AuthService {
               uid: user.uid,
               email: user.email,
               name: user.displayName,
-              role: 'comensal'
+              role: 'comensal',
+              direccion: '',
+              dni: null,
+              estado: 'A',
+              ruc: null
             };
             this.db
               .collection('users')
@@ -120,12 +120,8 @@ export class AuthService {
     return this.usersCollection.add(user);
   }
 
-  async register({ email, password, name, role }: any) {
-    const credential = await createUserWithEmailAndPassword(
-      this.auth,
-      email,
-      password
-    );
+  async register({ email, password, name, role, direccion, dni, estado, ruc }: any) {
+    const credential = await createUserWithEmailAndPassword(this.auth, email, password);
     const user = credential.user;
 
     if (user) {
@@ -135,6 +131,11 @@ export class AuthService {
         email,
         name,
         role,
+        direccion,
+        dni,
+        estado,
+        ruc,
+        active: true
       };
       await this.db
         .collection('users')
@@ -177,9 +178,23 @@ export class AuthService {
           uid: user.uid,
           email: user.email,
           name: user.displayName,
+          role: 'comensal',
+          direccion: '',
+          dni: null,
+          estado: 'A',
+          ruc: null,
+          active: true
         },
         { merge: true }
       );
     }
+  }
+
+  updateUser(id: string, user: Users) {
+    return this.usersCollection.doc(id).set(user, { merge: true });
+  }
+
+  deleteUser(id: string) {
+    return this.usersCollection.doc(id).delete();
   }
 }

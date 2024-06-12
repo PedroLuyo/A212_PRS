@@ -20,7 +20,21 @@ export class RestauranteComponent implements OnInit {
   currentPage = 1;
   mostrarFormulario: boolean = false; 
   restauranteCreado: any = {}; // Inicializamos restauranteCreado como un objeto vacío
+  allowOnlyNumbers(event: KeyboardEvent): void {
+    const pattern = /[0-9]/;
+    const inputChar = String.fromCharCode(event.charCode);
+    if (!pattern.test(inputChar)) {
+      event.preventDefault();
+    }
+  }
 
+  allowOnlyLetters(event: KeyboardEvent): void {
+    const pattern = /[a-zA-Z\s]/;
+    const inputChar = String.fromCharCode(event.charCode);
+    if (!pattern.test(inputChar)) {
+      event.preventDefault();
+    }
+  }
   constructor(
     private gestorService: GestorService,
     private restauranteService: RestauranteService,
@@ -31,7 +45,7 @@ export class RestauranteComponent implements OnInit {
   ngOnInit(): void {
     this.inicializarFormulario();
     this.obtenerRestaurantes();
-    this.obtenerGestores();
+    
   }
 
   inicializarFormulario(): void {
@@ -47,16 +61,7 @@ export class RestauranteComponent implements OnInit {
     });
   }
 
-  obtenerGestores(): void {
-    this.gestorService.obtenerGestores().subscribe(
-      (data) => {
-        this.gestores = data;
-      },
-      (error) => {
-        console.error('Error al obtener gestores', error);
-      }
-    );
-  }
+ 
 
   changePage(page: number): void {
     this.currentPage = page;
@@ -158,6 +163,7 @@ export class RestauranteComponent implements OnInit {
       this.obtenerRestaurantes();
     }
   }
+  
 
   desactivarRestaurante(restaurante: any): void {
     Swal.fire({
@@ -234,4 +240,5 @@ export class RestauranteComponent implements OnInit {
     link.click();
     document.body.removeChild(link);
   }
+  
 }

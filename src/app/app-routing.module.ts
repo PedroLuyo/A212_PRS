@@ -8,7 +8,6 @@ import { RoleGuard } from './guards/role.guard';
 import { PlatocartaComponent } from './components/platocarta/platocarta.component';
 import { SelectorComponent } from './components/roles/selector/selector.component';
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
-import { ComensalComponent } from './components/roles/comensal/comensal.component';
 import { GestorComponent } from './components/roles/gestor/gestor.component';
 
 const routes: Routes = [
@@ -20,7 +19,6 @@ const routes: Routes = [
   { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
-  { path: 'comensal', component: ComensalComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
 ];
 

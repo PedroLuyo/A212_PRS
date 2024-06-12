@@ -7,26 +7,6 @@ import { Router } from '@angular/router';
   styleUrls: ['./selector.component.css']
 })
 export class SelectorComponent {
-aplicarFiltroEstado: any;
-getVisibleItems: any;
-restaurarGestor(_t46: any) {
-throw new Error('Method not implemented.');
-}
-desactivarGestor(_t46: any) {
-throw new Error('Method not implemented.');
-}
-cancelarEdicion(_t46: any) {
-throw new Error('Method not implemented.');
-}
-confirmarEdicion(_t46: any) {
-throw new Error('Method not implemented.');
-}
-editarGestor(_t46: any) {
-throw new Error('Method not implemented.');
-}
-  mostrarListadoGestores: boolean = false;
-changePage: any;
-getPageNumbers: any;
 
   constructor(private router: Router) { }
 
@@ -37,10 +17,7 @@ getPageNumbers: any;
     this.router.navigate(['/restaurante']);
   }
 
-  irAComensal(): void {
-    // En lugar de navegar, cambia el estado para mostrar la lista de gestores
-    this.mostrarListadoGestores = true;
-  }
+ 
 
   irAGestor(): void {
     this.router.navigate(['/gestor']);
