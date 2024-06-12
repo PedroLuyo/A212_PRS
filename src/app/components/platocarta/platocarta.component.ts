@@ -31,9 +31,6 @@ export class PlatocartaComponent {
   categorias: any[] = [];
 
 
-  // Declarar una nueva variable para almacenar el ID del plato seleccionado y la cantidad de reserva
-  platoSeleccionadoId: number = 0;
-  cantidadReserva: number = 0;
 
   @ViewChild('agregarPlatoModal') agregarPlatoModal!: ElementRef;
   @ViewChild('editarPlatoModal') editarPlatoModal!: ElementRef;
@@ -43,7 +40,8 @@ export class PlatocartaComponent {
   categoriaControl = new FormControl();
   presentacionControl = new FormControl();
 
-
+  platoSeleccionado: number = 0;
+  cantidadReserva: number = 0;
 
 
   ngOnInit() {
@@ -396,35 +394,7 @@ export class PlatocartaComponent {
 
 
 
- // Método para manejar la selección de un plato
-seleccionarPlato(platoId: number) {
-  this.platoSeleccionadoId = platoId;
-}
 
-// Método para manejar la reserva rápida
-reservarPlato() {
-  // Verificar que se haya seleccionado un plato y se haya especificado una cantidad de reserva
-  if (this.platoSeleccionadoId && this.cantidadReserva > 0) {
-      // Buscar el plato seleccionado en la lista de platos
-      const platoSeleccionado = this.platos.find(plato => plato.id === this.platoSeleccionadoId);
-      if (platoSeleccionado) {
-          // Calcular la nueva cantidad de stock
-          const nuevoStock = platoSeleccionado.stock - this.cantidadReserva;
-          // Verificar que el stock no sea negativo
-          if (nuevoStock >= 0) {
-              // Actualizar el plato con el nuevo stock
-              this.editarPlatos(platoSeleccionado, nuevoStock);
-              // Restablecer los valores de selección
-              this.platoSeleccionadoId = 0;
-              this.cantidadReserva = 0;
-          } else {
-              alert('La cantidad a reservar supera el stock disponible.');
-          }
-      }
-  } else {
-      alert('Por favor, seleccione un plato y especifique la cantidad a reservar.');
-  }
-}
 
 // Método para editar un plato con el nuevo stock
 editarPlatos(plato: any, nuevoStock: number) {
@@ -445,5 +415,32 @@ actualizarPlatos(id: number, plato: any) {
           this.showErrorAlert('Error', 'Error al editar el plato.');
       }
   );
-}}
+}
+
+
+reservarPlato(idPlato: number, cantidad: number) {
+  const url = `${this.baseUrl}/reservar/${idPlato}/${cantidad}`;
+  this.http.post(url, {}).subscribe(
+    (data: any) => {
+      console.log('Reserva realizada:', data);
+      this.showSuccessAlert('Éxito', 'La reserva se realizó correctamente.');
+      this.getPlatos();
+    },
+    (error) => {
+      console.error('Error al realizar la reserva:', error);
+      this.showErrorAlert('Error', 'Hubo un error al realizar la reserva. Por favor, inténtelo de nuevo.');
+    }
+  );
+
+
+}
+
+
+
+
+
+
+
+
+}
 
