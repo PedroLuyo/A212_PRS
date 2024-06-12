@@ -5,7 +5,7 @@
       <div class="col-md-8 title-white">
         <h1 class="text-center mt-0 title-text-white">¡Bienvenido a nuestra plataforma!</h1>
         <p class="lead text-center">Gracias por unirte a nosotros. Estamos emocionados de tenerte aquí.</p>
-      </div>        
+      </div>
     </div>
   </div>
 </div>
@@ -18,7 +18,7 @@
         <div class="card-body">
           <h5 class="card-title">Iniciar sesión como gestor</h5>
           <p class="card-text">Accede a tu cuenta de gestor para administrar tus actividades.</p>
-          <button class="btn btn-primary" (click)="irARestaurante()">Iniciar Sesión</button>
+          <button class="btn btn-primary" (click)="openLoginModal()">Iniciar Sesión</button>
         </div>
       </div>
     </div>
@@ -29,6 +29,33 @@
           <p class="card-text">¿No tienes cuenta? Regístrate como gestor para comenzar.</p>
           <button class="btn btn-secondary" (click)="irAGestor()">Registrarse</button>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal de autenticación -->
+<div class="modal" tabindex="-1" role="dialog" [ngClass]="{'show': isLoginModalOpen}" style="display: block;" *ngIf="isLoginModalOpen">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Iniciar sesión</h5>
+        <button type="button" class="close" (click)="closeLoginModal()" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="loginForm" (ngSubmit)="onLoginSubmit()">
+          <div class="form-group">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" formControlName="email" class="form-control" placeholder="Introduce tu correo electrónico" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Contraseña</label>
+            <input type="password" id="password" formControlName="password" class="form-control" placeholder="Introduce tu contraseña" required>
+          </div>
+          <button type="submit" class="btn btn-primary">Iniciar sesión</button>
+        </form>
       </div>
     </div>
   </div>

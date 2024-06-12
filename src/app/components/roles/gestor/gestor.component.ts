@@ -10,8 +10,13 @@ import Swal from 'sweetalert2';
   styleUrls: ['./gestor.component.css'],
 })
 export class GestorComponent implements OnInit {
+irARestaurante() {
+throw new Error('Method not implemented.');
+}
   gestorForm: FormGroup;
   nombreGestor: any;
+isAdmin: any;
+isGestor: any;
 
   constructor(private authService: AuthService) {
     this.gestorForm = new FormGroup({

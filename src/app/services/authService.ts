@@ -23,6 +23,10 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
+  obtenerNombreGestorAutenticado() {
+    throw new Error('Method not implemented.');
+  }
+  
   private usersCollection: AngularFirestoreCollection<Users>;
   private userData: any;
 

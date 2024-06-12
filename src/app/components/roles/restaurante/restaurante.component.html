@@ -1,194 +1,50 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formulario y Listado</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-
-<!-- Formulario -->
-<div class="container mt-4 d-flex justify-content-center">
-  <div class="row w-100">
-    <div class="col-md-12">
-      <div class="card">
-        <div class="d-flex justify-content-center">
-          <h2 class="mb-0"> Vamos a crear Nuestro Restaurante </h2>
-        </div>
-        <div class="card-body">
-          <form [formGroup]="restauranteForm" (ngSubmit)="crearRestaurante()">
-            <!-- Resto del formulario -->
-            <div class="form-group">
-              <label for="nombre">Nombre</label>
-              <input type="text" class="form-control" id="nombre" formControlName="nombre" (keypress)="allowOnlyLetters($event)">
-            </div>
-            <div class="form-group">
-              <label for="tipoCocina">Tipo de Cocina</label>
-              <input type="text" class="form-control" id="tipoCocina" formControlName="tipoCocina" (keypress)="allowOnlyLetters($event)">
-            </div>
-            <div class="form-group">
-              <label for="direccion">Dirección</label>
-              <input type="text" class="form-control" id="direccion" formControlName="direccion">
-            </div>
-            <div class="form-group">
-              <label for="telefono">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" formControlName="telefono" (keypress)="allowOnlyNumbers($event)">
-            </div>
-            <!-- Campo de Horario de Funcionamiento con bloqueo de entrada -->
-            <div class="form-group">
-              <label for="horarioFuncionamiento">Horario de Funcionamiento</label>
-              <input type="text" class="form-control" id="horarioFuncionamiento" formControlName="horarioFuncionamiento" (keypress)="allowOnlyLetters($event)">
-            </div>
-            <!-- Campo de Categoría con bloqueo de entrada -->
-            <div class="form-group">
-              <label for="categoria">Categoría</label>
-              <input type="text" class="form-control" id="categoria" formControlName="categoria" (keypress)="allowOnlyLetters($event)">
-            </div>
-            <div class="form-group">
-              <label for="gestorId">Seleccionar gestor</label>
-              <select class="form-control" formControlName="gestorId">
-                <option value="" disabled selected>Seleccionar un gestor</option>
-                <option *ngFor="let gestor of gestores" [value]="gestor.id">{{ gestor.usuario }}</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="estado">Estado</label>
-              <select class="form-control" formControlName="estado">
-                <option value="Activo">Activo</option>
-                <option value="Inactivo">Inactivo</option>
-              </select>
-            </div>
-            <button type="submit" class="btn btn-primary">Crear Restaurante</button>
-          </form>
-        </div>
-      </div>
+<div class="container">
+  <h2>Crear Nuevo Restaurante</h2>
+  <form [formGroup]="restauranteForm" (ngSubmit)="crearRestaurante()">
+    <div class="form-group">
+      <label for="nombre">Nombre</label>
+      <input type="text" class="form-control" id="nombre" formControlName="nombre">
     </div>
+    <div class="form-group">
+      <label for="direccion">Dirección</label>
+      <input type="text" class="form-control" id="direccion" formControlName="direccion">
+    </div>
+    <div class="form-group">
+      <label for="telefono">Teléfono</label>
+      <input type="text" class="form-control" id="telefono" formControlName="telefono">
+    </div>
+    <div class="form-group">
+      <label for="tipoCocina">Tipo de Cocina</label>
+      <input type="text" class="form-control" id="tipoCocina" formControlName="tipoCocina">
+    </div>
+    <div class="form-group">
+      <label for="capacidadPersonas">Capacidad de Personas</label>
+      <input type="number" class="form-control" id="capacidadPersonas" formControlName="capacidadPersonas">
+    </div>
+    <div class="form-group">
+      <label for="horarioFuncionamiento">Horario de Funcionamiento</label>
+      <input type="text" class="form-control" id="horarioFuncionamiento" formControlName="horarioFuncionamiento">
+    </div>
+    <div class="form-group">
+      <label for="estado">Estado</label>
+      <select class="form-control" id="estado" formControlName="estado">
+        <option value="true">Activo</option>
+        <option value="false">Inactivo</option>
+      </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Crear Restaurante</button>
+  </form>
+
+  <!-- Mostrar el restaurante creado -->
+  <div *ngIf="restauranteCreado">
+    <hr>
+    <h2>Detalles del Restaurante Creado</h2>
+    <p><strong>Nombre:</strong> {{ restauranteCreado.nombre }}</p>
+    <p><strong>Dirección:</strong> {{ restauranteCreado.direccion }}</p>
+    <p><strong>Teléfono:</strong> {{ restauranteCreado.telefono }}</p>
+    <p><strong>Tipo de Cocina:</strong> {{ restauranteCreado.tipoCocina }}</p>
+    <p><strong>Capacidad de Personas:</strong> {{ restauranteCreado.capacidadPersonas }}</p>
+    <p><strong>Horario de Funcionamiento:</strong> {{ restauranteCreado.horarioFuncionamiento }}</p>
+    <p><strong>Estado:</strong> {{ restauranteCreado.estado ? 'Activo' : 'Inactivo' }}</p>
   </div>
 </div>
-
-<!-- Detalles del Restaurante -->
-<div class="container mt-4" *ngIf="restauranteCreado">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="mb-0 text-center">{{ restauranteCreado.nombre }}</h2>
-        </div>
-        <div class="card-body">
-          <div class="row">
-            <div class="col-md-6">
-              <p><strong>ID:</strong> {{ restauranteCreado.id }}</p>
-              <p><strong>Tipo de Cocina:</strong> {{ restauranteCreado.tipoCocina }}</p>
-              <p><strong>Dirección:</strong> {{ restauranteCreado.direccion }}</p>
-              <p><strong>Teléfono:</strong> {{ restauranteCreado.telefono }}</p>
-            </div>
-            <div class="col-md-6">
-              <p><strong>Horario de Funcionamiento:</strong> {{ restauranteCreado.horarioFuncionamiento }}</p>
-              <p><strong>Categoría:</strong> {{ restauranteCreado.categoria }}</p>
-              <p><strong>Gestor:</strong> {{ restauranteCreado.gestorId }}</p>
-              <p><strong>Estado:</strong> {{ restauranteCreado.estado }}</p>
-            </div>
-          </div>
-          <!-- Botón para agregar platos -->
-          <div class="text-center mt-3">
-          <!--  <button class="btn btn-primary" (click)="mostrarFormularioPlatos = true">
-              <mat-icon>restaurant_menu</mat-icon> Agregar Mis Platos
-            </button>-->
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Listado -->
-<div class="container mt-4">
-  <div class="col-md-13">
-    <div class="card">
-      <div class="card-header">
-        <h2 class="mb-0 d-flex justify-content-between align-items-center">
-          Listado de Restaurantes
-          <div class="btn-group" role="group">
-            <!-- Botón de exportación a CSV -->
-  <button type="button" class="btn btn-success" (click)="exportarCSV()">Exportar CSV</button>
-            <button type="button" class="btn btn-primary" (click)="filtrarPorEstado('Activos')">Activos</button>
-            <button type="button" class="btn btn-danger" (click)="filtrarPorEstado('Inactivos')">Inactivos</button>
-            <button type="button" class="btn btn-secondary" (click)="filtrarPorEstado('Todos')">Todos</button>
-          </div>
-        </h2>
-      </div>
-      <div class="card-body" style="height: 350px; overflow-y: auto;">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nombre</th>
-              <th>Tipo de Cocina</th>
-              <th>Dirección</th>
-              <th>Teléfono</th>
-              <th>Horario de Funcionamiento</th>
-              <th>Categoría</th>
-              <th>Gestor ID</th>
-              <th>Estado</th>
-              <th>Acciones</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let restaurante of restaurantes">
-              <td>{{ restaurante.id }}</td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.nombre }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.nombre" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.tipoCocina }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.tipoCocina" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.direccion }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.direccion" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.telefono }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.telefono" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.horarioFuncionamiento }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.horarioFuncionamiento" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.categoria }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.categoria" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.gestorId }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.gestorId" class="form-control">
-              </td>
-              <td *ngIf="!restaurante.editable">{{ restaurante.estado }}</td>
-              <td *ngIf="restaurante.editable">
-                <input type="text" [(ngModel)]="restaurante.estado" class="form-control">
-              </td>
-              <td>
-                <button class="btn btn-info btn-sm" (click)="editarRestaurante(restaurante)" *ngIf="!restaurante.editable">Editar</button>
-                <button class="btn btn-success btn-sm ml-2" (click)="confirmarEdicion(restaurante)" *ngIf="restaurante.editable">Confirmar</button>
-                <button class="btn btn-secondary btn-sm ml-2" (click)="cancelarEdicion(restaurante)" *ngIf="restaurante.editable">Cancelar</button>
-                <button class="btn btn-warning btn-sm ml-2" (click)="desactivarRestaurante(restaurante)" *ngIf="!restaurante.editable && restaurante.estado === 'Activo'">Desactivar</button>
-                <button class="btn btn-success btn-sm ml-2" (click)="restaurarRestaurante(restaurante)" *ngIf="!restaurante.editable && restaurante.estado === 'Inactivo'">Restaurar</button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <!-- Paginador simple -->
-    <ul class="pagination mt-3">
-      <li class="page-item" *ngFor="let page of getPageNumbers()">
-        <a class="page-link" (click)="changePage(page)">{{ page }}</a>
-      </li>
-    </ul>
-  </div>
-</div>
-
-</body>
-</html>

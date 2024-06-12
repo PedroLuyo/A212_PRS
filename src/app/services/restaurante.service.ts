@@ -12,23 +12,8 @@ export class RestauranteService {
 
   constructor(private http: HttpClient, private snackBar: MatSnackBar) { }
 
-  listarRestaurantes(estado: string): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/listar?estado=${estado}`)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-   
-  crearRestaurante(restaurante: any): Observable<void> {
-    return this.http.post<void>(`${this.apiUrl}/crear`, restaurante)
-      .pipe(
-        catchError(this.handleError)
-      );
-  }
-
-  obtenerGestores(): Observable<any[]> {
-    return this.http.get<any[]>(`${this.apiUrl}/gestores`)
+  crearRestaurante(restaurante: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/crear`, restaurante)
       .pipe(
         catchError(this.handleError)
       );
@@ -55,12 +40,17 @@ export class RestauranteService {
       );
   }
 
-  // Agrega aquí tus métodos adicionales si es necesario
-
   private handleError(error: any): Observable<never> {
-    console.error('Error:', error);
-    this.mostrarMensajeError('Ocurrió un error. Por favor, inténtelo de nuevo.');
-    return throwError(error);
+    let errorMsg: string;
+    if (error.error instanceof ErrorEvent) {
+      // Error del cliente
+      errorMsg = `Error: ${error.error.message}`;
+    } else {
+      // Error del servidor
+      errorMsg = `Error Code: ${error.status}\nMessage: ${error.message}`;
+    }
+    this.mostrarMensajeError(errorMsg);
+    return throwError(errorMsg);
   }
 
   private mostrarMensajeError(mensaje: string): void {
