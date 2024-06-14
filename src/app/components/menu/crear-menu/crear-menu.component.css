@@ -1,0 +1,45 @@
+/* comida.component.css */
+.container {
+    max-width: 900px;
+  }
+  
+  .mt-3 {
+    margin-top: 1.5rem;
+  }
+  
+  .table th, .table td {
+    text-align: center;
+  }
+  
+  .btn {
+    margin-right: 5px;
+  }
+  
+  /* Estilos adicionales */
+  h3 {
+    color: #007bff; /* Azul brillante */
+  }
+  
+  .btn-primary {
+    background-color: #28a745; /* Verde */
+    border-color: #28a745;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545; /* Rojo */
+    border-color: #dc3545;
+  }
+  
+  .btn-success {
+    background-color: #17a2b8; /* Cyan */
+    border-color: #17a2b8;
+  }
+  
+  .badge-success {
+    background-color: #28a745; /* Verde */
+  }
+  
+  .badge-danger {
+    background-color: #dc3545; /* Rojo */
+  }
+  

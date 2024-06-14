@@ -1,0 +1,27 @@
+<h1 class="text-center">Historial de Reserva</h1>
+<div class="container ">
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>ID</th>
+              <th>nombre</th>
+              <th>Correo</th>
+              <th>Hora</th>
+              <th>Personas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let reservaDetalle of reservaDetalles">
+              <td>{{ reservaDetalle.id_reserva }}</td>
+              <td>{{ reservaDetalle.nombreu }}</td>
+              <td>{{ reservaDetalle.correo }}</td>
+              <td>{{ reservaDetalle.hora_reserva }}</td>
+              <td>{{ reservaDetalle.num_personas }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>

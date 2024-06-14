@@ -1,0 +1,121 @@
+<div class="container mt-4">
+    <div class="row">
+      <!-- Nueva Comida -->
+      <div class="col-lg-4 mb-5" style="margin-left: -150px;">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title">{{ editandoId !== null ? 'Editar Comida' : 'Nueva Comida' }}</h3>
+            <form (submit)="guardarEdicion()" #comidaForm="ngForm">
+              <!-- Para el campo de Nombre -->
+              <div class="form-group">
+                <label for="nombre" class="lead">Nombre:</label>
+                <input type="text" class="form-control" id="nombre" [(ngModel)]="nuevaComida.nombrec" name="nombre"
+                  required pattern="^[A-Za-z\s]+$" (keypress)="validarLetras($event)">
+                <div *ngIf="comidaForm.controls['nombre']?.hasError('pattern')">
+                  Solo se permiten letras en el nombre.
+                </div>
+              </div>
+              <!-- Para el campo de Categoría -->
+              <div class="form-group">
+                <label for="categoria" class="lead">Categoría:</label>
+                <select class="form-control" id="categoria" [(ngModel)]="nuevaComida.categoria" name="categoria"
+                  required>
+                  <option value="">Seleccionar</option>
+                  <option value="Entrada">Entrada</option>
+                  <option value="Fondo">Fondo</option>
+                  <option value="Bebida">Bebida</option>
+                  <option value="Postre">Postre</option>
+                </select>
+              </div>
+  
+              <div class="form-group">
+                <label for="menu" class="lead">Menu:</label>
+               <!-- <input type="text" class="form-control" id="menu" [(ngModel)]="nuevaComida.menuid" name="menu"> -->
+                <select class="form-control" id="menu" [(ngModel)]="nuevaComida.menuid" name="menu"
+                  required>
+                  <option value="">Seleccionar</option>
+                  <option *ngFor="let menu of menus" [value]="menu.menuid">{{menu.nombrem}}</option>
+                </select>
+              </div>
+  
+              <div class="form-group">
+                <label for="precio" class="lead">Precio:</label>
+                <input type="text" class="form-control" id="precio" [(ngModel)]="nuevaComida.precio" name="precio">
+              </div>
+  
+              <button type="submit"
+                class="btn btn-primary">{{ editandoId !== null ? 'Guardar Cambios' : 'Crear Nueva' }}</button>
+            </form>
+          </div>
+        </div>
+      </div>
+      <!-- Listado de Comidas -->
+      <div class="col">
+        <div class="card">
+          <div class="card-body">
+  
+            <div class="d-flex align-items-center">
+              <h3 class="card-title">Listado de Comidas - {{ filtroEstado === 'A' ? 'Activos' : 'Inactivos' }}</h3>
+              <button (click)="exportarAExcel()" class="btn btn-primary ml-auto">Exportar a Excel</button>
+            </div>
+  
+            <div class="mb-3">
+              <label for="filtroEstado">Filtrar por Estado:</label>
+              <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()">
+                <option value="A">Activos</option>
+                <option value="I">Inactivos</option>
+              </select>
+            </div>
+            <div class="table-responsive">
+              <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                  <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Categoría</th>
+                    <th>Precio</th>
+                    <th>Menu</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let comida of comidas">
+                    <td>{{ comida.comidaid }}</td>
+                    <td>{{ comida.nombrec }}</td>
+                    <td>{{ comida.categoria | slice:0:15 }}</td>
+                    <td>{{ comida.precio }}</td>
+                   <!-- <td>{{ comida.menuid }}</td>-->
+                    <td>{{ obtenerNombreMenu(comida.menuid) }}</td>
+                    
+                    <td>
+                      <span [ngClass]="{'': comida.estado === 'A', 'badge badge-danger': comida.estado === 'I'}">
+                        {{ comida.estado === 'A' ? 'Activo' : 'Inactivo' }}
+                      </span>
+                    </td>
+                    <td class="d-flex justify-content-between align-items-center">
+                      <button *ngIf="mostrarBoton(comida.estado) && filtroEstado === 'A'"
+                        class="btn btn-danger btn-sm" (click)="eliminarComida(comida.comidaid)">Eliminar</button>
+                      <button *ngIf="mostrarBoton(comida.estado) && filtroEstado === 'A'"
+                        class="btn btn-primary btn-sm ml-2" (click)="editarComida(comida.comidaid)">Editar</button>
+                      <button *ngIf="mostrarBoton(comida.estado) && filtroEstado === 'I'"
+                        class="btn btn-success btn-sm" (click)="restaurarComida(comida.comidaid)">Restaurar</button>
+                    </td>
+                  </tr>
+  
+                   
+                <!--  <tr *ngFor="let menu of menus">
+                    <td>{{ menu.menuid }}</td>
+                    <td>{{ menu.nombre }}</td>
+                  </tr> -->
+  
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+  
