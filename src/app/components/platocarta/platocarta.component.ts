@@ -16,9 +16,8 @@ declare var $: any;
 })
 export class PlatocartaComponent {
 
-  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/plato-carta';
-  private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/presentacion';
-  private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/categoria'
+  //baseUrl= 'https://9095-vallegrande-msplatocart-vixue5nqeaq.ws-us114.gitpod.io';
+  private readonly baseUrl = 'http://localhost:9095/api/v1';
   private readonly estadoActivo = 'A';
   private readonly estadoInactivo = 'I';
 
@@ -187,7 +186,7 @@ export class PlatocartaComponent {
 
   // Método para obtener presentaciones activas y almacenarlas en el array
   getPresentacionesActivas() {
-    this.http.get(this.baseUrlPresentacion + '/obtener/activo').subscribe(
+    this.http.get(this.baseUrl + '/presentacion/obtener/activo').subscribe(
       (data: any) => {
         this.presentaciones = data;
         console.log('Presentaciones activas:', this.presentaciones);
@@ -200,7 +199,7 @@ export class PlatocartaComponent {
 
   // Método para obtener categorías activas y almacenarlas en el array
   getCategoriasActivas() {
-    this.http.get(this.baseUrlCategoria + '/obtener/activo').subscribe(
+    this.http.get(this.baseUrl + '/categoria/obtener/activo').subscribe(
       (data: any) => {
         this.categorias = data;
         console.log('Categorías activas:', this.categorias);
@@ -217,7 +216,7 @@ export class PlatocartaComponent {
   }
 
   getPlatos() {
-    let url = `${this.baseUrl}/obtener`;
+    let url = `${this.baseUrl}/plato-carta/obtener`;
 
     if (this.filtroPlatos) {
       url += `${this.filtroPlatos}`;
