@@ -23,7 +23,7 @@ FROM nginx:alpine
 # Copiar la carpeta de construcción al directorio correcto para nginx
 # ---- IMPORTANTE reemplazar "CAMBIAME" por el nombre de la aplicacion----
 
-COPY --from=build /app/dist/CAMBIAME/browser /usr/share/nginx/html
+COPY --from=build /app/dist/angular-17-firebase-crud/browser /usr/share/nginx/html
 
 EXPOSE 4200
 
