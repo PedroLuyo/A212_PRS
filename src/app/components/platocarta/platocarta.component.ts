@@ -258,7 +258,7 @@ export class PlatocartaComponent {
     if (this.modoEdicion) {
       this.actualizarPlato(this.plato.id);
     } else {
-      const url = `${this.baseUrl}/crear`;
+      const url = `${this.baseUrl}/plato-carta/crear`;
       this.http.post(url, this.plato).subscribe(
         (data: any) => {
           this.platos.push(data);
@@ -281,7 +281,7 @@ export class PlatocartaComponent {
 
   actualizarPlato(id: number) {
     this.plato.estado = this.getEstadoAbreviado(this.plato.estado);
-    const url = `${this.baseUrl}/editar/${id}`;
+    const url = `${this.baseUrl}/plato-carta/editar/${id}`;
 
     this.http.put(url, this.plato).subscribe(
       (data: any) => {
@@ -353,7 +353,7 @@ export class PlatocartaComponent {
   }
 
   eliminarPlato(plato: any) {
-    const url = `${this.baseUrl}/desactivar/${plato.id}`;
+    const url = `${this.baseUrl}/plato-carta/desactivar/${plato.id}`;
     const id = plato.id;
 
     this.http.patch(url, {}, { responseType: 'text' }).subscribe(
@@ -369,7 +369,7 @@ export class PlatocartaComponent {
   }
 
   cambiarEstadoPlato(plato: any) {
-    const url = `${this.baseUrl}/restaurar/${plato.id}`;
+    const url = `${this.baseUrl}/plato-carta/restaurar/${plato.id}`;
     const id = plato.id;
     const nuevoEstado = plato.estado === this.estadoActivo ? this.estadoInactivo : this.estadoActivo;
 
@@ -403,7 +403,7 @@ editarPlatos(plato: any, nuevoStock: number) {
 
 // Método para actualizar un plato
 actualizarPlatos(id: number, plato: any) {
-  const url = `${this.baseUrl}/editar/${id}`;
+  const url = `${this.baseUrl}/plato-carta/editar/${id}`;
   this.http.put(url, plato).subscribe(
       (data: any) => {
           // Manejar la respuesta si es necesario
