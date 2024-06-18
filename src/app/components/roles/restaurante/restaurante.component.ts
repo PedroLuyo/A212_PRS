@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { Router } from '@angular/router';
 import { RestauranteService } from '../../../services/restaurante.service';
-import { AuthService } from '../../../services/authService';
 
 @Component({
   selector: 'app-restaurante',
@@ -12,14 +10,12 @@ import { AuthService } from '../../../services/authService';
 })
 export class RestauranteComponent implements OnInit {
   restauranteForm!: FormGroup;
-  restauranteCreado: any = null;
   restaurantes: any[] = [];
+restauranteCreado: any;
 
   constructor(
-    private authService: AuthService,
     private restauranteService: RestauranteService,
-    private fb: FormBuilder,
-    private router: Router
+    private fb: FormBuilder
   ) {}
 
   ngOnInit(): void {
@@ -39,9 +35,10 @@ export class RestauranteComponent implements OnInit {
     });
   }
 
-  async crearRestaurante(): Promise<void> {
+  crearRestaurante(): void {
     if (this.restauranteForm.valid) {
       const nuevoRestaurante = this.restauranteForm.value;
+      console.log('Formulario válido. Datos:', nuevoRestaurante);
 
       Swal.fire({
         title: '¿Estás seguro?',
@@ -64,12 +61,13 @@ export class RestauranteComponent implements OnInit {
           this.restauranteService.crearRestaurante(nuevoRestaurante).subscribe(
             (restauranteCreado: any) => {
               console.log('Restaurante creado exitosamente', restauranteCreado);
-              // Aquí puedes manejar la respuesta del servidor, actualizar la lista de restaurantes, etc.
               Swal.fire('Creado!', 'El restaurante ha sido creado exitosamente.', 'success');
               this.restauranteForm.reset(); // Reinicia el formulario después de crear
+              this.listarRestaurantes(); // Actualiza la lista de restaurantes
             },
             (error: any) => {
               console.error('Error al crear restaurante', error);
+              console.log('Datos enviados:', nuevoRestaurante);
               Swal.fire('Error', 'Hubo un problema al crear el restaurante. Por favor, inténtelo de nuevo.', 'error');
             }
           );
@@ -79,7 +77,6 @@ export class RestauranteComponent implements OnInit {
       Swal.fire('Error', 'Por favor complete el formulario correctamente.', 'error');
     }
   }
-
 
   listarRestaurantes(): void {
     this.restauranteService.obtenerRestaurantes().subscribe(
