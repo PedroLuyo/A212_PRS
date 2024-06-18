@@ -16,9 +16,8 @@ declare var $: any;
 })
 export class PlatocartaComponent {
 
-  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/plato-carta';
-  private readonly baseUrlPresentacion = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/presentacion';
-  private readonly baseUrlCategoria = 'https://9095-vallegrande-msplatocart-9hirjl5fi20.ws-us114.gitpod.io/api/v1/categoria'
+  //baseUrl= 'https://9095-vallegrande-msplatocart-vixue5nqeaq.ws-us114.gitpod.io';
+  private readonly baseUrl = 'http://localhost:9095/api/v1';
   private readonly estadoActivo = 'A';
   private readonly estadoInactivo = 'I';
 
@@ -187,7 +186,7 @@ export class PlatocartaComponent {
 
   // Método para obtener presentaciones activas y almacenarlas en el array
   getPresentacionesActivas() {
-    this.http.get(this.baseUrlPresentacion + '/obtener/activo').subscribe(
+    this.http.get(this.baseUrl + '/presentacion/obtener/activo').subscribe(
       (data: any) => {
         this.presentaciones = data;
         console.log('Presentaciones activas:', this.presentaciones);
@@ -200,7 +199,7 @@ export class PlatocartaComponent {
 
   // Método para obtener categorías activas y almacenarlas en el array
   getCategoriasActivas() {
-    this.http.get(this.baseUrlCategoria + '/obtener/activo').subscribe(
+    this.http.get(this.baseUrl + '/categoria/obtener/activo').subscribe(
       (data: any) => {
         this.categorias = data;
         console.log('Categorías activas:', this.categorias);
@@ -217,7 +216,7 @@ export class PlatocartaComponent {
   }
 
   getPlatos() {
-    let url = `${this.baseUrl}/obtener`;
+    let url = `${this.baseUrl}/plato-carta/obtener`;
 
     if (this.filtroPlatos) {
       url += `${this.filtroPlatos}`;
@@ -259,7 +258,7 @@ export class PlatocartaComponent {
     if (this.modoEdicion) {
       this.actualizarPlato(this.plato.id);
     } else {
-      const url = `${this.baseUrl}/crear`;
+      const url = `${this.baseUrl}/plato-carta/crear`;
       this.http.post(url, this.plato).subscribe(
         (data: any) => {
           this.platos.push(data);
@@ -282,7 +281,7 @@ export class PlatocartaComponent {
 
   actualizarPlato(id: number) {
     this.plato.estado = this.getEstadoAbreviado(this.plato.estado);
-    const url = `${this.baseUrl}/editar/${id}`;
+    const url = `${this.baseUrl}/plato-carta/editar/${id}`;
 
     this.http.put(url, this.plato).subscribe(
       (data: any) => {
@@ -354,7 +353,7 @@ export class PlatocartaComponent {
   }
 
   eliminarPlato(plato: any) {
-    const url = `${this.baseUrl}/desactivar/${plato.id}`;
+    const url = `${this.baseUrl}/plato-carta/desactivar/${plato.id}`;
     const id = plato.id;
 
     this.http.patch(url, {}, { responseType: 'text' }).subscribe(
@@ -370,7 +369,7 @@ export class PlatocartaComponent {
   }
 
   cambiarEstadoPlato(plato: any) {
-    const url = `${this.baseUrl}/restaurar/${plato.id}`;
+    const url = `${this.baseUrl}/plato-carta/restaurar/${plato.id}`;
     const id = plato.id;
     const nuevoEstado = plato.estado === this.estadoActivo ? this.estadoInactivo : this.estadoActivo;
 
@@ -404,7 +403,7 @@ editarPlatos(plato: any, nuevoStock: number) {
 
 // Método para actualizar un plato
 actualizarPlatos(id: number, plato: any) {
-  const url = `${this.baseUrl}/editar/${id}`;
+  const url = `${this.baseUrl}/plato-carta/editar/${id}`;
   this.http.put(url, plato).subscribe(
       (data: any) => {
           // Manejar la respuesta si es necesario
