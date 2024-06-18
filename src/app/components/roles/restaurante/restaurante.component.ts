@@ -9,9 +9,10 @@ import { RestauranteService } from '../../../services/restaurante.service';
   styleUrls: ['./restaurante.component.css']
 })
 export class RestauranteComponent implements OnInit {
-  restauranteForm!: FormGroup;
+  restauranteForm: FormGroup = new FormGroup({});
   restaurantes: any[] = [];
-restauranteCreado: any;
+  restauranteCreado: any;
+  restauranteEditando: any = null; // Variable para almacenar el restaurante en edición
 
   constructor(
     private restauranteService: RestauranteService,
@@ -90,15 +91,22 @@ restauranteCreado: any;
     );
   }
 
-  editarRestaurante(id: number): void {
-    if (this.restauranteForm.valid) {
-      const restauranteEditado = this.restauranteForm.value;
-      this.restauranteService.editarRestaurante(id, restauranteEditado).subscribe(
+  editarRestaurante(restaurante: any): void {
+    this.restauranteEditando = { ...restaurante };
+  }
+
+  cancelarEdicion(): void {
+    this.restauranteEditando = null;
+  }
+
+  guardarCambios(id: number): void {
+    if (this.restauranteEditando) {
+      this.restauranteService.editarRestaurante(id, this.restauranteEditando).subscribe(
         (restauranteActualizado: any) => {
-          console.log('Restaurante actualizado exitosamente');
+          console.log('Restaurante actualizado exitosamente', restauranteActualizado);
           this.listarRestaurantes(); // Actualiza la lista de restaurantes
           Swal.fire('Actualizado!', 'El restaurante ha sido actualizado exitosamente.', 'success');
-          this.restauranteForm.reset(); // Reinicia el formulario después de editar
+          this.restauranteEditando = null; // Reinicia la variable de edición
         },
         (error: any) => {
           console.error('Error al actualizar restaurante', error);

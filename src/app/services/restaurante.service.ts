@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-y9y1h8716b9.ws-us114.gitpod.io/api/restaurants/v1';
+  private apiUrl = 'https://8090-vallegrande-msrestauran-rexfwp11xy0.ws-us114.gitpod.io/api/restaurants/v1';
 
   constructor(private http: HttpClient) {}
 
