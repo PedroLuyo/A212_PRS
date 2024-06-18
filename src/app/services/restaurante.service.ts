@@ -2,62 +2,73 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
-import { MatSnackBar } from '@angular/material/snack-bar';
+import Swal from 'sweetalert2';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-nevaxdprx4r.ws-us114.gitpod.io/api/restaurants/v1';
+  private apiUrl = 'https://8090-vallegrande-msrestauran-hq3zq9xlpe5.ws-us114.gitpod.io/api/restaurants/v1';
 
-  constructor(private http: HttpClient, private snackBar: MatSnackBar) { }
+  constructor(private http: HttpClient) {}
 
-  crearRestaurante(restaurante: any): Observable<any> {
-    return this.http.post<any>(`${this.apiUrl}/crear`, restaurante)
+  // Obtener todos los restaurantes
+  obtenerRestaurantes(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.apiUrl}/listar`)
       .pipe(
-        catchError(this.handleError)
+        catchError((error: any) => {
+          console.error('Error al obtener restaurantes', error);
+          Swal.fire('Error', 'Hubo un problema al obtener los restaurantes. Por favor, inténtelo de nuevo.', 'error');
+          return throwError(error);
+        })
       );
   }
 
-  editarRestaurante(id: number, restaurante: any): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/editar/${id}`, restaurante)
+  // Crear un restaurante
+  crearRestaurante(nuevoRestaurante: any): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/crear`, nuevoRestaurante)
       .pipe(
-        catchError(this.handleError)
+        catchError((error: any) => {
+          console.error('Error al crear restaurante', error);
+          Swal.fire('Error', 'Hubo un problema al crear el restaurante. Por favor, inténtelo de nuevo.', 'error');
+          return throwError(error);
+        })
       );
   }
 
-  desactivarRestaurante(id: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/desactivar/${id}`, null)
+  // Editar un restaurante
+  editarRestaurante(id: number, restaurante: any): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/editar/${id}`, restaurante)
       .pipe(
-        catchError(this.handleError)
+        catchError((error: any) => {
+          console.error('Error al editar restaurante', error);
+          Swal.fire('Error', 'Hubo un problema al editar el restaurante. Por favor, inténtelo de nuevo.', 'error');
+          return throwError(error);
+        })
       );
   }
 
-  restaurarRestaurante(id: number): Observable<void> {
-    return this.http.put<void>(`${this.apiUrl}/restaurar/${id}`, null)
+  // Desactivar un restaurante (eliminar lógico)
+  desactivarRestaurante(id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/desactivar/${id}`, null)
       .pipe(
-        catchError(this.handleError)
+        catchError((error: any) => {
+          console.error('Error al desactivar restaurante', error);
+          Swal.fire('Error', 'Hubo un problema al desactivar el restaurante. Por favor, inténtelo de nuevo.', 'error');
+          return throwError(error);
+        })
       );
   }
 
-  private handleError(error: any): Observable<never> {
-    let errorMsg: string;
-    if (error.error instanceof ErrorEvent) {
-      // Error del cliente
-      errorMsg = `Error: ${error.error.message}`;
-    } else {
-      // Error del servidor
-      errorMsg = `Error Code: ${error.status}\nMessage: ${error.message}`;
-    }
-    this.mostrarMensajeError(errorMsg);
-    return throwError(errorMsg);
-  }
-
-  private mostrarMensajeError(mensaje: string): void {
-    this.snackBar.open(mensaje, 'Cerrar', {
-      duration: 5000,
-      verticalPosition: 'top',
-      panelClass: ['snackbar-error']
-    });
+  // Restaurar un restaurante
+  restaurarRestaurante(id: number): Observable<any> {
+    return this.http.put<any>(`${this.apiUrl}/restaurar/${id}`, null)
+      .pipe(
+        catchError((error: any) => {
+          console.error('Error al restaurar restaurante', error);
+          Swal.fire('Error', 'Hubo un problema al restaurar el restaurante. Por favor, inténtelo de nuevo.', 'error');
+          return throwError(error);
+        })
+      );
   }
 }

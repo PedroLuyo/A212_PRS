@@ -15,8 +15,8 @@ throw new Error('Method not implemented.');
 }
   gestorForm: FormGroup;
   nombreGestor: any;
-isAdmin: any;
-isGestor: any;
+  isAdmin: any;
+  isGestor: any;
 
   constructor(private authService: AuthService) {
     this.gestorForm = new FormGroup({

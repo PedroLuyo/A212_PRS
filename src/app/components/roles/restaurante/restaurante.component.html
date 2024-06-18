@@ -3,15 +3,15 @@
   <form [formGroup]="restauranteForm" (ngSubmit)="crearRestaurante()">
     <div class="form-group">
       <label for="nombre">Nombre</label>
-      <input type="text" class="form-control" id="nombre" formControlName="nombre">
+      <input type="text" class="form-control" id="nombre" formControlName="nombre" required>
     </div>
     <div class="form-group">
       <label for="direccion">Dirección</label>
-      <input type="text" class="form-control" id="direccion" formControlName="direccion">
+      <input type="text" class="form-control" id="direccion" formControlName="direccion" required>
     </div>
     <div class="form-group">
       <label for="telefono">Teléfono</label>
-      <input type="text" class="form-control" id="telefono" formControlName="telefono">
+      <input type="text" class="form-control" id="telefono" formControlName="telefono" required>
     </div>
     <div class="form-group">
       <label for="tipoCocina">Tipo de Cocina</label>
@@ -28,8 +28,8 @@
     <div class="form-group">
       <label for="estado">Estado</label>
       <select class="form-control" id="estado" formControlName="estado">
-        <option value="true">Activo</option>
-        <option value="false">Inactivo</option>
+        <option [ngValue]="true">Activo</option>
+        <option [ngValue]="false">Inactivo</option>
       </select>
     </div>
     <button type="submit" class="btn btn-primary">Crear Restaurante</button>
@@ -47,4 +47,38 @@
     <p><strong>Horario de Funcionamiento:</strong> {{ restauranteCreado.horarioFuncionamiento }}</p>
     <p><strong>Estado:</strong> {{ restauranteCreado.estado ? 'Activo' : 'Inactivo' }}</p>
   </div>
+
+  <!-- Listado de restaurantes -->
+  <hr>
+  <h2>Lista de Restaurantes</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Nombre</th>
+        <th>Dirección</th>
+        <th>Teléfono</th>
+        <th>Tipo de Cocina</th>
+        <th>Capacidad</th>
+        <th>Horario</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let restaurante of restaurantes">
+        <td>{{ restaurante.nombre }}</td>
+        <td>{{ restaurante.direccion }}</td>
+        <td>{{ restaurante.telefono }}</td>
+        <td>{{ restaurante.tipoCocina }}</td>
+        <td>{{ restaurante.capacidadPersonas }}</td>
+        <td>{{ restaurante.horarioFuncionamiento }}</td>
+        <td>{{ restaurante.estado ? 'Activo' : 'Inactivo' }}</td>
+        <td>
+          <button class="btn btn-warning" (click)="editarRestaurante(restaurante.id)">Editar</button>
+          <button class="btn btn-danger" (click)="desactivarRestaurante(restaurante.id)" *ngIf="restaurante.estado">Desactivar</button>
+          <button class="btn btn-success" (click)="restaurarRestaurante(restaurante.id)" *ngIf="!restaurante.estado">Restaurar</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
 </div>

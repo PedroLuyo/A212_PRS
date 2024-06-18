@@ -23,8 +23,29 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
-  obtenerNombreGestorAutenticado() {
-    throw new Error('Method not implemented.');
+  obtenerNombreGestorAutenticado(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const auth = getAuth();
+      onAuthStateChanged(auth, (user) => {
+        if (user) {
+          this.db
+            .collection('users')
+            .doc(user.uid)
+            .get()
+            .subscribe((doc) => {
+              if (doc.exists) {
+                const userData = doc.data() as { name?: string };
+                const firstName = userData.name?.split(' ')[0] || '';
+                resolve(firstName);
+              } else {
+                reject('No se encontró el usuario en Firestore');
+              }
+            });
+        } else {
+          reject('No hay usuario');
+        }
+      });
+    });
   }
   
   private usersCollection: AngularFirestoreCollection<Users>;
