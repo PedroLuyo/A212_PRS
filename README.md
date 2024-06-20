@@ -6,7 +6,7 @@
 1. [Clonación del Proyecto](#clonación-del-proyecto)
 2. [Ejecución rápida con un solo comando](#Ejecución-rápida-con-un-solo-comando)
 3. [Wiki de Dockerización y Kubernetes](#wiki-de-dockerización-y-kubernetes)
-    - [Dockerfile Estándar](#dockerfile-estándar)
+    - [Dockerfile Estándar](#1️⃣-Dockerfile-Estándar-📄)
     - [Estándar de Nombre de Imagen a DockerHub](#estándar-de-nombre-de-imagen-a-dockerhub)
     - [Puertos y Cambios](#puertos-y-cambios)
     - [Archivo YML Total](#archivo-yml-total)
