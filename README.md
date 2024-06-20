@@ -4,7 +4,7 @@
 # 📖 Índice
 
 1. [Clonación del Proyecto](#clonación-del-proyecto)
-2. [Ejecución Rápida](#ejecución-rápida)
+2. [Ejecución rápida con un solo comando](#Ejecución-rápida-con-un-solo-comando)
 3. [Wiki de Dockerización y Kubernetes](#wiki-de-dockerización-y-kubernetes)
     - [Dockerfile Estándar](#dockerfile-estándar)
     - [Estándar de Nombre de Imagen a DockerHub](#estándar-de-nombre-de-imagen-a-dockerhub)
@@ -21,7 +21,7 @@ Para clonar esta rama, utiliza el siguiente comando:
 ```bash
 git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git
 ```
-## Ejecución rápida con un solo comando! 🚀
+## Ejecución rápida con un solo comando
 
 ¿Quieres arrancar rápido con el proyecto? ¡Chévere! Este comando hace el trabajo pesado por ti:
 
