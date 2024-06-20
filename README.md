@@ -222,6 +222,7 @@ spec:
 
 ## 5️⃣ Salida de Kubernetes YML 📤
 La salida de Kubernetes YML 📄 se refiere a cómo se configura la salida del balanceador de carga  y el puerto del nodo . 
+
 En el ejemplo anterior, el servicio está configurado para usar el tipo NodePort , lo que significa que el servicio es accesible en el puerto especificado (30001) en todos los nodos del clúster 🌐.
 
 Por ejemplo, tengo por el momento 2 imagenes de mis compañeros y sus enlaces🚏:
@@ -238,4 +239,4 @@ http://localhost:30001/api/v1/presentacion/obtener/activo
 ## 6️⃣ Conexión Localhost 🌐 (se explicará en DISCORD)
 Para conectar a la aplicación desde localhost cuando se ejecuta en un contenedor Docker, puedes usar la dirección localhost seguida del puerto en el que se está ejecutando el servicio. Por ejemplo, si el servicio se está ejecutando en el puerto 30001, puedes acceder a él en http://localhost:30001.
 
->este readme aún esta en mejora
+>este readme aún está en mejora
