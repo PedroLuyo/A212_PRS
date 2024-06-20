@@ -1,20 +1,11 @@
 <!-- Creditos: AngeloLaMadrid -->
+<h1 align="center">AS212</h1>
+
+![loog-og](https://github.com/PedroLuyo/A212_PRS/assets/101282128/5be25cc7-dfda-4519-9c6b-128976850d28)
 
 
-# 📖 Índice
+## 📚Clonación del Proyecto
 
-1. [Clonación del Proyecto](#clonación-del-proyecto)
-2. [Ejecución rápida con un solo comando](#Ejecución-rápida-con-un-solo-comando)
-3. [Wiki de Dockerización y Kubernetes](#wiki-de-dockerización-y-kubernetes)
-    - [1️⃣ Dockerfile Estándar 📄](#1️⃣-Dockerfile-Estándar-📄)
-    - [Estándar de Nombre de Imagen a DockerHub](#estándar-de-nombre-de-imagen-a-dockerhub)
-    - [Puertos y Cambios](#puertos-y-cambios)
-    - [Archivo YML Total](#archivo-yml-total)
-    - [Salida de Kubernetes YML](#salida-de-kubernetes-yml)
-    - [Conexión Localhost](#conexión-localhost)
-4. [Créditos](#créditos)
-
-## Clonación del Proyecto
 
 Para clonar esta rama, utiliza el siguiente comando:
 
@@ -27,8 +18,6 @@ git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git
 
 ```bash
 git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git && cd A212_PRS && npm install && npm install -g @angular/cli && ng serve --open
-
-
 ```
 Este comando realiza tres acciones importantes: clona el repositorio, instala las dependencias necesarias y posteriormente inicia el servidor de desarrollo de Angular. Todo esto en un único paso, lo que nos permite comenzar a trabajar de manera rápida y eficiente. 🔥
 
