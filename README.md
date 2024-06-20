@@ -15,7 +15,33 @@ git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git && cd A212_PRS &
 
 ![image](https://github.com/PedroLuyo/A212_PRS/assets/101282128/15234c25-5cf5-450e-b6d6-2a6c0399eab7)
 
+#
+### 🚀 Paso 1: Clonar el Repositorio
 
+```sh
+git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git
+```
+ 🔄 Paso 2: Nos aseguramos de estar en la rama correcta
+```sh
+git checkout frontend
+```
+🧹 Paso 3: Descartar cambios locales no confirmados
+```sh
+git reset --hard
+```
+🌐 Paso 4: Sincronizar con la rama frontend
+```sh
+git fetch origin frontend
+git reset --hard origin/frontend
+```
+✔️ Resumen
+```sh
+git checkout frontend
+git reset --hard
+git fetch origin frontend
+git reset --hard origin/frontend
+```
+#
 # 🐳 Wiki de Dockerización y Kubernetes
 
 ## 1️⃣ Dockerfile Estándar 📄
