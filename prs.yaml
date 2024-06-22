@@ -20,9 +20,9 @@ spec:
         - containerPort: 4200
         env:
         - name: BACKEND_URL
-          value: "http://service-ms-platocarta:9095"  # URL del servicio backend usando el nombre del servicio
+          value: "http://service-ms-platocarta:9095" 
         - name: MENU_URL
-          value: "http://service-ms-menurestaurant:8086"  # URL del servicio menu usando el nombre del servicio
+          value: "http://service-ms-menurestaurant:8086" 
 ---
 # Frontend Service
 apiVersion: v1
@@ -70,10 +70,10 @@ spec:
     app: backend
   ports:
     - protocol: TCP
-      name:service-ms-platocarta
+      name: service-ms-platocarta
       port: 9095
       targetPort: 9095
-      nodePort: 30001  # NodePort para el backend
+      nodePort: 30001 
   type: NodePort
 ---
 # Menu Deployment
