@@ -17,12 +17,12 @@ export class PlatocartaService {
     return this.http.get<any>(this.ApiUrl).pipe(
       catchError((error: HttpErrorResponse) => {
         // Si falla la primera URL, intenta con la segunda
-        console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo.`);
+        console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo. `);
         return this.http.get<any>(this.ApiUrlAngelo);
       })
     );  
   }
-
+ 
   logPlatosCarta(): void {
     this.getPlatosCarta().subscribe(platos => console.log(platos));
   }

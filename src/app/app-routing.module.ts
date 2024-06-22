@@ -22,7 +22,7 @@ const routes: Routes = [
 
   { path: 'main', component: MainComponent},
   { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
-  { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
+  { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
 
