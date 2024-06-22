@@ -8,8 +8,8 @@ import { Observable } from 'rxjs';
 export class PlatocartaService {
 
   //apiUrl = 'https://8086-vallegrande-msrestauran-jr8yds39xxz.ws-us114.gitpod.io/api/v1/products/obtener';
-  private apiUrl = 'http://service-ms-platocarta:9095/api/v1/products/obtener'; 
-
+  private apiUrl = 'http://service-ms-menurestaurant:8086/api/v1/products/obtener'; 
+  
   constructor(private http: HttpClient) { }
 
   getPlatosCarta(): Observable<any> {
