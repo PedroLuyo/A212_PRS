@@ -1,9 +1,11 @@
-.login-container {
-  background-color: white !important;
+body {
+  background-color: #f2f7fb;
 }
-:host {
-  background-color: white !important;
+
+.login-container, :host, .card {
+  background-color: #fff !important;
 }
+
 .password-image {
   height: 30px;
   width: 30px;
@@ -12,6 +14,7 @@
   top: 10px;
   cursor: pointer;
 }
+
 .image-container {
   height: 200px;
   overflow: hidden;
@@ -22,10 +25,6 @@
   height: 100%;
   object-fit: cover;
   object-position: center top;
-}
-
-body {
-  background-color: #f2f7fb;
 }
 
 .login-block {
@@ -40,20 +39,16 @@ body {
 
 .card {
   border-radius: 5px;
-  -webkit-box-shadow: 0 0 5px 0 rgba(43, 43, 43, 0.1),
-    0 11px 6px -7px rgba(43, 43, 43, 0.1);
-  box-shadow: 0 0 5px 0 rgba(43, 43, 43, 0.1),
-    0 11px 6px -7px rgba(43, 43, 43, 0.1);
+  box-shadow: 0 0 5px 0 rgba(43, 43, 43, 0.1), 0 11px 6px -7px rgba(43, 43, 43, 0.1);
   border: none;
   margin-bottom: 30px;
-  -webkit-transition: all 0.3s ease-in-out;
   transition: all 0.3s ease-in-out;
-  background-color: #fff;
 }
 
 .card .card-block {
   padding: 1.25rem;
 }
+
 a .f-80 {
   font-size: 80px;
 }
@@ -62,10 +57,13 @@ a .f-80 {
   margin-bottom: 1.25em;
 }
 
+.firebaseui-custom-button, .firebaseui-custom-img, .custom-width {
+  display: block;
+  margin: auto;
+}
+
 .firebaseui-custom-button {
   background-color: #db4437;
-  margin: auto;
-  display: block;
 }
 
 .firebaseui-custom-img {
@@ -75,8 +73,6 @@ a .f-80 {
 
 .custom-width {
   width: 74%;
-  display: block;
-  margin: auto;
 }
 
 .form-material .form-control {
@@ -89,14 +85,18 @@ a .f-80 {
   font-weight: 400;
   padding: 9px;
   background-color: transparent;
-  -webkit-box-shadow: none;
   box-shadow: none;
   border-bottom: 1px solid #ccc;
 }
 
-.btn-md {
+.btn, .btn-md, .btn-primary {
   padding: 10px 16px;
   font-size: 15px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.btn-md {
   line-height: 23px;
 }
 
@@ -104,26 +104,11 @@ a .f-80 {
   background-color: #4099ff;
   border-color: #4099ff;
   color: #fff;
-  cursor: pointer;
-  -webkit-transition: all ease-in 0.3s;
   transition: all ease-in 0.3s;
-}
-
-.btn {
-  border-radius: 2px;
-  font-size: 15px;
-  padding: 10px 19px;
-  cursor: pointer;
 }
 
 .m-b-20 {
   margin-bottom: 10px;
-}
-
-.btn-md {
-  padding: 10px 16px;
-  font-size: 15px;
-  line-height: 23px;
 }
 
 .heading {
@@ -135,11 +120,12 @@ a .f-80 {
 }
 
 .custom-margin-top {
-    margin-top: 20px;
+  margin-top: 20px;
 }
+
 .btn-google {
   color: #545454;
-  background-color: #ffffff;
+  background-color: #fff;
   box-shadow: 0 1px 2px 1px #ddd;
 }
 
