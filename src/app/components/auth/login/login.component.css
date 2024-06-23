@@ -1,3 +1,9 @@
+.login-container {
+  background-color: white !important;
+}
+:host {
+  background-color: white !important;
+}
 .password-image {
   height: 30px;
   width: 30px;
