@@ -1,9 +1,17 @@
 <div class="container mt-3">
   <h3 class="text-center mb-4">Listado de Usuarios</h3>
   <div class="d-flex justify-content-end mb-3">
-    <form [formGroup]="searchForm" (ngSubmit)="filterUsers()">
-      <div class="form-group">
-        <label for="rol">Filtrar por Rol:</label>
+    <div>
+      <button class="btn btn-success btn-sm ml-2" (click)="exportCSV()">
+        <i class="fas fa-download mr-1"></i> Descargar CSV
+      </button>
+      <button class="btn btn-danger btn-sm ml-2" (click)="exportPDF()">
+        <img src="https://imgur.com/gallery/vg-restaurant-nGk5aDP" alt="Logo" style="width: 20px; height: 20px; margin-right: 5px;"> Descargar PDF
+      </button>
+    </div>
+    <form [formGroup]="searchForm" (ngSubmit)="filterUsers()" class="d-flex align-items-center">
+      <div class="form-group mb-0 d-flex align-items-center">
+        <label for="rol" class="mb-0 mr-2">Filtrar:</label>
         <select class="form-control" id="rol" formControlName="rol">
           <option value="">Todos</option>
           <option value="admin">Admin</option>
@@ -11,12 +19,10 @@
           <option value="comensal">Comensal</option>
         </select>
       </div>
-      <button type="submit" class="btn btn-primary btn-sm mr-2">Filtrar</button>
     </form>
-    <button class="btn btn-success btn-sm ml-2" (click)="exportCSV()">
-      <i class="fas fa-download mr-1"></i> Descargar CSV
-    </button>
+
   </div>
+
   <div class="table-responsive">
     <table class="table table-hover">
       <thead class="thead-dark">
@@ -48,15 +54,16 @@
           <td *ngIf="!user.editable">{{ user.ruc }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.ruc" class="form-control"></td>
           <td>
-            <button class="btn btn-primary" *ngIf="!user.editable" (click)="editarUsuario(user)">Editar</button>
-            <button class="btn btn-success" *ngIf="user.editable" (click)="confirmarEdicion(user)">Confirmar</button>
-            <button class="btn btn-danger" (click)="eliminarOrestaurarUsuario(user)">
+            <button class="btn btn-primary btn-sm" *ngIf="!user.editable" (click)="editarUsuario(user)">Editar</button>
+            <button class="btn btn-success btn-sm" *ngIf="user.editable"
+              (click)="confirmarEdicion(user)">Confirmar</button>
+            <button class="btn btn-danger btn-sm" (click)="eliminarOrestaurarUsuario(user)">
               {{ user.estado === 'A' ? 'Eliminar' : 'Restaurar' }}
             </button>
-            <button class="btn btn-secondary" *ngIf="user.editable" (click)="cancelarEdicion(user)">Cancelar</button>
+            <button class="btn btn-secondary btn-sm" *ngIf="user.editable"
+              (click)="cancelarEdicion(user)">Cancelar</button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
-</div>
