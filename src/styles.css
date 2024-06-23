@@ -1,1 +1,25 @@
 /* You can add global styles to this file, and also import other style files */
+body {
+    background-color: bisque;
+    font-family: "Poppins", sans-serif;
+    color: #444444;
+}
+
+a {
+    text-decoration: none;
+    color: #ffb03b;
+}
+
+a:hover {
+    color: #ffc56e;
+    text-decoration: none;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-family: "Satisfy", sans-serif;
+}

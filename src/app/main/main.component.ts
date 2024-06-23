@@ -1,6 +1,5 @@
 import { AuthService } from './../services/authService';
 import { Component, OnInit } from '@angular/core';
-import { Users } from '../models/users.model';
 import { PlatocartaService } from '../services/platocarta.service';
 
 @Component({
@@ -8,48 +7,38 @@ import { PlatocartaService } from '../services/platocarta.service';
   templateUrl: './main.component.html',
   styleUrls: ['./main.component.css']
 })
-export class MainComponent implements OnInit{
+export class MainComponent implements OnInit {
   userName: string = '';
   platos: any[] = [];
-  allPlatos: any[] = []; // Agrega esta línea
-  searchResults: any[] = []; // Array para almacenar los resultados de búsqueda
-  showResultBox: boolean = false; // Variable para mostrar u ocultar el cuadro flotante
-
+  allPlatos: any[] = []; 
+  searchResults: any[] = []; 
+  showResultBox: boolean = false; 
 
   searchTerm: string = '';
 
+  constructor(private authService: AuthService, private platocartaService: PlatocartaService) { }
+
+  async ngOnInit(): Promise<void> {
+    this.updatePage();
+    this.platocartaService.getPlatosCarta().subscribe((platos: any[]) => {
+      this.allPlatos = platos; 
+      this.platos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+    });
+
+    // Inicializar el carrusel
+    this.initCarousel();
+  }
+
   searchPlatos(): void {
     this.searchResults = this.allPlatos.filter(plato => plato.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()));
-    this.showResultBox = true; // Mostrar el cuadro flotante siempre que haya término de búsqueda
-
-    // Verificar si no hay resultados y actualizar la visibilidad del cuadro flotante
+    this.showResultBox = true; 
     if (this.searchTerm.trim() === '' || this.searchResults.length === 0) {
       this.showResultBox = false;
     }
   }
 
-  carouselImages: any[] = [
-    { src: 'https://www.peru.travel/Contenido/General/Imagen/es/1049/1.1/restaurantes-de-lujo-desktop.jpg', alt: 'Image 1' },
-    { src: 'https://i0.wp.com/goula.lat/wp-content/uploads/2020/06/restaurantes-nueva-normalidad.jpg?fit=1000%2C667&ssl=1', alt: 'Image 2' },
-    { src: 'https://blog.mesa247.pe/wp-content/uploads/2022/04/restaurantes.jpeg', alt: 'Image 3' },
-    { src: 'https://elcomercio.pe/resizer/UnhQAK8FIAtm1MHRp4W0qIw8izI=/580x330/smart/filters:format(jpeg):quality(75)/cloudfront-us-east-1.images.arcpublishing.com/elcomercio/OF7TBC3M3FEPTMLRIKJKP6BXLA.jpg', alt: 'Image 4' },
-    { src: 'https://cdn.forbes.com.mx/2017/09/Restaurantes-mexicanos-P.jpg', alt: 'Image 5' },
-    // Agrega más imágenes según sea necesario
-  ];
-  
-
-  constructor(private authService: AuthService, private platocartaService: PlatocartaService) { }
-  
-  async ngOnInit(): Promise<void> {
-    this.updatePage();
-    this.platocartaService.getPlatosCarta().subscribe((platos: any[]) => {
-      this.allPlatos = platos; // Guarda todos los platos en allPlatos
-      this.platos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
-    });
-  }
-
   getPrecioTachado(precio: number): number {
-    return precio + Math.floor(Math.random() * 3) + 2; // Suma un número aleatorio entre 2 y 5 al precio original
+    return precio + Math.floor(Math.random() * 3) + 2; 
   }
 
   async updatePage(): Promise<void> {
@@ -59,5 +48,29 @@ export class MainComponent implements OnInit{
       console.error('Error getting user name', error);
       this.userName = ''; 
     }
+  }
+
+  initCarousel(): void {
+    "use strict";
+
+    const select = (el: string, all = false): HTMLElement | HTMLElement[] | null => {
+      el = el.trim();
+      if (all) {
+        return Array.from(document.querySelectorAll(el)) as HTMLElement[];
+      } else {
+        return document.querySelector(el) as HTMLElement | null;
+      }
+    }
+
+    let heroCarouselIndicators = select("#hero-carousel-indicators") as HTMLElement;
+    let heroCarouselItems = select('#heroCarousel .carousel-item', true) as HTMLElement[];
+
+    heroCarouselItems.forEach((item: HTMLElement, index: number) => {
+      if (index === 0) {
+        heroCarouselIndicators.innerHTML += `<li data-bs-target='#heroCarousel' data-bs-slide-to='${index}' class='active'></li>`;
+      } else {
+        heroCarouselIndicators.innerHTML += `<li data-bs-target='#heroCarousel' data-bs-slide-to='${index}'></li>`;
+      }
+    });
   }
 }

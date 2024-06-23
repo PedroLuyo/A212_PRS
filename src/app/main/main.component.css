@@ -1,144 +1,297 @@
-
-@import url("https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css");
-
-/* Estilos para cards */
-.card {
-  position: relative;
-  height: auto;
-  width: 100%; /* Cambiado a 100% para que se ajuste al contenedor */
-  max-width: 310px; /* Máximo ancho fijo */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border-radius: 0.5rem 0.5rem 0 0;
+/*--------------------------------------------------------------
+# Book a table button Menu
+--------------------------------------------------------------*/
+.book-a-table-btn {
+  background: #ffb03b;
+  color: #fff;
+  border-radius: 50px;
+  margin: 0 0 0 20px;
+  padding: 10px 25px;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 1px;
+  transition: 0.3s;
+  white-space: nowrap;
 }
 
-
-
-#platoCarousel {
-  width: 99.4vw; /* Ancho completo de la ventana */
-  margin-left: calc(-50vw + 50%); /* Centra el carrusel horizontalmente */
-  margin-right: calc(-50vw + 50%); /* Centra el carrusel horizontalmente */
+.book-a-table-btn:hover {
+  background: #ffa012;
+  color: #fff;
 }
 
-.carousel-inner {
-  height: 450px; /* Ajusta la altura del carrusel según tus preferencias */
-  margin-bottom: 20px;
+@media (max-width: 992px) {
+  .book-a-table-btn {
+    margin: 0 15px 0 0;
+    padding: 8px 20px;
+    letter-spacing: 1px;
+  }
 }
 
-.carousel-item img {
-  width: 100%; /* Ajusta el tamaño de las imágenes para ocupar todo el ancho del carrusel */
-  filter: brightness(70%);
-}
-
-.separator {
-  display: flex;
-  align-items: center;
+/*--------------------------------------------------------------
+# Hero Section
+--------------------------------------------------------------*/
+#hero {
+  width: 100%;
+  height: 100vh;
+  background-color: rgba(39, 37, 34, 0.8);
+  overflow: hidden;
+  padding: 0;
   margin-bottom: 50px;
-  margin-top: 30px;
-
 }
 
-.separator hr {
-  flex-grow: 1;
-  border: none;
-  border-top: 2px solid #ccc;
-  margin: 0 10px; /* Ajusta el margen izquierdo y derecho para la línea horizontal */
+#hero .carousel-item {
+  width: 100%;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
-.category-text {
-  font-size: 30px;
-  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
-  color: #555;
-  padding-left: 10px; /* Ajusta el padding izquierdo para separar el texto de la línea */
-}
-
-
-
-.card-img-top {
-  height: 200px;
-  object-fit: cover;
-  border-top-left-radius: 0.5rem;
-  border-top-right-radius: 0.5rem;
-}
-
-.card-body {
-  padding: 1rem;
-  background-color: #f8f9fa;
-  display: flex;
-  flex-direction: column;
-  justify-content: left;
-  align-items: left;
-}
-
-.card-footer {
-  background-color: #f8f9fa;
-  padding: 1rem;
-}
-
-.tag {
-  padding: 0.25rem;
-  border-radius: 0.25rem;
-  margin-right: 0.5rem;
-  font-weight: 400;
-  color: white;
-  font-size: 0.75rem;
-}
-
-.search-bar {
-  width: 300px;
-}
-
-.footer {
+#hero .carousel-item::before {
+  content: "";
+  background-color: rgba(12, 11, 10, 0.5);
+  position: absolute;
+  top: 0;
+  right: 0;
   left: 0;
   bottom: 0;
-  width: 100%;
-  background-color: #f8f9fa;
-  color: #6c757d;
-  text-align: center;
-  padding: 10px 0;
-  border-top: 1px solid #e9ecef;
 }
 
-body {
-  overflow-x: hidden; /* Evita el desbordamiento horizontal */
-}
-
-
-.result-box {
+#hero .carousel-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: absolute;
-  background-color: white;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  padding: 10px;
-  width: 300px;
-  z-index: 1000;
+  bottom: 0;
+  top: 0;
+  left: 0;
+  right: 0;
 }
 
-.result-item {
+#hero .carousel-content {
+  text-align: center;
+}
+
+#hero h2 {
+  color: #fff;
+  margin-bottom: 30px;
+  font-size: 48px;
+  font-weight: 700;
+}
+
+#hero h2 span {
+  color: #ffb03b;
+}
+
+#hero p {
+  width: 80%;
+  animation-delay: 0.4s;
+  margin: 0 auto 30px auto;
+  color: #fff;
+}
+
+#hero .carousel-inner .carousel-item {
+  transition-property: opacity;
+  background-position: center top;
+}
+
+#hero .carousel-inner .carousel-item,
+#hero .carousel-inner .active.carousel-item-start,
+#hero .carousel-inner .active.carousel-item-end {
+  opacity: 0;
+}
+
+#hero .carousel-inner .active,
+#hero .carousel-inner .carousel-item-next.carousel-item-start,
+#hero .carousel-inner .carousel-item-prev.carousel-item-end {
+  opacity: 1;
+  transition: 0.5s;
+}
+
+#hero .carousel-inner .carousel-item-next,
+#hero .carousel-inner .carousel-item-prev,
+#hero .carousel-inner .active.carousel-item-start,
+#hero .carousel-inner .active.carousel-item-end {
+  left: 0;
+  transform: translate3d(0, 0, 0);
+}
+
+#hero .carousel-control-next-icon,
+#hero .carousel-control-prev-icon {
+  background: none;
+  font-size: 30px;
+  line-height: 0;
+  width: auto;
+  height: auto;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 50px;
+  transition: 0.3s;
+  color: rgba(255, 255, 255, 0.5);
+  width: 54px;
+  height: 54px;
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  justify-content: center;
 }
 
-.result-image {
-  width: 50px;
-  height: 50px;
-  margin-right: 10px;
+#hero .carousel-control-next-icon:hover,
+#hero .carousel-control-prev-icon:hover {
+  background: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
 }
 
-.result-info {
-  flex: 1;
+#hero .carousel-indicators li {
+  cursor: pointer;
+  list-style-type: none;
 }
 
-
-.fade-in {
-  animation: fadeIn ease 0.5s;
+#hero .btn-menu,
+#hero .btn-book {
+  font-weight: 600;
+  font-size: 13px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  display: inline-block;
+  padding: 12px 30px;
+  border-radius: 50px;
+  transition: 0.5s;
+  line-height: 1;
+  margin: 0 10px;
+  animation-delay: 0.8s;
+  color: #fff;
+  border: 2px solid #ffb03b;
 }
 
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
+#hero .btn-menu:hover,
+#hero .btn-book:hover {
+  background: #ffb03b;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  #hero h2 {
+    font-size: 28px;
   }
-  100% {
-    opacity: 1;
+}
+
+@media (min-width: 1024px) {
+  #hero p {
+    width: 50%;
   }
+
+  #hero .carousel-control-prev,
+  #hero .carousel-control-next {
+    width: 5%;
+  }
+}
+
+/*--------------------------------------------------------------
+# Footer
+--------------------------------------------------------------*/
+#footer {
+  background: #35322d;
+  color: #fff;
+  font-size: 14px;
+  text-align: center;
+  padding: 30px 0;
+}
+
+#footer h3 {
+  font-size: 36px;
+  font-weight: 700;
+  color: #ffb03b;
+  position: relative;
+  padding: 0;
+  margin: 0 0 15px 0;
+}
+
+#footer p {
+  font-size: 15px;
+  font-style: italic;
+  padding: 0;
+  margin: 0 0 40px 0;
+}
+
+#footer .social-links {
+  margin: 0 0 40px 0;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+#footer .social-links a {
+  font-size: 18px;
+  display: inline-block;
+  background: #46423b;
+  color: #fff;
+  line-height: 1;
+  padding: 8px;
+  border-radius: 50%;
+  text-align: center;
+  width: 36px;
+  height: 36px;
+  transition: 0.3s;
+}
+
+#footer .social-links a:hover {
+  background: #ffb03b;
+}
+
+#footer .copyright {
+  margin: 0 0 5px 0;
+}
+
+#footer .credits {
+  font-size: 13px;
+}
+
+/*--------------------------------------------------------------
+# Sobre Nosotros
+--------------------------------------------------------------*/
+.why-us .section-title {
+  text-align: center; 
+  margin-bottom: 50px; 
+  margin-top: 50px;
+}
+
+.why-us .box {
+  padding: 50px 30px;
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  transition: all ease-in-out 0.3s;
+  height: 100%;
+  text-align: center;
+}
+
+.why-us .box span {
+  display: block;
+  font-size: 28px;
+  font-weight: 700;
+  color: #313030;
+}
+
+.why-us .box h4 {
+  font-size: 24px;
+  font-weight: 600;
+  padding: 0;
+  margin: 20px 0;
+  color: #6c665c;
+}
+
+.why-us .box p {
+  color: #6c665c;
+  font-size: 15px;
+  margin: 0;
+  padding: 0;
+}
+
+.why-us .box:hover {
+  background: #ffb03b;
+  padding: 30px 30px 70px 30px;
+  box-shadow: 10px 15px 30px rgba(0, 0, 0, 0.18);
+}
+
+.why-us .box:hover span,
+.why-us .box:hover h4,
+.why-us .box:hover p {
+  color: #fff;
 }

@@ -13,6 +13,7 @@ export class RestauranteComponent implements OnInit {
   restaurantes: any[] = [];
   restauranteCreado: any;
   restauranteEditando: any = null; // Variable para almacenar el restaurante en edición
+  restauranteSeleccionado: any = null; // Variable para almacenar el restaurante seleccionado
 
   constructor(
     private restauranteService: RestauranteService,
@@ -142,5 +143,17 @@ export class RestauranteComponent implements OnInit {
         Swal.fire('Error', 'Hubo un problema al restaurar el restaurante. Por favor, inténtelo de nuevo.', 'error');
       }
     );
+  }
+
+  verRestaurante(restaurante: any): void {
+    this.restauranteSeleccionado = restaurante;
+  }
+
+  verPlatosCarta(restaurante: any): void {
+    console.log('Ver platos de carta para el restaurante:', restaurante);
+  }
+
+  verPlatosMenu(restaurante: any): void {
+    console.log('Ver platos de menú para el restaurante:', restaurante);
   }
 }
