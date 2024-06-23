@@ -24,16 +24,20 @@
           <a routerLink="selector" class="nav-link"><i class="fas fa-tasks"></i> 📋 Gestionar</a>
         </li>
       </ul>
-      <div *ngIf="userName; else login">
-        <span class="navbar-text mr-3">👋 Bienvenido, {{ userName }} 😊</span>
-        <button (click)="logout()" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> 🔐 Cerrar sesión</button>
-      </div>
-      <ng-template #login>
-        <a routerLink="login" class="btn btn-success nav-link"><i class="fas fa-sign-in-alt"></i> 🔑 Iniciar sesión</a>
-      </ng-template>
+      <ul class="navbar-nav ml-auto navbar-right-margins">
+        <li class="nav-item" *ngIf="userName; else login">
+          <span class="navbar-text mr-3">👋 Bienvenido, {{ userName }} 😊</span>
+          <button (click)="logout()" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> 🔐 Cerrar sesión</button>
+        </li>
+        <ng-template #login>
+          <li class="nav-item">
+            <a routerLink="login" class="btn btn-success nav-link"><i class="fas fa-sign-in-alt"></i> 🔑 Iniciar sesión</a>
+          </li>
+        </ng-template>
+      </ul>
     </div>
   </nav>
   <br>
   <br>
-    <router-outlet></router-outlet>
+  <router-outlet></router-outlet>
 </div>

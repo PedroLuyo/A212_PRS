@@ -1,9 +1,7 @@
-/* Añadimos animaciones */
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
 }
-
 
 .navbar {
   position: fixed;
@@ -54,4 +52,8 @@
 
 .navbar-toggler {
   border-color: rgba(255, 255, 255, 0.1);
+}
+
+.navbar-right-margins {
+  margin-right: 20px; /* Ajusta este valor según sea necesario */
 }
