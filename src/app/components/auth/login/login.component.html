@@ -27,10 +27,10 @@
                   name="submit" value="Iniciar sesión" />
               </div>
               <div class="col-md-20">
-                <a class="btn btn-lg btn-google btn-block text-uppercase btn-outline separacion-btn"
+                <a class="btn btn-lg btn-google btn-block btn-outline separacion-btn"
                   (click)="onClick()">
                   <img src="https://img.icons8.com/color/16/000000/google-logo.png" />
-                  Iniciar con Google
+                  Ya estoy registrado
                 </a>
               </div>
             </div>
@@ -48,14 +48,12 @@
               ></firebase-ui>
             </div>
             -->
-            <button
-              class="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-password firebaseui-id-idp-button firebaseui-custom-button my-2">
+            <a (click)="navigateToLoginBlock()" class="firebaseui-idp-button mdl-button mdl-js-button mdl-button--raised firebaseui-idp-password firebaseui-id-idp-button firebaseui-custom-button my-2">
               <span class="firebaseui-idp-icon-wrapper">
-                <img class="firebaseui-custom-img" alt=""
-                  src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg" />
+                <img class="firebaseui-custom-img" alt="" src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/mail.svg" />
               </span>
               <span class="firebaseui-idp-text firebaseui-idp-text-long">Registrarse con email</span>
-            </button>
+            </a>
 
             <a class="btn btn-lg btn-google custom-width" (click)="onClick()">
               <img src="https://img.icons8.com/color/16/000000/google-logo.png" />
@@ -74,7 +72,7 @@
   </div>
 </div>
 
-<section class="login-block">
+<section id="login-block" class="login-block">
   <div class="container-fluid">
     <div class="row">
       <div class="col-sm-12">

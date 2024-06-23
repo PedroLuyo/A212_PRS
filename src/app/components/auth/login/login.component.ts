@@ -92,7 +92,7 @@ async onSubmit() {
         console.log('Error al registrar el usuario en Firestore', error);
       });
   }
-
+  //validaciones del codigo, la logica se encuentra en la carpeta services por las buenas practicas
   registerUser(form: NgForm) {
     const value = form.value;
     const email = value.email;
@@ -139,5 +139,10 @@ async onSubmit() {
       console.error('Error al enviar el correo de restablecimiento de contraseña', error);
     }
   }
-
+  navigateToLoginBlock(): void {
+    const loginBlockElement = document.getElementById('login-block');
+    if (loginBlockElement) {
+      loginBlockElement.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 }

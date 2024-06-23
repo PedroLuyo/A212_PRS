@@ -2,7 +2,22 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+.sparkle-hover:hover i, .sparkle-hover:hover img {
+  animation: sparkleAnimation 1s ease-in-out infinite;
+}
 
+@keyframes sparkleAnimation {
+  0% { filter: brightness(1); }
+  30% { filter: brightness(2); }
+  60% { filter: brightness(1); }
+}
+a i, a img {
+  transition: transform 0.3s ease;
+}
+
+a:hover i, a:hover img {
+  transform: scale(1.8);
+}
 .navbar {
   position: fixed;
   top: 0;
