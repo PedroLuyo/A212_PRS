@@ -7,7 +7,7 @@
       <button class="btn btn-success btn-sm ml-2" (click)="exportCSV()">
         <i class="fas fa-download mr-1"></i> Descargar CSV
       </button>
-      <button class="btn btn-danger btn-sm ml-2">
+      <button class="btn btn-danger btn-sm ml-2" (click)="generarReportePDF()">
         <i class="fas fa-download mr-1"></i> Descargar PDF
       </button>
     </div>
@@ -35,7 +35,7 @@
           <th>DNI</th>
           <th>Estado</th>
           <th>RUC</th>
-          <th class="text-center">-ACCIONES-</th>
+          <th class="text-center">--ACCIONES--</th>
         </tr>
       </thead>
       <tbody>
@@ -59,7 +59,7 @@
             <button class="btn btn-success btn-sm" *ngIf="user.editable"
               (click)="confirmarEdicion(user)">Confirmar</button>
             <button class="btn btn-danger btn-sm" (click)="eliminarOrestaurarUsuario(user)">
-              {{ user.estado === 'A' ? 'Eliminar' : 'Restaurar' }}
+              {{ user.estado === 'A' ? 'Eliminar' : ' ' }}
             </button>
             <button class="btn btn-secondary btn-sm" *ngIf="user.editable"
               (click)="cancelarEdicion(user)">Cancelar</button>

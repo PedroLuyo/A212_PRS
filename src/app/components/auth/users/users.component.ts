@@ -3,6 +3,8 @@ import { AuthService } from '../../../services/authService';
 import { Users } from '../../../models/users.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-users',
@@ -53,7 +55,6 @@ export class UsersComponent implements OnInit {
 
   editarUsuario(user: Users): void {
     user.editable = true;
-    // Copiar datos a formRegister para edición
     this.formRegister.patchValue({
       email: user.email,
       nombre: user.name,
@@ -89,18 +90,13 @@ export class UsersComponent implements OnInit {
           estado: this.formRegister.value.estado,
           ruc: this.formRegister.value.ruc,
         };
-  
-        // Actualizar en Firestore
+
         this.authService.updateUser(user.docId!, updatedUser).then(
           () => {
             console.log('Usuario editado exitosamente');
-            // Actualizar el objeto `user` con los nuevos valores
             Object.assign(user, updatedUser);
-            // Salir del modo de edición
             user.editable = false;
-            // Actualizar la lista de usuarios después de confirmar la edición
             this.retrieveUsers();
-            // Si necesitas resetear el formulario, hazlo aquí
             this.formRegister.reset();
           },
           (error) => {
@@ -109,12 +105,11 @@ export class UsersComponent implements OnInit {
         );
       }
     });
-}
+  }
 
-cancelarEdicion(user: Users): void {
+  cancelarEdicion(user: Users): void {
     user.editable = false;
-}
-
+  }
 
   cambiarEstadoUsuario(user: Users): void {
     const nuevoEstado = user.estado === 'A' ? 'I' : 'A';
@@ -185,7 +180,7 @@ cancelarEdicion(user: Users): void {
     if (role === '') {
       this.filteredUsers = this.users;
     } else {
-      this.filteredUsers = this.users?.filter(user => user.role === role);
+      this.filteredUsers = this.users?.filter(user => user.role === role) || [];
     }
   }
 
@@ -249,5 +244,69 @@ cancelarEdicion(user: Users): void {
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
+  }
+
+  generarReportePDF(): void {
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+
+    const fecha = new Date().toLocaleDateString();
+    const margin = 10;
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const pageHeight = doc.internal.pageSize.getHeight();
+
+    // Configurar el título del reporte
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(20);
+    const titulo = 'Reporte de Usuarios';
+    const tituloX = margin;
+    const tituloY = 20;
+    doc.text(titulo, tituloX, tituloY);
+
+    // Configurar la tabla de datos
+    const head = [['Correo', 'Nombre', 'Rol', 'Dirección', 'DNI', 'Estado', 'RUC']];
+    const data = (this.filteredUsers || []).map((user: Users) => [
+      user.email,
+      user.name,
+      user.role,
+      user.direccion,
+      user.dni,
+      user.estado,
+      user.ruc
+    ]);
+
+    (doc as any).autoTable({
+      head: head,
+      body: data,
+      startY: tituloY + 10,
+      styles: {
+        cellWidth: 'auto',
+        fontSize: 10,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1
+      },
+      headStyles: {
+        fillColor: [0, 0, 0],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        textColor: 0
+      },
+      alternateRowStyles: {
+        fillColor: [235, 235, 235]
+      }
+    });
+
+    // Establecer la fecha en todas las páginas del documento
+    for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+      doc.setPage(i);
+      doc.text(`Fecha de creación: ${fecha}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+    }
+
+    // Guardar el documento PDF
+    doc.save('reporte_usuarios.pdf');
   }
 }
