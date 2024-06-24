@@ -3,7 +3,7 @@
        [ngClass]="{'colorAdmin': userRole === 'admin', 'colorGestor': userRole === 'gestor'}" 
        *ngIf="showMenu">
 
-       <a href="#" class="sparkle-hover">
+       <a href="#" class="sparkle-hover" (click)="redireccionar($event)">
         <i class="fas fa-utensils">   </i>
         <img src="assets/img/eating.gif" alt="Logo" style="height: 25px;">
       </a>
