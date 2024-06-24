@@ -250,6 +250,13 @@ export class UsersComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'portrait'
     });
+    
+    // Cargar y añadir la imagen de la cabecera
+    const img = new Image();
+    img.src = 'assets/img/VGLogo.png'; // Asegúrate de que la ruta sea accesible
+    img.onload = () => {
+      doc.addImage(img, 'PNG', 10, 10, 30, 30); // Ajusta las coordenadas y el tamaño según sea necesario
+    
 
     const fecha = new Date().toLocaleDateString();
     const margin = 10;
@@ -309,4 +316,5 @@ export class UsersComponent implements OnInit {
     // Guardar el documento PDF
     doc.save('reporte_usuarios.pdf');
   }
+}
 }
