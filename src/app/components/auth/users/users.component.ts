@@ -177,14 +177,19 @@ export class UsersComponent implements OnInit {
     this.currentIndex = index;
   }
 
-filterUsers(): void {
-  const role = this.searchForm.get('rol')?.value;
-  if (role) {
-    this.filteredUsers = this.users?.filter(user => user.role === role);
-  } else {
-    this.filteredUsers = this.users;
+  filterUsers(): void {
+    console.log('--------------------------');
+    console.log('Iniciando filtrado de usuarios');
+    const role = this.searchForm.get('rol')?.value;
+    console.log(`Rol buscado: ${role}`);
+    if (role) {
+      this.filteredUsers = this.users?.filter(user => user.role === role);
+      console.log(`Usuarios filtrados por rol: ${this.filteredUsers?.length}`);
+    } else {
+      this.filteredUsers = this.users;
+      console.log('No se especificó rol, mostrando todos los usuarios');
+    }
   }
-}
 
 
   loginWithGoogle(): void {
