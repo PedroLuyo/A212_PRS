@@ -41,18 +41,20 @@ export class UsersComponent implements OnInit {
   }
 
   retrieveUsers(): void {
-    this.authService
-      .getAll()
-      .snapshotChanges()
-      .subscribe((data) => {
+    this.authService.getAll().snapshotChanges().subscribe(
+      (data) => {
         this.users = data.map((user) => ({
           ...user.payload.doc.data() as Users,
           docId: user.payload.doc.id, // Store the document ID from Firestore
         }));
         this.filteredUsers = this.users;
-      });
+        console.log('Usuarios recuperados:', this.users); // Para depuración
+      },
+      (error) => {
+        console.error('Error al recuperar usuarios:', error);
+      }
+    );
   }
-
   editarUsuario(user: Users): void {
     user.editable = true;
     this.formRegister.patchValue({
@@ -175,14 +177,15 @@ export class UsersComponent implements OnInit {
     this.currentIndex = index;
   }
 
-  filterUsers(): void {
-    const role = this.searchForm.value.rol;
-    if (role === '') {
-      this.filteredUsers = this.users;
-    } else {
-      this.filteredUsers = this.users?.filter(user => user.role === role) || [];
-    }
+filterUsers(): void {
+  const role = this.searchForm.get('rol')?.value;
+  if (role) {
+    this.filteredUsers = this.users?.filter(user => user.role === role);
+  } else {
+    this.filteredUsers = this.users;
   }
+}
+
 
   loginWithGoogle(): void {
     this.authService
