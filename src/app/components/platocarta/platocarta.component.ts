@@ -16,8 +16,8 @@ declare var $: any;
 })
 export class PlatocartaComponent {
 
-  //baseUrl= 'https://9095-vallegrande-msplatocart-vixue5nqeaq.ws-us114.gitpod.io';
-  private readonly baseUrl = 'http://localhost:9095/api/v1';
+  //baseUrl= 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io';
+  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io/api/v1';
   private readonly estadoActivo = 'A';
   private readonly estadoInactivo = 'I';
 
