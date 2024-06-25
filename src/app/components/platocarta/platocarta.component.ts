@@ -3,8 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { FormControl, NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
-import { FormsModule } from '@angular/forms';
 import 'jspdf-autotable';
+import { FormsModule } from '@angular/forms';
 
 
 declare var $: any;

@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class PlatocartaService {
 
-  private ApiUrl = 'http://localhost:8086/api/v1/products/obtener';
+  private ApiUrl = 'https://8086-vallegrande-msrestauran-jr8yds39xxz.ws-us114.gitpod.io/api/v1/products/obtener';
   private ApiUrlAngelo = 'http://localhost:30002/api/v1/products/obtener';
   
   constructor(private http: HttpClient) { }

@@ -135,10 +135,16 @@
   </div>
 </div>
 
+<button class="btn btn-primary" (click)="generarReportePDF()">
+  <i class="bi bi-file-earmark-pdf-fill"></i> Generar Reporte de Platos
+</button>
+
 <!-- Línea horizontal con texto -->
 <div class="separator container-fluid px-5">
   <hr><div class="category-text"> Categoria 1</div>
 </div>
+
+
 
 <!-- Grid de platos -->
 <div class="row">
@@ -156,11 +162,11 @@
       </div>
       <div class="card-footer">
         <div class="d-flex">
-          <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{
+          <div class="tag" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{
             plato.categoria_detalle.nombre }}</div>
-          <div class="tag" style="background-color: #6c757d;"><i class="bi bi-tags-fill"></i> {{
+          <div class="tag" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{
             plato.presentacion_detalle.tipo }}</div>
-          <div class="tag" style="background-color: #112e13;"><i class="bi bi-tags-fill"></i> {{ plato.stock }}</div>
+          <div class="tag" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{ plato.stock }}</div>
         </div>
       </div>
     </div>
