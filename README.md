@@ -7,10 +7,10 @@ Para clonar el repositorio y asegurar que tu copia local esté sincronizada con 
 ¿Quieres arrancar rápido con el proyecto? ¡Chévere! Este comando hace el trabajo pesado por ti:
 
 ```bash
-git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git && cd A212_PRS && npm install && ng serve --open
+git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git && cd A212_PRS && npm install && npm install -g @angular/cli && ng serve --open
 
 ```
-> **¡Importante!** Si se esta usando Codespaces usar el comando `npm install -g @angular/cli`.
+> **FUNCIONA:** Comando corregido para ejecutar en `Codespaces`:
 
 Este comando realiza tres acciones importantes: clona el repositorio, instala las dependencias necesarias y posteriormente inicia el servidor de desarrollo de Angular. Todo esto en un único paso, lo que nos permite comenzar a trabajar de manera rápida y eficiente. 🔥
 
