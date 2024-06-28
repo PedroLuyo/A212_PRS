@@ -160,7 +160,7 @@ export class AuthService {
   async register({ email, password, name, role, direccion, dni, estado, ruc }: any) {
     const credential = await createUserWithEmailAndPassword(this.auth, email, password);
     const user = credential.user;
-
+  
     if (user) {
       await updateProfile(user, { displayName: name });
       const userData = {
@@ -168,10 +168,10 @@ export class AuthService {
         email,
         name,
         role,
-        direccion,
-        dni,
-        estado,
-        ruc,
+        direccion: direccion ?? null, 
+        dni: dni ?? null,             
+        estado: estado ?? null,        
+        ruc: ruc ?? null,              
         active: true
       };
       await this.db
@@ -179,7 +179,7 @@ export class AuthService {
         .doc(user.uid)
         .set(userData, { merge: true });
     }
-  }
+}
 
   // Método para verificar si hay un usuario autenticado
   get isLoggedIn(): boolean {
