@@ -13,7 +13,7 @@ import { ToastrService } from 'ngx-toastr';
 }) 
 export class AppComponent implements OnInit, OnDestroy {
   userName: string = '';
-  userRole: string = ''; //aun falta la logica para el rol o eliminar esto si es necesario 
+  userRole: string = '';
   showMenu = true;
   user: User | null = null;
   private subscription: Subscription;
