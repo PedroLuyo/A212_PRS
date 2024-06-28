@@ -58,89 +58,125 @@
     </div>
   </div>
 
-  <!-- Listado de restaurantes -->
-  <div class="card mb-4">
-    <div class="card-header">
-      <h2>Lista de Restaurantes</h2>
-    </div>
-    <div class="card-body">
-      <table class="table table-striped">
-        <thead>
-          <tr>
-            <th>Nombre</th>
-            <th>Dirección</th>
-            <th>Teléfono</th>
-            <th>Tipo de Cocina</th>
-            <th>Capacidad</th>
-            <th>Horario</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let restaurante of restaurantes">
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayMode">
-                <input type="text" [(ngModel)]="restauranteEditando.nombre" class="form-control" />
-              </ng-container>
-              <ng-template #displayMode>{{ restaurante.nombre }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayModeDireccion">
-                <input type="text" [(ngModel)]="restauranteEditando.direccion" class="form-control" />
-              </ng-container>
-              <ng-template #displayModeDireccion>{{ restaurante.direccion }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayModeTelefono">
-                <input type="text" [(ngModel)]="restauranteEditando.telefono" class="form-control" />
-              </ng-container>
-              <ng-template #displayModeTelefono>{{ restaurante.telefono }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayModeTipoCocina">
-                <input type="text" [(ngModel)]="restauranteEditando.tipoCocina" class="form-control" />
-              </ng-container>
-              <ng-template #displayModeTipoCocina>{{ restaurante.tipoCocina }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayModeCapacidad">
-                <input type="number" [(ngModel)]="restauranteEditando.capacidadPersonas" class="form-control" />
-              </ng-container>
-              <ng-template #displayModeCapacidad>{{ restaurante.capacidadPersonas }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayModeHorario">
-                <input type="text" [(ngModel)]="restauranteEditando.horarioFuncionamiento" class="form-control" />
-              </ng-container>
-              <ng-template #displayModeHorario>{{ restaurante.horarioFuncionamiento }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else displayModeEstado">
-                <select [(ngModel)]="restauranteEditando.estado" class="form-control">
-                  <option [ngValue]="true">Activo</option>
-                  <option [ngValue]="false">Inactivo</option>
-                </select>
-              </ng-container>
-              <ng-template #displayModeEstado>{{ restaurante.estado ? 'Activo' : 'Inactivo' }}</ng-template>
-            </td>
-            <td>
-              <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else actionButtons">
-                <button class="btn btn-success btn-sm" (click)="guardarCambios(restaurante.id)">Guardar</button>
-                <button class="btn btn-secondary btn-sm" (click)="cancelarEdicion()">Cancelar</button>
-              </ng-container>
-              <ng-template #actionButtons>
-                <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
-                <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante.id)" *ngIf="restaurante.estado">Desactivar</button>
-                <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante.id)" *ngIf="!restaurante.estado">Restaurar</button>
-                <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
-              </ng-template>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+ <!-- Listado de restaurantes -->
+<div class="card mb-4">
+  <div class="card-header">
+    <h2>Lista de Restaurantes</h2>
   </div>
+  <div class="card-body">
+    <!-- Filtros y búsqueda -->
+    <div class="row mb-3">
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Buscar por nombre..." [(ngModel)]="filtroNombre">
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Buscar por dirección..." [(ngModel)]="filtroDireccion">
+      </div>
+      <div class="col-md-3">
+        <select class="form-control" [(ngModel)]="filtroEstado">
+          <option value="">Todos</option>
+          <option value="true">Activos</option>
+          <option value="false">Inactivos</option>
+        </select>
+      </div>
+      <div class="col-md-3">
+        <input type="text" class="form-control" placeholder="Buscar por tipo de cocina..." [(ngModel)]="filtroTipoCocina">
+      </div>
+    </div>
+
+    <!-- Tabla de restaurantes -->
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Dirección</th>
+          <th>Teléfono</th>
+          <th>Tipo de Cocina</th>
+          <th>Capacidad</th>
+          <th>Horario</th>
+          <th>Estado</th> 
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let restaurante of filtrarRestaurantes(); let i = index;">
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditNombre">
+              <input type="text" class="form-control" [(ngModel)]="restauranteEditando.nombre">
+            </ng-container>
+            <ng-template #noEditNombre>
+              {{ restauranteEditando?.id === restaurante.id ? restauranteEditando.nombre : restaurante.nombre }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditDireccion">
+              <input type="text" class="form-control" [(ngModel)]="restauranteEditando.direccion">
+            </ng-container>
+            <ng-template #noEditDireccion>
+              {{ restauranteEditando?.id === restaurante.id ? restauranteEditando.direccion : restaurante.direccion }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditTelefono">
+              <input type="text" class="form-control" [(ngModel)]="restauranteEditando.telefono">
+            </ng-container>
+            <ng-template #noEditTelefono>
+              {{ restauranteEditando?.id === restaurante.id ? restauranteEditando.telefono : restaurante.telefono }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditTipoCocina">
+              <input type="text" class="form-control" [(ngModel)]="restauranteEditando.tipoCocina">
+            </ng-container>
+            <ng-template #noEditTipoCocina>
+              {{ restauranteEditando?.id === restaurante.id ? restauranteEditando.tipoCocina : restaurante.tipoCocina }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditCapacidad">
+              <input type="number" class="form-control" [(ngModel)]="restauranteEditando.capacidadPersonas">
+            </ng-container>
+            <ng-template #noEditCapacidad>
+              {{ restauranteEditando?.id === restaurante.id ? restauranteEditando.capacidadPersonas : restaurante.capacidadPersonas }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditHorario">
+              <input type="text" class="form-control" [(ngModel)]="restauranteEditando.horarioFuncionamiento">
+            </ng-container>
+            <ng-template #noEditHorario>
+              {{ restauranteEditando?.id === restaurante.id ? restauranteEditando.horarioFuncionamiento : restaurante.horarioFuncionamiento }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else noEditEstado">
+              <select class="form-control" [(ngModel)]="restauranteEditando.estado">
+                <option [ngValue]="true">Activo</option>
+                <option [ngValue]="false">Inactivo</option>
+              </select>
+            </ng-container>
+            <ng-template #noEditEstado>
+              {{ restauranteEditando?.id === restaurante.id ? (restauranteEditando.estado ? 'Activo' : 'Inactivo') : (restaurante.estado ? 'Activo' : 'Inactivo') }}
+            </ng-template>
+          </td>
+          <td>
+            <ng-container *ngIf="restauranteEditando?.id === restaurante.id; else actionButtons">
+              <button class="btn btn-success btn-sm" (click)="guardarCambios()">Guardar</button>
+              <button class="btn btn-secondary btn-sm" (click)="cancelarEdicion()">Cancelar</button>
+            </ng-container>
+            <ng-template #actionButtons>
+              <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
+              <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante)" *ngIf="restaurante.estado">Desactivar</button>
+              <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante)" *ngIf="!restaurante.estado">Restaurar</button>
+              <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
+            </ng-template>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
 
   <!-- Detalles del restaurante seleccionado -->
   <div *ngIf="restauranteSeleccionado" class="card mb-4">
@@ -155,9 +191,6 @@
       <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
       <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
       <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
-      <!-- Botones para ver platos de carta y menú -->
-      <button class="btn btn-info" (click)="verPlatosCarta(restauranteSeleccionado)">Ver Platos de Carta</button>
-      <button class="btn btn-info" (click)="verPlatosMenu(restauranteSeleccionado)">Ver Platos del Menú</button>
     </div>
   </div>
 </div>

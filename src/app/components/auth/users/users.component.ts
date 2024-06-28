@@ -1,10 +1,10 @@
+// users.component.ts
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/authService';
 import { Users } from '../../../models/users.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
 
 @Component({
   selector: 'app-users',
@@ -12,27 +12,19 @@ import 'jspdf-autotable';
   styleUrls: ['./users.component.css'],
 })
 export class UsersComponent implements OnInit {
-  users?: Users[];
-  filteredUsers?: Users[];
-  currentUser?: Users;
-  currentIndex = -1;
-  formRegister: FormGroup;
+  users: Users[] = [];
+  filteredUsers: Users[] = [];
+  pagedUsers: Users[] = [];
+  currentPage = 1;
+  pageSize = 10;
+  totalPages = 0;
   searchForm: FormGroup;
 
   constructor(private authService: AuthService) {
-    this.formRegister = new FormGroup({
-      email: new FormControl(),
-      nombre: new FormControl(),
-      password: new FormControl(),
-      rol: new FormControl(),
-      direccion: new FormControl(),
-      dni: new FormControl(),
-      estado: new FormControl('A'),
-      ruc: new FormControl(),
-    });
-
     this.searchForm = new FormGroup({
+      nombre: new FormControl(''),
       rol: new FormControl(''),
+      estado: new FormControl(''),
     });
   }
 
@@ -45,31 +37,36 @@ export class UsersComponent implements OnInit {
       (data) => {
         this.users = data.map((user) => ({
           ...user.payload.doc.data() as Users,
-          docId: user.payload.doc.id, // Store the document ID from Firestore
+          docId: user.payload.doc.id,
+          editable: false, // Agregar propiedad editable para el modo edición
         }));
-        this.filteredUsers = this.users;
-        console.log('Usuarios recuperados:', this.users); // Para depuración
+        this.filteredUsers = [...this.users];
+        this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
+        this.paginateUsers();
+        console.log('Usuarios cargados desde Firestore:', this.users);
       },
       (error) => {
-        console.error('Error al recuperar usuarios:', error);
+        console.error('Error al cargar usuarios desde Firestore:', error);
       }
     );
   }
+
   editarUsuario(user: Users): void {
     user.editable = true;
-    this.formRegister.patchValue({
-      email: user.email,
-      nombre: user.name,
-      password: user.password,
-      rol: user.role,
-      direccion: user.direccion,
-      dni: user.dni,
-      estado: user.estado,
-      ruc: user.ruc,
-    });
+    // No es necesario setear los valores al formulario aquí, se maneja en HTML
   }
 
   confirmarEdicion(user: Users): void {
+    const updatedUser: Partial<Users> = {
+      dni: user.dni,
+      name: user.name,
+      role: user.role,
+      email: user.email,
+      direccion: user.direccion,
+      ruc: user.ruc,
+      estado: user.estado,
+    };
+
     Swal.fire({
       title: '¿Confirmar Edición?',
       text: '¿Deseas confirmar los cambios?',
@@ -81,28 +78,28 @@ export class UsersComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        const updatedUser = {
+        const dataToUpdate: Users = {
           ...user,
-          email: this.formRegister.value.email,
-          name: this.formRegister.value.nombre,
-          password: this.formRegister.value.password,
-          role: this.formRegister.value.rol,
-          direccion: this.formRegister.value.direccion,
-          dni: this.formRegister.value.dni,
-          estado: this.formRegister.value.estado,
-          ruc: this.formRegister.value.ruc,
+          ...updatedUser,
         };
 
-        this.authService.updateUser(user.docId!, updatedUser).then(
+        this.authService.updateUser(user.docId!, updatedUser as Users).then(
           () => {
-            console.log('Usuario editado exitosamente');
-            Object.assign(user, updatedUser);
+            console.log('Usuario editado exitosamente en Firestore');
+            const index = this.users.findIndex(u => u.docId === user.docId);
+            if (index !== -1) {
+              this.users[index] = {
+                ...this.users[index],
+                ...updatedUser,
+              };
+              console.log('Usuario actualizado localmente:', this.users[index]);
+            }
             user.editable = false;
-            this.retrieveUsers();
-            this.formRegister.reset();
+            Swal.fire('Éxito', 'Los cambios han sido guardados correctamente.', 'success');
           },
           (error) => {
-            console.error('Error al editar usuario', error);
+            console.error('Error al editar usuario en Firestore', error);
+            Swal.fire('Error', 'Hubo un problema al guardar los cambios.', 'error');
           }
         );
       }
@@ -110,136 +107,72 @@ export class UsersComponent implements OnInit {
   }
 
   cancelarEdicion(user: Users): void {
+    // No se guarda ningún cambio, se restaura el modo visualización
     user.editable = false;
   }
 
-  cambiarEstadoUsuario(user: Users): void {
-    const nuevoEstado = user.estado === 'A' ? 'I' : 'A';
-    const nuevoEstadoTexto = user.estado === 'A' ? 'Desactivar' : 'Restaurar';
-    const mensajeConfirmacion = `Esta acción ${nuevoEstadoTexto.toLowerCase()}á el usuario. ¿Quieres continuar?`;
-
-    Swal.fire({
-      title: `¿Estás seguro?`,
-      text: mensajeConfirmacion,
-      icon: 'warning',
-      showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: `Sí, ${nuevoEstadoTexto.toLowerCase()}`,
-      cancelButtonText: 'Cancelar',
-    }).then((result) => {
-      if (result.isConfirmed) {
-        user.estado = nuevoEstado;
-        this.authService.updateUser(user.docId!, user).then(
-          () => {
-            console.log(`Usuario ${nuevoEstadoTexto.toLowerCase()}do exitosamente`);
-            this.retrieveUsers();
-          },
-          (error) => {
-            console.error(`Error al ${nuevoEstadoTexto.toLowerCase()}r usuario`, error);
-          }
-        );
-      }
-    });
-  }
-
   eliminarOrestaurarUsuario(user: Users): void {
-    const accion = user.estado === 'A' ? 'Desactivar' : 'Restaurar';
-    const nuevoEstado = user.estado === 'A' ? 'I' : 'A';
+    const newStatus = user.estado === 'A' ? 'I' : 'A';
+    const message = user.estado === 'A' ? 'eliminar' : 'restaurar';
 
     Swal.fire({
-      title: `¿Estás seguro?`,
-      text: `Esta acción ${accion.toLowerCase()}á el usuario permanentemente. ¿Quieres continuar?`,
-      icon: 'warning',
+      title: `¿${message} Usuario?`,
+      text: `¿Estás seguro de ${message === 'eliminar' ? 'eliminar' : 'restaurar'} este usuario?`,
+      icon: 'question',
       showCancelButton: true,
-      confirmButtonColor: '#d33',
-      cancelButtonColor: '#3085d6',
-      confirmButtonText: `Sí, ${accion.toLowerCase()}`,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: `Sí, ${message}`,
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        user.estado = nuevoEstado;
-        this.authService.updateUser(user.docId!, user).then(
+        this.authService.updateUser(user.docId!, {
+          estado: newStatus,
+          email: '',
+          name: '',
+          password: '',
+          role: '',
+          direccion: '',
+          dni: '',
+          ruc: '',
+        }).then(
           () => {
-            console.log(`Usuario ${accion.toLowerCase()}do exitosamente`);
-            this.retrieveUsers();
+            console.log(`Usuario ${message}do exitosamente en Firestore`);
+            const index = this.users.findIndex(u => u.docId === user.docId);
+            if (index !== -1) {
+              this.users[index].estado = newStatus;
+              console.log('Estado actualizado localmente:', this.users[index]);
+            }
+            Swal.fire('Éxito', `Usuario ${message}do correctamente.`, 'success');
           },
           (error) => {
-            console.error(`Error al ${accion.toLowerCase()}r usuario`, error);
+            console.error(`Error al ${message}r usuario en Firestore`, error);
+            Swal.fire('Error', `Hubo un problema al ${message}r el usuario.`, 'error');
           }
         );
       }
     });
-  }
-
-  setActiveUser(user: Users, index: number): void {
-    this.currentUser = user;
-    this.currentIndex = index;
   }
 
   filterUsers(): void {
-    console.log('--------------------------');
-    console.log('Iniciando filtrado de usuarios');
-    const role = this.searchForm.get('rol')?.value;
-    console.log(`Rol buscado: ${role}`);
-    if (role) {
-      this.filteredUsers = this.users?.filter(user => user.role === role);
-      console.log(`Usuarios filtrados por rol: ${this.filteredUsers?.length}`);
-    } else {
-      this.filteredUsers = this.users;
-      console.log('No se especificó rol, mostrando todos los usuarios');
-    }
-  }
+    const { nombre, rol, estado } = this.searchForm.value;
 
+    this.filteredUsers = this.users.filter((user) =>
+      (!nombre || user.name.toLowerCase().includes(nombre.toLowerCase())) &&
+      (!rol || user.role.toLowerCase() === rol.toLowerCase()) &&
+      (!estado || user.estado.toLowerCase() === estado.toLowerCase())
+    );
 
-  loginWithGoogle(): void {
-    this.authService
-      .loginWithGoogle()
-      .then(() => {
-        console.log('Logeado con Google');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  logout(): void {
-    this.authService
-      .logout()
-      .then(() => {
-        console.log('Salir de Google');
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  async onSubmit(): Promise<void> {
-    try {
-      const user = this.formRegister.value;
-      await this.authService.register({
-        email: user.email,
-        name: user.nombre,
-        password: user.password,
-        role: user.rol,
-        direccion: user.direccion,
-        dni: user.dni,
-        estado: user.estado,
-        ruc: user.ruc,
-      });
-      console.log('Usuario registrado con éxito');
-    } catch (error) {
-      console.log('Error al registrar el usuario', error);
-    }
+    this.totalPages = Math.ceil(this.filteredUsers.length / this.pageSize);
+    this.currentPage = 1;
+    this.paginateUsers();
   }
 
   exportCSV(): void {
-    let csvData = 'Correo,Nombre,Rol,Dirección,DNI,Estado,RUC\n';
-    if (this.filteredUsers) {
-      this.filteredUsers.forEach(user => {
-        csvData += `${user.email},${user.name},${user.role},${user.direccion},${user.dni},${user.estado},${user.ruc}\n`;
-      });
-    }
+    let csvData = 'DNI,Nombre,Rol,Correo,Dirección,RUC,Estado\n';
+    this.filteredUsers.forEach(user => {
+      csvData += `${user.dni},${user.name},${user.role},${user.email},${user.direccion},${user.ruc},${user.estado}\n`;
+    });
 
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -258,71 +191,80 @@ export class UsersComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'portrait'
     });
-    
-    // Cargar y añadir la imagen de la cabecera
+
     const img = new Image();
-    img.src = 'assets/img/VGLogo.png'; // Asegúrate de que la ruta sea accesible
+    img.src = 'assets/img/VGLogo.png';
     img.onload = () => {
-      doc.addImage(img, 'PNG', 10, 10, 30, 30); // Ajusta las coordenadas y el tamaño según sea necesario
-    
+      doc.addImage(img, 'PNG', 10, 10, 30, 30);
 
-    const fecha = new Date().toLocaleDateString();
-    const margin = 10;
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const pageHeight = doc.internal.pageSize.getHeight();
+      const fecha = new Date().toLocaleDateString();
+      const margin = 10;
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
 
-    // Configurar el título del reporte
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(20);
-    const titulo = 'Reporte de Usuarios';
-    const tituloX = margin;
-    const tituloY = 20;
-    doc.text(titulo, tituloX, tituloY);
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(20);
+      const titulo = 'Reporte de Usuarios';
+      const tituloX = margin;
+      const tituloY = 20;
+      doc.text(titulo, tituloX, tituloY);
 
-    // Configurar la tabla de datos
-    const head = [['Correo', 'Nombre', 'Rol', 'Dirección', 'DNI', 'Estado', 'RUC']];
-    const data = (this.filteredUsers || []).map((user: Users) => [
-      user.email,
-      user.name,
-      user.role,
-      user.direccion,
-      user.dni,
-      user.estado,
-      user.ruc
-    ]);
+      const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
+      const data = this.filteredUsers.map((user: Users) => [
+        user.dni,
+        user.name,
+        user.role,
+        user.email,
+        user.direccion,
+        user.ruc,
+        user.estado
+      ]);
 
-    (doc as any).autoTable({
-      head: head,
-      body: data,
-      startY: tituloY + 10,
-      styles: {
-        cellWidth: 'auto',
-        fontSize: 10,
-        lineColor: [0, 0, 0],
-        lineWidth: 0.1
-      },
-      headStyles: {
-        fillColor: [0, 0, 0],
-        textColor: 255,
-        fontStyle: 'bold'
-      },
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        textColor: 0
-      },
-      alternateRowStyles: {
-        fillColor: [235, 235, 235]
+      (doc as any).autoTable({
+        head: head,
+        body: data,
+        startY: tituloY + 10,
+        styles: {
+          cellWidth: 'auto',
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [0, 0, 0],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+          textColor: 0
+        },
+        alternateRowStyles: {
+          fillColor: [235, 235, 235]
+        }
+      });
+
+      for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+        doc.setPage(i);
+        doc.text(`Fecha de creación: ${fecha}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
       }
-    });
 
-    // Establecer la fecha en todas las páginas del documento
-    for (let i = 1; i <= doc.getNumberOfPages(); i++) {
-      doc.setPage(i);
-      doc.text(`Fecha de creación: ${fecha}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+      doc.save('reporte_usuarios.pdf');
     }
-
-    // Guardar el documento PDF
-    doc.save('reporte_usuarios.pdf');
   }
-}
+
+  onPageChange(page: number): void {
+    this.currentPage = page;
+    this.paginateUsers();
+  }
+  
+  paginateUsers(): void {
+    const startIndex = (this.currentPage - 1) * this.pageSize;
+    this.pagedUsers = this.filteredUsers.slice(startIndex, startIndex + this.pageSize);
+  }
+  
+  getPaginationArray(): number[] {
+    return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+  }
+
 }

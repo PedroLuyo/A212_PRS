@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';
@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-s8zrza8zwu3.ws-us114.gitpod.io/api/restaurants/v1';
+  private apiUrl = 'https://8090-vallegrande-msrestauran-wpmhomixovo.ws-us114.gitpod.io/api/restaurants/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -29,7 +29,7 @@ export class RestauranteService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    return this.http.post<any>(`${this.apiUrl}/crear`, JSON.stringify(nuevoRestaurante), { headers })
+    return this.http.post<any>(`${this.apiUrl}/crear`, nuevoRestaurante, { headers })
       .pipe(
         catchError((error: any) => {
           console.error('Error al crear restaurante', error);
@@ -44,7 +44,7 @@ export class RestauranteService {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    return this.http.put<any>(`${this.apiUrl}/editar/${id}`, JSON.stringify(restaurante), { headers })
+    return this.http.put<any>(`${this.apiUrl}/editar/${id}`, restaurante, { headers })
       .pipe(
         catchError((error: any) => {
           console.error('Error al editar restaurante', error);

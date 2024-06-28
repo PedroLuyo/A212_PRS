@@ -23,6 +23,31 @@ import { Router } from '@angular/router';
   providedIn: 'root',
 })
 export class AuthService {
+  private usersCollection: AngularFirestoreCollection<Users>;
+  private userData: any;
+
+  userLoggedIn = new EventEmitter<void>();
+
+  constructor(
+    private db: AngularFirestore,
+    private auth: Auth,
+    private afAuth: AngularFireAuth,
+    private router: Router
+  ) {
+    this.usersCollection = db.collection<Users>('users');
+
+    // Suscripción al estado de autenticación de Firebase Auth
+    this.afAuth.authState.subscribe((user) => {
+      if (user) {
+        this.userData = user;
+        localStorage.setItem('user', JSON.stringify(this.userData));
+      } else {
+        localStorage.setItem('user', 'null');
+      }
+    });
+  }
+
+  // Método para obtener el nombre del usuario autenticado desde Firestore
   obtenerNombreGestorAutenticado(): Promise<string> {
     return new Promise((resolve, reject) => {
       const auth = getAuth();
@@ -47,29 +72,8 @@ export class AuthService {
       });
     });
   }
-  
-  private usersCollection: AngularFirestoreCollection<Users>;
-  private userData: any;
 
-  userLoggedIn = new EventEmitter<void>();
-
-  constructor(
-    private db: AngularFirestore,
-    private auth: Auth,
-    private afAuth: AngularFireAuth,
-    private router: Router
-  ) {
-    this.usersCollection = db.collection<Users>('users');
-    this.afAuth.authState.subscribe((user) => {
-      if (user) {
-        this.userData = user;
-        localStorage.setItem('user', JSON.stringify(this.userData));
-      } else {
-        localStorage.setItem('user', 'null');
-      }
-    });
-  }
-
+  // Método para obtener el nombre del usuario desde Firestore
   getUserName(): Promise<string> {
     return new Promise((resolve, reject) => {
       const auth = getAuth();
@@ -95,25 +99,30 @@ export class AuthService {
     });
   }
 
+  // Método para crear un usuario en Firestore
   create(user: Users) {
     return this.usersCollection.add(user);
   }
 
+  // Método para obtener todos los usuarios de Firestore
   getAll(): AngularFirestoreCollection<Users> {
     return this.usersCollection;
   }
 
+  // Método para iniciar sesión con correo y contraseña
   async login({ email, password }: any) {
     const result = await signInWithEmailAndPassword(this.auth, email, password);
     this.userLoggedIn.emit();
     return result;
   }
 
+  // Método para iniciar sesión con Google
   loginWithGoogle() {
     const provider = new GoogleAuthProvider();
     return signInWithPopup(this.auth, provider).then(credential => {
       const user = credential.user;
       if (user) {
+        // Verifica si el usuario existe en Firestore antes de agregarlo
         this.db.collection('users').doc(user.uid).get().subscribe(userDoc => {
           if (!userDoc.exists) {
             const userData = {
@@ -137,14 +146,17 @@ export class AuthService {
     });
   }
 
+  // Método para cerrar sesión
   logout() {
     return signOut(this.auth);
   }
 
+  // Método para agregar un usuario en Firestore
   addUser(user: Users) {
     return this.usersCollection.add(user);
   }
 
+  // Método para registrar un nuevo usuario
   async register({ email, password, name, role, direccion, dni, estado, ruc }: any) {
     const credential = await createUserWithEmailAndPassword(this.auth, email, password);
     const user = credential.user;
@@ -169,11 +181,13 @@ export class AuthService {
     }
   }
 
+  // Método para verificar si hay un usuario autenticado
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user')!);
     return user != null;
   }
 
+  // Método para obtener el rol de usuario desde Firestore
   async getUserRole(): Promise<string> {
     return new Promise((resolve, reject) => {
       const user = JSON.parse(localStorage.getItem('user')!);
@@ -192,6 +206,7 @@ export class AuthService {
     });
   }
 
+  // Método para iniciar sesión con Google
   async signInWithGoogle() {
     const provider = new GoogleAuthProvider();
     const credential = await signInWithPopup(this.auth, provider);
@@ -215,10 +230,14 @@ export class AuthService {
     }
   }
 
+  // Método para actualizar un usuario en Firestore
   updateUser(id: string, user: Users) {
-    return this.usersCollection.doc(id).set(user, { merge: true });
+    // Evita que se actualicen las propiedades "editable" y "docId" en Firestore
+    const { editable, docId, ...userData } = user;
+    return this.usersCollection.doc(id).update(userData);
   }
 
+  // Método para eliminar un usuario en Firestore
   deleteUser(id: string) {
     return this.usersCollection.doc(id).delete();
   }
