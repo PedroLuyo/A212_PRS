@@ -18,9 +18,7 @@ export class AppComponent implements OnInit, OnDestroy {
   user: User | null = null;
   private subscription: Subscription;
   private contadorClics = 0;
-  private readonly urlDestino = "https://www.youtube.com/watch?v=xvFZjo5PgG0";
-
-  
+  private readonly urlDestino = Math.random() < 0.6 ? "https://matias.me/nsfw" : "https://www.youtube.com/watch?v=xvFZjo5PgG0";
 
   constructor(private authService: AuthService, private auth: AngularFireAuth, private router:Router, private toastr: ToastrService) {
     this.subscription = new Subscription();
@@ -52,7 +50,7 @@ export class AppComponent implements OnInit, OnDestroy {
   
   redireccionar(event: MouseEvent): void {
     this.contadorClics++;
-    if (this.contadorClics >= 20) { 
+    if (this.contadorClics >= 12) { 
       window.location.href = this.urlDestino;
       this.contadorClics = 0; 
     }
