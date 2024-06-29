@@ -1,74 +1,207 @@
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-.sparkle-hover:hover i, .sparkle-hover:hover img {
-  animation: sparkleAnimation 1s ease-in-out infinite;
-}
-
-@keyframes sparkleAnimation {
-  0% { filter: brightness(1); }
-  30% { filter: brightness(2); }
-  60% { filter: brightness(1); }
-}
-a i, a img {
-  transition: transform 0.3s ease;
-}
-
-a:hover i, a:hover img {
-  transform: scale(1.8);
-}
-.navbar {
+/*--------------------------------------------------------------
+# Header
+--------------------------------------------------------------*/
+#navbar {
+  transition: all 0.5s;
+  z-index: 997;
+  padding: 15px 0;
   position: fixed;
-  top: 0;
   width: 100%;
-  z-index: 1000;
-  background-color: #343a40;
-  animation: fadeIn 1s ease-in-out;
+  top: 0;
 }
 
-.colorAdmin {
-  background-color: #35587a;
-  transition: background-color 0.3s ease;
+#navbar.navbar-transparent {
+  background-color: transparent;
+  color: var(--main);
+  /* Color inicial de las letras */
 }
 
-.colorGestor {
-  background-color: #295c3c;
-  transition: background-color 0.3s ease;
+#navbar.navbar-scrolled {
+  background-color: rgba(127, 137, 161, 0.25);
+  /* Color de fondo con opacidad */
+  box-shadow: 0px 2px 15px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  /* También aplicar desenfoque */
+  color: black;
+  /* Cambiar el color de las letras al hacer scroll */
 }
 
-.nav-link {
-  transition: color 0.3s ease, transform 0.3s ease;
+#navbar.navbar-transparent a,
+#navbar.navbar-transparent .navbar-text,
+#navbar.navbar-transparent .nav-link {
+  color: var(--main);
+  font-weight: bold;
+  /* Poner el texto en negritas */
 }
 
-.nav-link:hover {
-  color: #f8f9fa;
-  transform: scale(1.1);
+#navbar.navbar-scrolled a,
+#navbar.navbar-scrolled .navbar-text,
+#navbar.navbar-scrolled .nav-link {
+  color: black;
+  font-weight: bold;
+  /* Poner el texto en negritas */
 }
 
-.btn {
-  transition: background-color 0.3s ease, transform 0.3s ease;
+#navbar .logo h1 {
+  font-size: 30px;
+  margin: 0;
+  line-height: 1;
+  font-weight: 400;
+  letter-spacing: 2px;
 }
 
-.btn:hover {
-  background-color: #dc3545;
-  transform: scale(1.1);
+#navbar .logo h1 a,
+#navbar .logo h1 a:hover {
+  color: inherit;
+  /* Hereda el color definido en las clases anteriores */
+  text-decoration: none;
 }
 
-.container {
-  margin-top: 80px; /* Ajusta este valor según sea necesario */
+#navbar .logo img {
+  margin: 0;
+  max-height: 40px;
 }
 
-@media (max-width: 991.98px) {
-  .navbar-nav {
-    text-align: center;
+/*--------------------------------------------------------------
+# Navigation Menu
+--------------------------------------------------------------*/
+/* Desktop Navigation */
+.navbar {
+  padding: 0;
+}
+
+.navbar ul {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  list-style: none;
+  align-items: center;
+}
+
+.navbar li {
+  position: relative;
+}
+
+.navbar a,
+.navbar a:focus {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0 10px 30px;
+  font-size: 15px;
+  white-space: nowrap;
+  transition: 0.3s;
+  font-weight: bold;
+  /* Poner el texto en negritas */
+}
+
+.navbar a i,
+.navbar a:focus i {
+  font-size: 12px;
+  line-height: 0;
+  margin-left: 5px;
+}
+
+.navbar a:hover,
+.navbar .active,
+.navbar .active:focus,
+.navbar li:hover>a {
+  color: #5777ba;
+}
+
+.navbar .getstarted,
+.navbar .getstarted:focus {
+  background: #5777ba;
+  color: #fff;
+  padding: 12px 25px;
+  margin-left: 30px;
+  line-height: 1;
+  border-radius: 50px;
+  font-weight: bold;
+  /* Poner el texto en negritas */
+}
+
+.navbar .getstarted:hover,
+.navbar .getstarted:focus:hover {
+  background: #5777ba;
+  color: #fff;
+}
+
+.navbar .dropdown ul {
+  display: block;
+  position: absolute;
+  left: 14px;
+  top: calc(100% + 30px);
+  margin: 0;
+  padding: 10px 0;
+  z-index: 99;
+  opacity: 0;
+  visibility: hidden;
+  background: #fff;
+  box-shadow: 0px 0px 30px rgba(127, 137, 161, 0.25);
+  transition: 0.3s;
+  border-radius: 4px;
+}
+
+.navbar .dropdown ul li {
+  min-width: 200px;
+}
+
+.navbar .dropdown ul a {
+  padding: 10px 20px;
+  font-size: 15px;
+  text-transform: none;
+  font-weight: 600;
+  font-weight: bold;
+  /* Poner el texto en negritas */
+}
+
+.navbar .dropdown ul a i {
+  font-size: 12px;
+}
+
+.navbar .dropdown ul a:hover,
+.navbar .dropdown ul .active:hover,
+.navbar .dropdown ul li:hover>a {
+  color: #5777ba;
+}
+
+.navbar .dropdown:hover>ul {
+  opacity: 1;
+  top: 100%;
+  visibility: visible;
+}
+
+.navbar .dropdown .dropdown ul {
+  top: 0;
+  left: calc(100% - 30px);
+  visibility: hidden;
+}
+
+.navbar .dropdown .dropdown:hover>ul {
+  opacity: 1;
+  top: 0;
+  left: 100%;
+  visibility: visible;
+}
+
+@media (max-width: 1366px) {
+  .navbar .dropdown .dropdown ul {
+    left: -90%;
+  }
+
+  .navbar .dropdown .dropdown:hover>ul {
+    left: -100%;
   }
 }
 
-.navbar-toggler {
-  border-color: rgba(255, 255, 255, 0.1);
+.navbar .btn-success {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 20px;
 }
 
-.navbar-right-margins {
-  margin-right: 20px; /* Ajusta este valor según sea necesario */
+.navbar .btn-success .fas {
+  margin-right: 5px;
 }

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy,HostListener } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { AuthService } from './services/authService';
 import { Subscription } from 'rxjs';
@@ -16,6 +16,7 @@ export class AppComponent implements OnInit, OnDestroy {
   userRole: string = '';
   showMenu = true;
   user: User | null = null;
+  isTransparent = true; 
   private subscription: Subscription;
   private contadorClics = 0;
   private readonly urlDestino = Math.random() < 0.6 ? "https://matias.me/nsfw" : "https://www.youtube.com/watch?v=xvFZjo5PgG0";
@@ -47,7 +48,16 @@ export class AppComponent implements OnInit, OnDestroy {
       })
     );
   }
-  
+
+  @HostListener('window:scroll', [])
+  onWindowScroll() {
+    if (window.pageYOffset > 0) {
+      this.isTransparent = false; 
+    } else {
+      this.isTransparent = true; 
+    }
+  }
+
   redireccionar(event: MouseEvent): void {
     this.contadorClics++;
     if (this.contadorClics >= 12) { 

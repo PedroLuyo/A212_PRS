@@ -64,6 +64,6 @@ export class SelectorComponent {
   }
 
   irAGestor(): void {
-    this.router.navigate(['/gestor']);
+    this.router.navigate(['gestor']);
   }
 }

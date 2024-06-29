@@ -1,47 +1,57 @@
 <div>
-  <nav class="navbar navbar-expand-lg navbar-dark" 
-       [ngClass]="{'colorAdmin': userRole === 'admin', 'colorGestor': userRole === 'gestor'}" 
-       *ngIf="showMenu">
+  <nav id="navbar" class="navbar fixed-top navbar-expand-lg"
+    [ngClass]="{
+      'navbar-transparent': isTransparent && showMenu,
+      'navbar-scrolled': !isTransparent && showMenu,
+      'colorAdmin': userRole === 'admin',
+      'colorGestor': userRole === 'gestor'
+    }">
+    <div class="container d-flex align-items-center justify-content-between">
 
-       <a href="#" class="sparkle-hover" (click)="redireccionar($event)">
-        <i class="fas fa-utensils">   </i>
-        <img src="assets/img/eating.gif" alt="Logo" style="height: 25px;">
-      </a>
-       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mr-auto">
-        <li class="nav-item">
-          <a routerLink="main" class="nav-link"><i class="fas fa-home"></i> 🏠 Inicio</a>
-        </li>
-        <li class="nav-item" *ngIf="userName && userRole === 'admin'">
-          <a routerLink="users" class="nav-link"><i class="fas fa-users"></i> 👥 Usuarios</a>
-        </li>
-        <li class="nav-item" *ngIf="userName && (userRole === 'comensal' || userRole === 'admin')">
-          <a class="nav-link"><i class="fas fa-shopping-cart"></i> 🛒 Comprar 🍔</a>
-        </li>
-        <li class="nav-item" *ngIf="userName && (userRole === 'gestor' || userRole === 'admin')">
-          <a routerLink="platos" class="nav-link"><i class="fas fa-utensil-spoon"></i> 🍽️ Platos</a>
-        </li>
-        <li class="nav-item" *ngIf="userName && (userRole === 'admin' || userRole === 'gestor')">
-          <a routerLink="selector" class="nav-link"><i class="fas fa-tasks"></i> 📋 Gestionar</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto navbar-right-margins">
-        <li class="nav-item" *ngIf="userName; else login">
-          <span class="navbar-text mr-3">👋 Bienvenido, {{ userName }} 😊</span>
-          <button (click)="logout()" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> 🔐 Cerrar sesión</button>
-        </li>
-        <ng-template #login>
+      <div class="logo">
+        <h1><a href="#" class="sparkle-hover" (click)="redireccionar($event)">
+            <i class="fas fa-utensils">   </i>
+            <img src="assets/img/eating.gif" alt="Logo" style="height: 25px;"> PRS
+          </a></h1>
+      </div>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
           <li class="nav-item">
-            <a routerLink="login" class="btn btn-success nav-link"><i class="fas fa-sign-in-alt"></i> 🔑 Iniciar sesión</a>
+            <a routerLink="main" class="nav-link"><i class="fas fa-home"></i> Inicio</a>
           </li>
-        </ng-template>
-      </ul>
+          <li class="nav-item" *ngIf="userName && userRole === 'admin'">
+            <a routerLink="users" class="nav-link"><i class="fas fa-users"></i> Usuarios</a>
+          </li>
+          <li class="nav-item" *ngIf="userName && (userRole === 'comensal' || userRole === 'admin')">
+            <a class="nav-link"><i class="fas fa-shopping-cart"></i> Comprar</a>
+          </li>
+          <li class="nav-item" *ngIf="userName && (userRole === 'gestor' || userRole === 'admin')">
+            <a routerLink="platos" class="nav-link"><i class="fas fa-utensil-spoon"></i> Platos</a>
+          </li>
+          <li class="nav-item" *ngIf="userName && (userRole === 'admin' || userRole === 'gestor')">
+            <a routerLink="selector" class="nav-link"><i class="fas fa-tasks"></i> Gestionar</a>
+          </li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item" *ngIf="userName; else login">
+            <span class="navbar-text mr-3 welcome-text">👋 Bienvenido, {{ userName }} 😊</span>
+            <button (click)="logout()" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
+          </li>
+          <ng-template #login>
+            <li class="nav-item">
+              <a routerLink="login" class="btn btn-success nav-link"><i class="fas fa-sign-in-alt"></i> Iniciar
+                sesión</a>
+            </li>
+          </ng-template>
+        </ul>
+      </div>
     </div>
   </nav>
-  <br>
-  <br>
   <router-outlet></router-outlet>
 </div>

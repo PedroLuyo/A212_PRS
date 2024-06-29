@@ -1,25 +1,52 @@
 /* You can add global styles to this file, and also import other style files */
+:root {
+    --main: #5777ba;
+    --blanco:#fff;
+    --negro:rgb(43, 41, 41);
+    --bordes:#ffa012;
+}
+
 body {
-    background-color: bisque;
+    background-color: var(--blanco);
     font-family: "Poppins", sans-serif;
-    color: #444444;
+}
+
+.welcome-text {
+    color: var(--main);
 }
 
 a {
     text-decoration: none;
-    color: #ffb03b;
 }
 
 a:hover {
-    color: #ffc56e;
     text-decoration: none;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
+h1 {
+    font-family: "Satisfy";
+}
+
+h2 {
+    font-family: "Satisfy";
+}
+
+h3 {
+    font-family: "Poppins";
+}
+
+h4 {
+    font-family: sans-serif;
+}
+
+h5 {
+    font-family: sans-serif;
+}
+
 h6 {
-    font-family: "Satisfy", sans-serif;
+    font-family: sans-serif;
+}
+
+p {
+    font-family: "Poppins";
 }
