@@ -113,11 +113,11 @@ export class UsersComponent implements OnInit {
 
   eliminarOrestaurarUsuario(user: Users): void {
     const newStatus = user.estado === 'A' ? 'I' : 'A';
-    const message = user.estado === 'A' ? 'eliminar' : 'restaurar';
-
+    const message = user.estado === 'A' ? 'desactivar' : 'restaurar';
+  
     Swal.fire({
       title: `¿${message} Usuario?`,
-      text: `¿Estás seguro de ${message === 'eliminar' ? 'eliminar' : 'restaurar'} este usuario?`,
+      text: `¿Estás seguro de ${message === 'desactivar' ? 'desactivar' : 'restaurar'} este usuario?`,
       icon: 'question',
       showCancelButton: true,
       confirmButtonColor: '#3085d6',
@@ -126,21 +126,13 @@ export class UsersComponent implements OnInit {
       cancelButtonText: 'Cancelar',
     }).then((result) => {
       if (result.isConfirmed) {
-        this.authService.updateUser(user.docId!, {
-          estado: newStatus,
-          email: '',
-          name: '',
-          password: '',
-          role: '',
-          direccion: '',
-          dni: '',
-          ruc: '',
-        }).then(
+        // Actualiza solo el estado del usuario
+        this.authService.updateUser(user.docId!, { estado: newStatus }).then(
           () => {
             console.log(`Usuario ${message}do exitosamente en Firestore`);
             const index = this.users.findIndex(u => u.docId === user.docId);
             if (index !== -1) {
-              this.users[index].estado = newStatus;
+              this.users[index].estado = newStatus; // Actualiza el estado localmente
               console.log('Estado actualizado localmente:', this.users[index]);
             }
             Swal.fire('Éxito', `Usuario ${message}do correctamente.`, 'success');
@@ -153,6 +145,9 @@ export class UsersComponent implements OnInit {
       }
     });
   }
+  
+  
+  
 
   filterUsers(): void {
     const { nombre, rol, estado } = this.searchForm.value;

@@ -231,9 +231,8 @@ export class AuthService {
   }
 
   // Método para actualizar un usuario en Firestore
-  updateUser(id: string, user: Users) {
-    // Evita que se actualicen las propiedades "editable" y "docId" en Firestore
-    const { editable, docId, ...userData } = user;
+  updateUser(id: string, userData: Partial<Users>) {
+    // Realiza la actualización solo con las propiedades provistas en userData
     return this.usersCollection.doc(id).update(userData);
   }
 
