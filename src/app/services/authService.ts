@@ -235,6 +235,8 @@ export class AuthService {
     // Realiza la actualización solo con las propiedades provistas en userData
     return this.usersCollection.doc(id).update(userData);
   }
+  
+  
 
   // Método para eliminar un usuario en Firestore
   deleteUser(id: string) {

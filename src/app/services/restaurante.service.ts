@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';
@@ -8,7 +8,7 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-v1ka65xkhtj.ws-us114.gitpod.io/api/restaurants/v1';
+  private apiUrl = 'https://8090-vallegrande-msrestauran-2v1gv6knw86.ws-us114.gitpod.io/api/restaurants/v1';
 
   constructor(private http: HttpClient) {}
 
@@ -25,11 +25,11 @@ export class RestauranteService {
   }
 
   // Crear un restaurante
-  crearRestaurante(nuevoRestaurante: any): Observable<any> {
+  crearRestaurante(restaurante: any, docIdGestor: string): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    return this.http.post<any>(`${this.apiUrl}/crear`, nuevoRestaurante, { headers })
+    return this.http.post<any>(`${this.apiUrl}/crear?docIdGestor=${docIdGestor}`, restaurante, { headers })
       .pipe(
         catchError((error: any) => {
           console.error('Error al crear restaurante', error);
@@ -40,11 +40,10 @@ export class RestauranteService {
   }
   
   // Editar un restaurante
-  editarRestaurante(id: number, restaurante: any): Observable<any> {
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-    return this.http.put<any>(`${this.apiUrl}/editar/${id}`, restaurante, { headers })
+  editarRestaurante(idRestaurante: string, restauranteEditado: any, docIdGestor: string): Observable<any> {
+    const url = `${this.apiUrl}/restaurantes/${idRestaurante}`;
+    const params = new HttpParams().set('docIdGestor', docIdGestor);
+    return this.http.put(url, restauranteEditado, { params })
       .pipe(
         catchError((error: any) => {
           console.error('Error al editar restaurante', error);
@@ -77,4 +76,17 @@ export class RestauranteService {
         })
       );
   }
+
+  // Eliminar físicamente un restaurante
+  eliminarRestaurante(id: number): Observable<any> {
+    return this.http.delete<any>(`${this.apiUrl}/eliminar/${id}`)
+      .pipe(
+        catchError((error: any) => {
+          console.error('Error al eliminar restaurante', error);
+          Swal.fire('Error', 'Hubo un problema al eliminar el restaurante. Por favor, inténtelo de nuevo.', 'error');
+          return throwError(error);
+        })
+      );
+  }
 }
+
