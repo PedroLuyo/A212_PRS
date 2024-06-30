@@ -14,16 +14,13 @@ export class RestauranteComponent implements OnInit {
   restauranteCreado: any;
   restauranteEditando: any = null; // Variable para almacenar el restaurante en edición
   restauranteSeleccionado: any = null; // Variable para almacenar el restaurante seleccionado
-  filtroNombre: string = '';
-  filtroEstado: string = '';
-  filtroDireccion: string = '';
-  filtroTipoCocina: string = '';
 
   constructor(
     private restauranteService: RestauranteService,
     private fb: FormBuilder
   ) {
     this.restauranteForm = this.fb.group({
+      id: [''],
       nombre: ['', Validators.required],
       direccion: ['', Validators.required],
       telefono: ['', Validators.required],
@@ -31,8 +28,7 @@ export class RestauranteComponent implements OnInit {
       capacidadPersonas: [''],
       horarioFuncionamiento: [''],
       estado: [true],
-      docid: [''],
-      imagenRestaurante: ['']
+      imagenRestaurante: [''] // Campo para la imagen del restaurante
     });
   }
 
@@ -54,7 +50,6 @@ export class RestauranteComponent implements OnInit {
                <b>Capacidad de Personas:</b> ${nuevoRestaurante.capacidadPersonas}<br>
                <b>Horario de Funcionamiento:</b> ${nuevoRestaurante.horarioFuncionamiento}<br>
                <b>Estado:</b> ${nuevoRestaurante.estado ? 'Activo' : 'Inactivo'}<br>
-               <b>ID del Gestor:</b> ${nuevoRestaurante.docid}<br>
                <b>Imagen del Restaurante:</b> ${nuevoRestaurante.imagenRestaurante}`,
         icon: 'question',
         showCancelButton: true,
@@ -64,12 +59,12 @@ export class RestauranteComponent implements OnInit {
         cancelButtonText: 'Cancelar',
       }).then((result) => {
         if (result.isConfirmed) {
-          this.restauranteService.crearRestaurante(nuevoRestaurante, nuevoRestaurante.docid).subscribe(
+          this.restauranteService.crearRestaurante(nuevoRestaurante).subscribe(
             (restauranteCreado: any) => {
               this.restauranteCreado = restauranteCreado;
               Swal.fire('Creado!', 'El restaurante ha sido creado exitosamente.', 'success');
-              this.restauranteForm.reset();
-              this.listarRestaurantes();
+              this.restauranteForm.reset(); // Reinicia el formulario después de crear
+              this.listarRestaurantes(); // Actualiza la lista de restaurantes
             },
             (error: any) => {
               console.error('Error al crear restaurante', error);
@@ -84,7 +79,7 @@ export class RestauranteComponent implements OnInit {
   }
 
   listarRestaurantes(): void {
-    this.restauranteService.obtenerRestaurantes().subscribe(
+    this.restauranteService.obtenerTodos().subscribe(
       (data: any[]) => {
         this.restaurantes = data;
       },
@@ -96,30 +91,48 @@ export class RestauranteComponent implements OnInit {
   }
 
   editarRestaurante(restaurante: any): void {
+    // Clona el restaurante para evitar cambios directos en el original
     this.restauranteEditando = { ...restaurante };
+    // Asigna los valores al formulario de edición
+    this.restauranteForm.patchValue({
+      id: this.restauranteEditando.id,
+      nombre: this.restauranteEditando.nombre,
+      direccion: this.restauranteEditando.direccion,
+      telefono: this.restauranteEditando.telefono,
+      tipoCocina: this.restauranteEditando.tipoCocina,
+      capacidadPersonas: this.restauranteEditando.capacidadPersonas,
+      horarioFuncionamiento: this.restauranteEditando.horarioFuncionamiento,
+      estado: this.restauranteEditando.estado,
+      imagenRestaurante: this.restauranteEditando.imagenRestaurante
+    });
   }
 
   cancelarEdicion(): void {
     this.restauranteEditando = null;
+    this.restauranteForm.reset(); // Reinicia el formulario de edición
   }
 
   guardarCambios(): void {
-    if (this.restauranteEditando) {
-      const idRestaurante = this.restauranteEditando.id;
-      const docIdGestor = this.restauranteEditando.docId;
+    if (this.restauranteForm.valid) {
+      const restauranteActualizado = this.restauranteForm.value;
+      const idRestaurante = restauranteActualizado.id;
 
-      this.restauranteService.editarRestaurante(idRestaurante, this.restauranteEditando, docIdGestor).subscribe(
+      // Envía la solicitud de actualización al servicio
+      this.restauranteService.editarRestaurante(idRestaurante, restauranteActualizado).subscribe(
         (restauranteActualizado: any) => {
           console.log('Restaurante actualizado exitosamente', restauranteActualizado);
-          this.listarRestaurantes();
+          this.listarRestaurantes(); // Actualiza la lista de restaurantes
           Swal.fire('Actualizado!', 'El restaurante ha sido actualizado exitosamente.', 'success');
-          this.restauranteEditando = null;
+          this.restauranteEditando = null; // Reinicia la variable de edición
+          this.restauranteForm.reset(); // Reinicia el formulario de edición
         },
         (error: any) => {
           console.error('Error al actualizar restaurante', error);
           Swal.fire('Error', 'Hubo un problema al actualizar el restaurante. Por favor, inténtelo de nuevo.', 'error');
         }
       );
+    } else {
+      Swal.fire('Error', 'Por favor complete el formulario correctamente.', 'error');
     }
   }
 
@@ -127,7 +140,7 @@ export class RestauranteComponent implements OnInit {
     this.restauranteService.desactivarRestaurante(restaurante.id).subscribe(
       () => {
         console.log('Restaurante desactivado exitosamente');
-        this.listarRestaurantes();
+        this.listarRestaurantes(); // Actualiza la lista de restaurantes
         Swal.fire('Desactivado!', 'El restaurante ha sido desactivado exitosamente.', 'success');
       },
       (error: any) => {
@@ -141,7 +154,7 @@ export class RestauranteComponent implements OnInit {
     this.restauranteService.restaurarRestaurante(restaurante.id).subscribe(
       () => {
         console.log('Restaurante restaurado exitosamente');
-        this.listarRestaurantes();
+        this.listarRestaurantes(); // Actualiza la lista de restaurantes
         Swal.fire('Restaurado!', 'El restaurante ha sido restaurado exitosamente.', 'success');
       },
       (error: any) => {
@@ -152,19 +165,6 @@ export class RestauranteComponent implements OnInit {
   }
 
   verRestaurante(restaurante: any): void {
-    this.restauranteSeleccionado = { ...restaurante };
-  }
-
-  limpiarSeleccion(): void {
-    this.restauranteSeleccionado = null;
-  }
-
-  filtrarRestaurantes(): any[] {
-    return this.restaurantes.filter((restaurante: any) =>
-      (restaurante.nombre.toLowerCase().includes(this.filtroNombre.toLowerCase()) ||
-        restaurante.direccion.toLowerCase().includes(this.filtroDireccion.toLowerCase())) &&
-      (restaurante.tipoCocina.toLowerCase().includes(this.filtroTipoCocina.toLowerCase()) || !this.filtroTipoCocina) &&
-      (this.filtroEstado === '' || restaurante.estado.toString() === this.filtroEstado)
-    );
+    this.restauranteSeleccionado = restaurante;
   }
 }

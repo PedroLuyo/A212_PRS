@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import Swal from 'sweetalert2';
@@ -13,7 +13,7 @@ export class RestauranteService {
   constructor(private http: HttpClient) {}
 
   // Obtener todos los restaurantes
-  obtenerRestaurantes(): Observable<any[]> {
+  obtenerTodos(): Observable<any[]> {
     return this.http.get<any[]>(`${this.apiUrl}/listar`)
       .pipe(
         catchError((error: any) => {
@@ -25,11 +25,11 @@ export class RestauranteService {
   }
 
   // Crear un restaurante
-  crearRestaurante(restaurante: any, docIdGestor: string): Observable<any> {
+  crearRestaurante(restaurante: any): Observable<any> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
-    return this.http.post<any>(`${this.apiUrl}/crear?docIdGestor=${docIdGestor}`, restaurante, { headers })
+    return this.http.post<any>(`${this.apiUrl}/crear`, restaurante, { headers })
       .pipe(
         catchError((error: any) => {
           console.error('Error al crear restaurante', error);
@@ -38,12 +38,11 @@ export class RestauranteService {
         })
       );
   }
-  
+
   // Editar un restaurante
-  editarRestaurante(idRestaurante: string, restauranteEditado: any, docIdGestor: string): Observable<any> {
-    const url = `${this.apiUrl}/restaurantes/${idRestaurante}`;
-    const params = new HttpParams().set('docIdGestor', docIdGestor);
-    return this.http.put(url, restauranteEditado, { params })
+  editarRestaurante(idRestaurante: string, restauranteEditado: any): Observable<any> {
+    const url = `${this.apiUrl}/editar/${idRestaurante}`;
+    return this.http.put(url, restauranteEditado)
       .pipe(
         catchError((error: any) => {
           console.error('Error al editar restaurante', error);
@@ -53,8 +52,8 @@ export class RestauranteService {
       );
   }
 
-  // Desactivar un restaurante (eliminar lógico)
-  desactivarRestaurante(id: number): Observable<any> {
+  // Desactivar un restaurante
+  desactivarRestaurante(id: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/desactivar/${id}`, null)
       .pipe(
         catchError((error: any) => {
@@ -66,7 +65,7 @@ export class RestauranteService {
   }
 
   // Restaurar un restaurante
-  restaurarRestaurante(id: number): Observable<any> {
+  restaurarRestaurante(id: string): Observable<any> {
     return this.http.put<any>(`${this.apiUrl}/restaurar/${id}`, null)
       .pipe(
         catchError((error: any) => {
@@ -76,17 +75,4 @@ export class RestauranteService {
         })
       );
   }
-
-  // Eliminar físicamente un restaurante
-  eliminarRestaurante(id: number): Observable<any> {
-    return this.http.delete<any>(`${this.apiUrl}/eliminar/${id}`)
-      .pipe(
-        catchError((error: any) => {
-          console.error('Error al eliminar restaurante', error);
-          Swal.fire('Error', 'Hubo un problema al eliminar el restaurante. Por favor, inténtelo de nuevo.', 'error');
-          return throwError(error);
-        })
-      );
-  }
 }
-
