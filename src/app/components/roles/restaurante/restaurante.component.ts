@@ -14,6 +14,7 @@ export class RestauranteComponent implements OnInit {
   restauranteCreado: any;
   restauranteEditando: any = null; // Variable para almacenar el restaurante en edición
   restauranteSeleccionado: any = null; // Variable para almacenar el restaurante seleccionado
+  private docid: string = ''; // ID del gestor
 
   constructor(
     private restauranteService: RestauranteService,
@@ -28,7 +29,8 @@ export class RestauranteComponent implements OnInit {
       capacidadPersonas: [''],
       horarioFuncionamiento: [''],
       estado: [true],
-      imagenRestaurante: [''] // Campo para la imagen del restaurante
+      imagenRestaurante: [''], // Campo para la imagen del restaurante
+      docid: [this.docid, Validators.required] // Campo para el ID del gestor
     });
   }
 
@@ -50,7 +52,8 @@ export class RestauranteComponent implements OnInit {
                <b>Capacidad de Personas:</b> ${nuevoRestaurante.capacidadPersonas}<br>
                <b>Horario de Funcionamiento:</b> ${nuevoRestaurante.horarioFuncionamiento}<br>
                <b>Estado:</b> ${nuevoRestaurante.estado ? 'Activo' : 'Inactivo'}<br>
-               <b>Imagen del Restaurante:</b> ${nuevoRestaurante.imagenRestaurante}`,
+               <b>Imagen del Restaurante:</b> ${nuevoRestaurante.imagenRestaurante}<br>
+               <b>ID del Gestor:</b> ${nuevoRestaurante.docid}`,
         icon: 'question',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
