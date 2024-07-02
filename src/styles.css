@@ -1,9 +1,11 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
-    --main: #5777ba;
+    --main: #fff;
     --blanco:#fff;
     --negro:rgb(43, 41, 41);
     --bordes:#ffa012;
+    --colorAdmin: #c81f98;
+    --colorGestor: #1fc8ba;
 }
 
 body {
@@ -17,6 +19,7 @@ body {
 
 a {
     text-decoration: none;
+    text-shadow: -1px 0 var(--negro), 0 1px var(--negro), 1px 0 var(--negro), 0 -1px var(--negro);
 }
 
 a:hover {

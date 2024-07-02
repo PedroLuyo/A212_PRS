@@ -69,9 +69,9 @@
             <div class="carousel-content">
               <h2 class="animate__animated animate__fadeInDown"><span>Todo tipo de </span> Platos</h2>
               <p class="animate__animated animate__fadeInUp">Bienvenido a nuestro sitio de platos</p>
-              <div class="input-group search-bar">
+              <div class="input-group search-bar ">
                 <input type="text" [(ngModel)]="searchTerm" placeholder="Buscar plato" (input)="searchPlatos()"
-                  class="form-control">
+                  class="form-control ">
                 <div class="input-group-append">
                   <span class="input-group-text"><i class="bi bi-search"></i></span>
                 </div>
@@ -160,27 +160,31 @@
       <h2>Nuestros <span>Platos</span></h2>
       <p>Explora nuestra variedad de platos disponibles</p>
     </div>
+<!-- Sección para listar Platos Carta -->
+<section id="platos-carta" class="platos-carta">
+  <div class="container">
+    <div class="section-title" style="text-align: left; margin-left: 0;">
+      <h2>Platos <span>Carta</span></h2>
+      <p>Explora nuestra variedad de platos de carta disponibles</p>
+    </div>
 
     <div class="row">
-      <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let plato of platos">
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let platocarta of platoscarta">
         <div class="card shadow-sm h-100">
-          <img class="card-img-top" [src]="plato.image" alt="Imagen de plato">
+          <img class="card-img-top" [src]="platocarta.image" alt="Imagen de plato">
           <div class="card-body d-flex flex-column">
-            <h5 class="card-title">{{ plato.nombre }}</h5>
-            <p class="card-text">{{ plato.descripcion }}</p>
+            <h5 class="card-title">{{ platocarta.nombre }}</h5>
+            <p class="card-text">{{ platocarta.descripcion }}</p>
             <div class="mt-auto">
               <div class="d-flex justify-content-between align-items-center mb-2">
-                <div style="color: #ffb03b; font-weight: 600;">S/ {{ plato.precio.toFixed(2) }}</div>
-                <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(plato.precio).toFixed(2)
-                  }}</div>
+                <div style="color: #ffb03b; font-weight: 600;">S/ {{ platocarta.precio.toFixed(2) }}</div>
+                <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(platocarta.precio).toFixed(2) }}</div>
+                <span *ngIf="platocarta.stock >= 1" class="badge" style="background-color: green;">• Disponible</span>
+                <span *ngIf="platocarta.stock < 1" class="badge" style="background-color: red;">• No disponible</span>
               </div>
               <div class="d-flex flex-wrap">
-                <div class="tag me-2" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{
-                  plato.categoria_detalle.nombre }}</div>
-                <div class="tag me-2" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{
-                  plato.presentacion_detalle.tipo }}</div>
-                <div class="tag" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{ plato.stock }}
-                </div>
+                <!-- <div class="tag me-2" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{ platocarta.categoria_detalle.nombre }}</div>
+                <div class="tag me-2" style="background-color: #ffffff;"><i class="bi bi-tags-fill"></i> {{ platocarta.presentacion_detalle.tipo }}</div> -->
               </div>
             </div>
           </div>
@@ -189,13 +193,56 @@
     </div>
 
     <!-- Mensaje cuando no hay platos -->
-    <div class="row" *ngIf="platos.length === 0">
-      <div class="col">
-        <p class="text-center">No se han encontrado platos.</p>
+    <div class="row" *ngIf="platoscarta.length === 0">
+        <div class="alert alert-warning" role="alert">
+          No hay platos a la carta por mostrar.
+        </div>
+    </div>
+  </div>
+
+
+
+
+</section>
+
+<!-- Sección para listar Platos Menú -->
+<section id="platos-menu" class="platos-menu">
+  <div class="container">
+    <div class="section-title" style="text-align: left; margin-left: 0;">
+      <h2>Platos <span>Menú</span></h2>
+      <p>Explora nuestra variedad de platos de menú disponibles</p>
+    </div>
+
+    <div class="row">
+      <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let platomenu of platosmenu">
+        <div class="card shadow-sm h-100">
+          <img class="card-img-top" [src]="platomenu.image" alt="Imagen de plato">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">{{ platomenu.nombre }}</h5>
+            <p class="card-text">{{ platomenu.descripcion }}</p>
+            <div class="mt-auto">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <div style="color: #ffb03b; font-weight: 600;">S/ {{ platomenu.precio.toFixed(2) }}</div>
+                <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(platomenu.precio).toFixed(2) }}</div>
+                <span *ngIf="platomenu.stock >= 1" class="badge" style="background-color: green;">• Disponible</span>
+                <span *ngIf="platomenu.stock < 1" class="badge" style="background-color: red;">• No disponible</span>
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay platos -->
+    <div class="row" *ngIf="platosmenu.length === 0">
+      <div class="alert alert-warning" role="alert">
+        No hay platos menú por mostrar.
       </div>
     </div>
   </div>
 </section>
+
 <!-- ======= Footer ======= -->
 <footer id="footer">
   <div class="container">

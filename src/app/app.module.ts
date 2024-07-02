@@ -36,6 +36,7 @@ import { CrearMenuComponent } from './components/menu/crear-menu/crear-menu.comp
 import { HistorialComponent } from './components/menu/historial/historial.component';
 import { ReservaComponent } from './components/menu/reserva/reserva.component';
 import { MenuComponent } from './components/menu/menu.component';
+import { VistaMenuPlatosComponent } from './components/vista-menu-platos/vista-menu-platos.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -61,6 +62,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     HistorialComponent,
     ReservaComponent,
     MenuComponent,
+    VistaMenuPlatosComponent,
   ],
   imports: [
     BrowserModule,

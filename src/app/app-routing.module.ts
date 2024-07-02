@@ -14,6 +14,7 @@ import { CrearMenuComponent } from './components/menu/crear-menu/crear-menu.comp
 import { ReservaComponent } from './components/menu/reserva/reserva.component';
 import { HistorialComponent } from './components/menu/historial/historial.component';
 import { CrearComidaComponent } from './components/menu/crear-comida/crear-comida.component';
+import { VistaMenuPlatosComponent } from './components/vista-menu-platos/vista-menu-platos.component';
 
 const routes: Routes = [
   { path: '', redirectTo: 'main', pathMatch: 'full' },
@@ -21,7 +22,7 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   { path: 'main', component: MainComponent},
-  { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  { path: 'platos', component: VistaMenuPlatosComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },

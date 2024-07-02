@@ -1,6 +1,6 @@
 import { AuthService } from './../services/authService';
 import { Component, OnInit } from '@angular/core';
-import { PlatocartaService } from '../services/platocarta.service';
+import { RestauranteMenuService } from '../services/restaurantmenu/restaurantmenu.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
@@ -17,7 +17,8 @@ declare module 'jspdf' {
 })
 export class MainComponent implements OnInit {
   userName: string = '';
-  platos: any[] = [];
+  platoscarta: any[] = [];
+  platosmenu: any[] = [];
   allPlatos: any[] = [];
   searchResults: any[] = [];
   showResultBox: boolean = false;
@@ -25,14 +26,28 @@ export class MainComponent implements OnInit {
 
   searchTerm: string = '';
 
-  constructor(private authService: AuthService, private platocartaService: PlatocartaService) { }
+  constructor(private authService: AuthService, private restauranteMenuService: RestauranteMenuService) { }
 
   async ngOnInit(): Promise<void> {
     this.updatePage();
-    this.platocartaService.getPlatosCarta().subscribe((platos: any[]) => {
-      this.allPlatos = platos;
-      this.platos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+
+    
+    this.restauranteMenuService.getCartas().subscribe((platos: any[]) => {
+      this.platoscarta = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+      console.log('Listado de platos carta',this.platoscarta);
     });
+
+    this.restauranteMenuService.getMenus().subscribe((platos: any[]) => {
+      this.platosmenu = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+      console.log('Listado de platos menu',this.platosmenu);
+    });
+    
+
+
+    this.restauranteMenuService.getPlatos().subscribe((platos: any[]) => {
+      this.limitedSearchResults = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+    });
+
     this.initCarousel();
   }
 
@@ -82,7 +97,6 @@ export class MainComponent implements OnInit {
     });
   }
 
-
   async generarReportePDF(): Promise<void> {
     const doc = new jsPDF({
       orientation: "landscape",
@@ -106,7 +120,7 @@ export class MainComponent implements OnInit {
     const filas: (string | number)[][] = [];
 
     // Obtener los platos y preparar las filas para el reporte
-    const platos = await this.platocartaService.getPlatosCarta().toPromise();
+    const platos = await this.restauranteMenuService.getPlatos().toPromise();
     platos.forEach((plato: { nombre: string; descripcion: string; precio: number }) => {
       filas.push([plato.nombre, plato.descripcion, plato.precio]);
     });

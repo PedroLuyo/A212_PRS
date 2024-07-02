@@ -29,7 +29,7 @@
             <a routerLink="users" class="nav-link"><i class="fas fa-users"></i> Usuarios</a>
           </li>
           <li class="nav-item" *ngIf="userName && (userRole === 'comensal' || userRole === 'admin')">
-            <a class="nav-link"><i class="fas fa-shopping-cart"></i> Comprar</a>
+            <a class="nav-link"><i class="fas fa-shopping-cart"></i> Reservar</a>
           </li>
           <li class="nav-item" *ngIf="userName && (userRole === 'gestor' || userRole === 'admin')">
             <a routerLink="platos" class="nav-link"><i class="fas fa-utensil-spoon"></i> Platos</a>
@@ -39,7 +39,9 @@
           </li>
         </ul>
         <ul class="navbar-nav ml-auto">
-          <li class="nav-item" *ngIf="userName; else login">
+          <span *ngIf="userRole === 'admin' || userRole === 'gestor'" class="badge mr-4" 
+          [ngStyle]="{'background-color': userRole === 'admin' ? 'var(--colorAdmin)' : 'var(--colorGestor)'}" 
+          style="text-transform: capitalize;">{{ userRole }}</span>          <li class="nav-item" *ngIf="userName; else login">
             <span class="navbar-text mr-3 welcome-text">👋 Bienvenido, {{ userName }} 😊</span>
             <button (click)="logout()" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Cerrar sesión</button>
           </li>
