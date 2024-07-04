@@ -1,5 +1,5 @@
 <!-- Creditos: AngeloLaMadrid -->
-<h1 align="center">AS212</h1>
+<h1 align="center">GastroConnect</h1>
 
 ![loog-og](https://github.com/PedroLuyo/A212_PRS/assets/101282128/5be25cc7-dfda-4519-9c6b-128976850d28)
 
