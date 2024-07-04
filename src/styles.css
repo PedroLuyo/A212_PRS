@@ -1,6 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 :root {
-    --main: #fff;
+    --main: #5777ba;
     --blanco:#fff;
     --negro:rgb(43, 41, 41);
     --bordes:#ffa012;
@@ -19,7 +19,6 @@ body {
 
 a {
     text-decoration: none;
-    text-shadow: -1px 0 var(--negro), 0 1px var(--negro), 1px 0 var(--negro), 0 -1px var(--negro);
 }
 
 a:hover {

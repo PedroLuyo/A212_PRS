@@ -13,6 +13,7 @@
 #navbar.navbar-transparent {
   background-color: transparent;
   color: var(--main);
+
   /* Color inicial de las letras */
 }
 

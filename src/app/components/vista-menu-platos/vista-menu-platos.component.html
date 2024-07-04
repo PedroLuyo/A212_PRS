@@ -1,8 +1,9 @@
-<div class="container mt-5">
+<div class="container mt-5" id="test">
     <div class="row">
         <div class="col-md-12 text-center">
             <h1>Elige tu opción favorita</h1>
-            <p>Selecciona entre nuestros deliciosos platos a la carta o menús completos diseñados para satisfacer todos los gustos.</p>
+            <p>Selecciona entre nuestros deliciosos platos a la carta o menús completos diseñados para satisfacer todos los gustos. </p>
+            
             <div class="d-flex justify-content-center mt-3">
                 <button type="button" class="btn btn-selector mx-2" (click)="selectOption('platos')">Platos a la Carta</button>
                 <button type="button" class="btn btn-selector mx-2" (click)="selectOption('vista')">Menús</button>
@@ -10,7 +11,7 @@
         </div>
     </div>
 
-    <div class="row mt-5">
+    <div class="row mt-5" >
         <div class="col-md-12">
             <ng-container *ngIf="selectedOption === 'platos'">
                 <app-platocarta></app-platocarta>
