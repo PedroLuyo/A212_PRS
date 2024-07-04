@@ -149,6 +149,7 @@ export class UsersComponent implements OnInit {
     const { nombre, rol, estado } = this.searchForm.value;
 
     this.filteredUsers = this.users.filter((user) =>
+
       (!nombre || user.name.toLowerCase().includes(nombre.toLowerCase())) &&
       (!rol || user.role.toLowerCase() === rol.toLowerCase()) &&
       (!estado || user.estado.toLowerCase() === estado.toLowerCase())
