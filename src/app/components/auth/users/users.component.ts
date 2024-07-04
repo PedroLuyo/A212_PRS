@@ -53,9 +53,13 @@ export class UsersComponent implements OnInit {
 
   editarUsuario(user: Users): void {
     user.editable = true;
-    // No es necesario setear los valores al formulario aquí, se maneja en HTML
   }
 
+  
+  cancelarEdicion(user: Users): void {
+    user.editable = false;
+  }
+  
   confirmarEdicion(user: Users): void {
     const updatedUser: Partial<Users> = {
       dni: user.dni,
@@ -106,15 +110,10 @@ export class UsersComponent implements OnInit {
     });
   }
 
-  cancelarEdicion(user: Users): void {
-    // No se guarda ningún cambio, se restaura el modo visualización
-    user.editable = false;
-  }
-
   eliminarOrestaurarUsuario(user: Users): void {
     const newStatus = user.estado === 'A' ? 'I' : 'A';
     const message = user.estado === 'A' ? 'desactivar' : 'restaurar';
-  
+
     Swal.fire({
       title: `¿${message} Usuario?`,
       text: `¿Estás seguro de ${message === 'desactivar' ? 'desactivar' : 'restaurar'} este usuario?`,
@@ -145,9 +144,6 @@ export class UsersComponent implements OnInit {
       }
     });
   }
-  
-  
-  
 
   filterUsers(): void {
     const { nombre, rol, estado } = this.searchForm.value;
@@ -171,7 +167,6 @@ export class UsersComponent implements OnInit {
 
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
-
     const link = document.createElement('a');
     link.setAttribute('href', url);
     link.setAttribute('download', 'reporte_usuarios.csv');
@@ -186,27 +181,25 @@ export class UsersComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'portrait'
     });
-  
+
     const img = new Image();
     img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
       const logoWidth = pageWidth * 0.6; // Ajustar el ancho del logo al 50% de la página
-    
-      // Añadir el logo centrado horizontalmente
       const logoHeight = img.height * (logoWidth / img.width);
       const logoX = (pageWidth - logoWidth) / 2;
       doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
-  
+
       const fecha = new Date().toLocaleDateString();
-  
+
       doc.setFont('courier', 'bold');
       doc.setFontSize(20);
       const titulo = 'Reporte de Usuarios';
       const tituloY = logoHeight; // Espacio después del logo reducido
       doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
-  
+
       const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
       const data = this.filteredUsers.map((user: Users) => [
         user.dni,
@@ -217,7 +210,7 @@ export class UsersComponent implements OnInit {
         user.ruc,
         user.estado
       ]);
-  
+
       (doc as any).autoTable({
         head: head,
         body: data,
@@ -241,27 +234,26 @@ export class UsersComponent implements OnInit {
           fillColor: [235, 235, 235]
         }
       });
-  
+
       for (let i = 1; i <= doc.getNumberOfPages(); i++) {
         doc.setPage(i);
         doc.text(`Fecha de creación: ${fecha}`, pageWidth - 14, pageHeight - 10, { align: 'right' }); // Ajuste de la posición del texto de fecha
       }
-  
       doc.save('reporte_usuarios.pdf');
     };
   }
-  
+
 
   onPageChange(page: number): void {
     this.currentPage = page;
     this.paginateUsers();
   }
-  
+
   paginateUsers(): void {
     const startIndex = (this.currentPage - 1) * this.pageSize;
     this.pagedUsers = this.filteredUsers.slice(startIndex, startIndex + this.pageSize);
   }
-  
+
   getPaginationArray(): number[] {
     return Array(this.totalPages).fill(0).map((x, i) => i + 1);
   }
