@@ -34,7 +34,7 @@
           <li class="nav-item" *ngIf="userName && (userRole === 'gestor' || userRole === 'admin')">
             <a routerLink="platos" class="nav-link"><i class="fas fa-utensil-spoon"></i> Platos</a>
           </li>
-          <li class="nav-item" *ngIf="userName && (userRole === 'admin' || userRole === 'gestor')">
+          <li class="nav-item" *ngIf="userName && (userRole === 'admin' || userRole === 'gestor' ||userRole === 'comensal' )">
             <a routerLink="selector" class="nav-link"><i class="fas fa-tasks"></i> Gestionar</a>
           </li>
         </ul>
