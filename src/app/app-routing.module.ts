@@ -28,11 +28,11 @@ const routes: Routes = [
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor','comensal' ] } },
 
 
-  { path: 'comida', component: CrearComidaComponent },
-  { path: 'vista', component: ComidaVistaComponent },
-  { path: 'menu', component: CrearMenuComponent },
-  { path: 'reserva', component: ReservaComponent },
-  { path: 'historial', component: HistorialComponent  },
+  { path: 'comida', component: CrearComidaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor' ] }},
+  //{ path: 'vista', component: ComidaVistaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor','comensal' ] } },
+  { path: 'menu', component: CrearMenuComponent , canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] }},
+  { path: 'reserva', component: ReservaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['comensal' ] } },
+  { path: 'historial', component: HistorialComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] }  },
 ];
 
 @NgModule({
