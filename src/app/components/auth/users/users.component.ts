@@ -59,7 +59,7 @@ export class UsersComponent implements OnInit {
   cancelarEdicion(user: Users): void {
     user.editable = false;
   }
-  
+
   confirmarEdicion(user: Users): void {
     const updatedUser: Partial<Users> = {
       dni: user.dni,
@@ -179,7 +179,7 @@ export class UsersComponent implements OnInit {
 
   generarReportePDF(): void {
     const doc = new jsPDF({
-      orientation: 'portrait'
+      orientation: 'portrait'// tambien se puede usar 'landscape'
     });
 
     const img = new Image();
