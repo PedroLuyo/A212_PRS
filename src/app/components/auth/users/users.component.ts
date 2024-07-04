@@ -186,24 +186,27 @@ export class UsersComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'portrait'
     });
-
+  
     const img = new Image();
-    img.src = 'assets/img/VGLogo.png';
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = () => {
-      doc.addImage(img, 'PNG', 10, 10, 30, 30);
-
-      const fecha = new Date().toLocaleDateString();
-      const margin = 10;
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-
+      const logoWidth = pageWidth * 0.6; // Ajustar el ancho del logo al 50% de la página
+    
+      // Añadir el logo centrado horizontalmente
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+  
+      const fecha = new Date().toLocaleDateString();
+  
       doc.setFont('courier', 'bold');
       doc.setFontSize(20);
       const titulo = 'Reporte de Usuarios';
-      const tituloX = margin;
-      const tituloY = 20;
-      doc.text(titulo, tituloX, tituloY);
-
+      const tituloY = logoHeight; // Espacio después del logo reducido
+      doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
+  
       const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
       const data = this.filteredUsers.map((user: Users) => [
         user.dni,
@@ -214,7 +217,7 @@ export class UsersComponent implements OnInit {
         user.ruc,
         user.estado
       ]);
-
+  
       (doc as any).autoTable({
         head: head,
         body: data,
@@ -238,15 +241,16 @@ export class UsersComponent implements OnInit {
           fillColor: [235, 235, 235]
         }
       });
-
+  
       for (let i = 1; i <= doc.getNumberOfPages(); i++) {
         doc.setPage(i);
-        doc.text(`Fecha de creación: ${fecha}`, pageWidth - margin, pageHeight - margin, { align: 'right' });
+        doc.text(`Fecha de creación: ${fecha}`, pageWidth - 14, pageHeight - 10, { align: 'right' }); // Ajuste de la posición del texto de fecha
       }
-
+  
       doc.save('reporte_usuarios.pdf');
-    }
+    };
   }
+  
 
   onPageChange(page: number): void {
     this.currentPage = page;
