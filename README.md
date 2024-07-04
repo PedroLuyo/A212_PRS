@@ -1,3 +1,7 @@
+<!-- Creditos: AngeloLaMadrid -->
+<h1 align="center">GastroConnect</h1>
+
+![loog-og](https://github.com/PedroLuyo/A212_PRS/assets/101282128/5be25cc7-dfda-4519-9c6b-128976850d28)
 # ⚡️ Clonación y Sincronización del Repositorio
 
 Para clonar el repositorio y asegurar que tu copia local esté sincronizada con el estado actual del repositorio en GitHub, sigue estos pasos:
@@ -10,7 +14,7 @@ Para clonar el repositorio y asegurar que tu copia local esté sincronizada con 
 git clone -b frontend https://github.com/PedroLuyo/A212_PRS.git && cd A212_PRS && npm install && npm install -g @angular/cli && ng serve --open
 
 ```
-> **FUNCIONA:** Comando corregido para ejecutar en `Codespaces`:
+> **Fix:** Comando corregido para ejecutar en `Codespace`:
 
 Este comando realiza tres acciones importantes: clona el repositorio, instala las dependencias necesarias y posteriormente inicia el servidor de desarrollo de Angular. Todo esto en un único paso, lo que nos permite comenzar a trabajar de manera rápida y eficiente. 🔥
 
