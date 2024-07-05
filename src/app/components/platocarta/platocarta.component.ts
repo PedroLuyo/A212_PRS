@@ -6,18 +6,18 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { FormsModule } from '@angular/forms';
 
-
 declare var $: any;
 
 @Component({
   selector: 'app-platocarta',
   templateUrl: './platocarta.component.html',
-  styleUrl: './platocarta.component.css'
+  styleUrls: ['./platocarta.component.css'] // Corregido de styleUrl a styleUrls
 })
 export class PlatocartaComponent {
+  private readonly apiPlatoCarta = 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io/api/v1';
+  private readonly apiAngelo = 'http://localhost:30001/api/v1';
+  baseUrl: string | undefined;
 
-  //baseUrl= 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io';
-  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io/api/v1';
   private readonly estadoActivo = 'A';
   private readonly estadoInactivo = 'I';
 
@@ -29,12 +29,22 @@ export class PlatocartaComponent {
   presentaciones: any[] = [];
   categorias: any[] = [];
 
-
-
   @ViewChild('agregarPlatoModal') agregarPlatoModal!: ElementRef;
   @ViewChild('editarPlatoModal') editarPlatoModal!: ElementRef;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient) {
+    this.setBaseUrl().then(() => {
+      this.getPlatos();
+      this.filtrarPlatos('/activo');
+      this.getCategoriasActivas();
+      this.getPresentacionesActivas();
+      console.log('Categorías:', this.categorias);
+      console.log('Presentaciones:', this.presentaciones);
+
+      this.categoriaControl.setValue(this.categorias[0]); // Establece el valor inicial
+      this.presentacionControl.setValue(this.presentaciones[0]);
+    });
+  }
 
   categoriaControl = new FormControl();
   presentacionControl = new FormControl();
@@ -42,17 +52,23 @@ export class PlatocartaComponent {
   platoSeleccionado: number = 0;
   cantidadReserva: number = 0;
 
+  ngOnInit() {}
 
-  ngOnInit() {
-    this.getPlatos();
-    this.filtrarPlatos('/activo');
-    this.getCategoriasActivas();
-    this.getPresentacionesActivas();
-    console.log('Categorías:', this.categorias);
-    console.log('Presentaciones:', this.presentaciones);
-
-    this.categoriaControl.setValue(this.categorias[0]); // Establece el valor inicial
-    this.presentacionControl.setValue(this.presentaciones[0]);
+  private setBaseUrl(): Promise<void> {
+    return new Promise((resolve) => {
+      this.http.get(this.apiPlatoCarta).subscribe({
+        next: () => {
+          console.log(`Usando API principal: ${this.apiPlatoCarta}`);
+          this.baseUrl = this.apiPlatoCarta;
+          resolve();
+        },
+        error: () => {
+          console.log(`API principal falló (${this.apiPlatoCarta}), usando API Angelo secundaria: ${this.apiAngelo}`);
+          this.baseUrl = this.apiAngelo;
+          resolve();
+        }
+      });
+    });
   }
 
   generarReportePDF() {
