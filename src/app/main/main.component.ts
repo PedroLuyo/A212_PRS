@@ -1,4 +1,4 @@
-import { AuthService } from './../services/authService';
+import { AuthService } from '../services/auth/authService';
 import { Component, OnInit } from '@angular/core';
 import { RestauranteMenuService } from '../services/restaurantmenu/restaurantmenu.service';
 import jsPDF from 'jspdf';

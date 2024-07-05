@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { RestauranteService } from '../../../services/restaurante.service';
+import { RestauranteService } from '../../../services/restaurant/restaurante.service';
 import jsPDF from 'jspdf';
-import { AuthService } from '../../../services/authService';
-import { CloudinaryService } from '../../../services/CloudinaryService';
+import { AuthService } from '../../../services/auth/authService';
+import { CloudinaryService } from '../../../services/cloudinary/Cloudinary.service';
 
 @Component({
   selector: 'app-restaurante',

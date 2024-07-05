@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
-import { AuthService } from '../services/authService'; // Ajustamos la ruta al servicio AuthService
-import { Users } from '../models/users.model'; // Ajustamos la ruta al modelo Users
+import { AuthService } from '../auth/authService';
+import { Users } from '../../models/menu/users.model';
+
 
 @Injectable({
   providedIn: 'root',
