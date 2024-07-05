@@ -180,69 +180,72 @@ export class UsersComponent implements OnInit {
 
   generarReportePDF(): void {
     const doc = new jsPDF({
-      orientation: 'portrait'// tambien se puede usar 'landscape'
+        orientation: 'landscape' // también se puede usar 'portrait'
     });
 
     const img = new Image();
     img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = () => {
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const logoWidth = pageWidth * 0.6; // Ajustar el ancho del logo al 50% de la página
-      const logoHeight = img.height * (logoWidth / img.width);
-      const logoX = (pageWidth - logoWidth) / 2;
-      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const logoWidth = pageWidth * 0.2; // Ajustar el ancho del logo al 20% de la página
+        const logoHeight = img.height * (logoWidth / img.width);
+        const logoX = (pageWidth - logoWidth) / 2;
+        doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
 
-      const fecha = new Date().toLocaleDateString();
+        const fecha = new Date().toLocaleDateString();
 
-      doc.setFont('courier', 'bold');
-      doc.setFontSize(20);
-      const titulo = 'Reporte de Usuarios';
-      const tituloY = logoHeight; // Espacio después del logo reducido
-      doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
+        doc.setFont('courier', 'bold');
+        doc.setFontSize(20);
+        const titulo = 'Reporte de Usuarios';
+        const tituloY = logoHeight + 20; // Espacio después del logo
+        doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
 
-      const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
-      const data = this.filteredUsers.map((user: Users) => [
-        user.dni,
-        user.name,
-        user.role,
-        user.email,
-        user.direccion,
-        user.ruc,
-        user.estado
-      ]);
+        // Añadir fecha a la derecha del título
+        doc.setFontSize(12); // Tamaño de fuente para la fecha
+        const fechaX = pageWidth - 14; // Margen derecho
+        doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
 
-      (doc as any).autoTable({
-        head: head,
-        body: data,
-        startY: tituloY + 10,
-        styles: {
-          cellWidth: 'auto',
-          fontSize: 10,
-          lineColor: [0, 0, 0],
-          lineWidth: 0.1
-        },
-        headStyles: {
-          fillColor: [0, 0, 0],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        bodyStyles: {
-          fillColor: [255, 255, 255],
-          textColor: 0
-        },
-        alternateRowStyles: {
-          fillColor: [235, 235, 235]
-        }
-      });
+        const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
+        const data = this.filteredUsers.map((user: Users) => [
+            user.dni,
+            user.name,
+            user.role,
+            user.email,
+            user.direccion,
+            user.ruc,
+            user.estado
+        ]);
 
-      for (let i = 1; i <= doc.getNumberOfPages(); i++) {
-        doc.setPage(i);
-        doc.text(`Fecha de creación: ${fecha}`, pageWidth - 14, pageHeight - 10, { align: 'right' }); // Ajuste de la posición del texto de fecha
-      }
-      doc.save('reporte_usuarios.pdf');
+        (doc as any).autoTable({
+            head: head,
+            body: data,
+            startY: tituloY + 10,
+            styles: {
+                cellWidth: 'auto',
+                fontSize: 10,
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1
+            },
+            headStyles: {
+                fillColor: [0, 0, 0],
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                textColor: 0
+            },
+            alternateRowStyles: {
+                fillColor: [235, 235, 235]
+            }
+        });
+
+
+        doc.save('reporte_usuarios.pdf');
     };
-  }
+}
+
 
 
   onPageChange(page: number): void {
