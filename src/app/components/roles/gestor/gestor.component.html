@@ -1,52 +1,49 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Formulario de Gestores</title>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-
-<div class="container mt-4">
-    <div class="row justify-content-center">
-        <!-- Encabezado condicional para mostrar el nombre del gestor -->
-        <div class="col-md-12" *ngIf="nombreGestor">
-            <h2 class="text-center">Bienvenido Gestor {{ nombreGestor }}</h2>
-        </div>
-       <!-- Formulario para insertar gestores -->
-<div class="col-md-12">
-    <div class="card">
-      <div class="d-flex justify-content-center">
-        <h2 class="mb-0">Conviertiéndome en Gestor</h2>
+<section id="crearGestor">
+  <!-- Encabezado condicional para mostrar el nombre del gestor -->
+  <div class="col-md-12" *ngIf="nombreGestor">
+    <h2 class="text-center">Bienvenido Gestor {{ nombreGestor }}</h2>
+  </div>
+  <!-- Formulario para insertar gestores -->
+  
+  
+      <div class="d-flex justify-content-center mb-4">
+        <h2 class="mb-0">Conviértete en Gestor</h2>
       </div>
+  
+  
       <div class="card-body">
         <form [formGroup]="gestorForm" (ngSubmit)="crearGestor()">
           <!-- Campos del formulario -->
           <div class="mb-3">
             <label for="direccion" class="form-label">Dirección:</label>
-            <input type="text" class="form-control" id="direccion" formControlName="direccion" placeholder="Ingrese la dirección" required>
+            <input type="text" class="form-control" id="direccion" formControlName="direccion"
+              placeholder="Ingrese la dirección" required>
           </div>
           <div class="mb-3">
             <label for="dni" class="form-label">DNI:</label>
-            <input type="text" class="form-control" id="dni" formControlName="dni" placeholder="Ingrese el DNI" required (keypress)="allowOnlyNumbers($event)">
+            <input type="text" class="form-control" id="dni" formControlName="dni" placeholder="Ingrese el DNI" required
+              (keypress)="allowOnlyNumbers($event)">
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email:</label>
-            <input type="email" class="form-control" id="email" formControlName="email" placeholder="Ingrese el email" required>
+            <input type="email" class="form-control" id="email" formControlName="email" placeholder="Ingrese el email"
+              required>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Contraseña:</label>
             <div class="input-group">
-              <input type="password" class="form-control" id="password" formControlName="password" placeholder="Ingrese la contraseña" required>
+              <input type="password" class="form-control" id="password" formControlName="password"
+                placeholder="Ingrese la contraseña" required>
               <div class="input-group-append">
-                <button class="btn btn-outline-secondary" type="button" (click)="togglePasswordVisibility()">Ver</button>
+                <button class="btn btn-outline-secondary" type="button"
+                  (click)="togglePasswordVisibility()">Ver</button>
               </div>
             </div>
           </div>
           <div class="mb-3">
             <label for="name" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="name" formControlName="name" placeholder="Ingrese el nombre" required (keypress)="allowOnlyLetters($event)">
+            <input type="text" class="form-control" id="name" formControlName="name" placeholder="Ingrese el nombre"
+              required (keypress)="allowOnlyLetters($event)">
           </div>
           <div class="mb-3">
             <label for="role" class="form-label">Rol:</label>
@@ -54,7 +51,8 @@
           </div>
           <div class="mb-3">
             <label for="ruc" class="form-label">RUC:</label>
-            <input type="text" class="form-control" id="ruc" formControlName="ruc" maxlength="11" placeholder="Ingrese el RUC" required (keypress)="allowOnlyNumbers($event)">
+            <input type="text" class="form-control" id="ruc" formControlName="ruc" maxlength="11"
+              placeholder="Ingrese el RUC" required (keypress)="allowOnlyNumbers($event)">
           </div>
           <div class="mb-3">
             <label for="estado" class="form-label">Estado:</label>
@@ -63,24 +61,6 @@
           <button type="submit" class="btn btn-primary">Crear Gestor</button>
         </form>
       </div>
-    </div>
-  </div>
-</div>
-</div>
 
-<script>
-function togglePasswordVisibility() {
-  const passwordInput = document.getElementById('password');
-  const buttonIcon = document.querySelector('#password + .input-group-append button');
-  if (passwordInput.type === 'password') {
-    passwordInput.type = 'text';
-    buttonIcon.textContent = 'Ocultar';
-  } else {
-    passwordInput.type = 'password';
-    buttonIcon.textContent = 'Ver';
-  }
-}
-</script>
 
-</body>
-</html>
+</section>

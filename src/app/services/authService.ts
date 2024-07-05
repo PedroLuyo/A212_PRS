@@ -160,7 +160,7 @@ export class AuthService {
   async register({ email, password, name, role, direccion, dni, estado, ruc }: any) {
     const credential = await createUserWithEmailAndPassword(this.auth, email, password);
     const user = credential.user;
-  
+
     if (user) {
       await updateProfile(user, { displayName: name });
       const userData = {
@@ -168,10 +168,10 @@ export class AuthService {
         email,
         name,
         role,
-        direccion: direccion ?? null, 
-        dni: dni ?? null,             
-        estado: estado ?? null,        
-        ruc: ruc ?? null,              
+        direccion: direccion ?? null,
+        dni: dni ?? null,
+        estado: estado ?? null,
+        ruc: ruc ?? null,
         active: true
       };
       await this.db
@@ -179,7 +179,7 @@ export class AuthService {
         .doc(user.uid)
         .set(userData, { merge: true });
     }
-}
+  }
 
   // Método para verificar si hay un usuario autenticado
   get isLoggedIn(): boolean {
@@ -205,6 +205,45 @@ export class AuthService {
       }
     });
   }
+
+  // Método para obtener el UID del usuario desde Firestore
+  async getUserUid(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const user = JSON.parse(localStorage.getItem('user')!);
+      if (user) {
+        this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
+          if (doc.exists) {
+            resolve(user.uid);
+          } else {
+            reject('No se encontró el uid en Firestore');
+          }
+        });
+      } else {
+        reject('No hay uid');
+      }
+    });
+  }
+
+// Método para obtener el RUC del usuario desde Firestore
+async getUserRUC(): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const user = JSON.parse(localStorage.getItem('user')!);
+    if (user) {
+      this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
+        if (doc.exists) {
+          const userData = doc.data() as { ruc?: string }; 
+          resolve(userData.ruc || ''); 
+        } else {
+          reject('No se encontró el documento del usuario en Firestore');
+        }
+      });
+    } else {
+      reject('No hay usuario');
+    }
+  });
+}
+
+
 
   // Método para iniciar sesión con Google
   async signInWithGoogle() {
@@ -235,8 +274,8 @@ export class AuthService {
     // Realiza la actualización solo con las propiedades provistas en userData
     return this.usersCollection.doc(id).update(userData);
   }
-  
-  
+
+
 
   // Método para eliminar un usuario en Firestore
   deleteUser(id: string) {

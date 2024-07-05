@@ -14,6 +14,8 @@ import { ToastrService } from 'ngx-toastr';
 export class AppComponent implements OnInit, OnDestroy {
   userName: string = '';
   userRole: string = '';
+  userUid: string = '';
+  userRuc: string = '';
   showMenu = true;
   user: User | null = null;
   isTransparent = true; 
@@ -29,26 +31,37 @@ export class AppComponent implements OnInit, OnDestroy {
     this.subscription.add(
       this.auth.authState.subscribe(async (user) => {
         if (user) {
-          // El usuario ha iniciado sesión.
           try {
             this.userName = await this.authService.getUserName();
             this.userRole = await this.authService.getUserRole();
+            this.userUid = await this.authService.getUserUid();
+            this.userRuc = await this.authService.getUserRUC(); 
             console.log('Rol del usuario:', this.userRole);
+            console.log('Uid del usuario:', this.userUid);
+            console.log('Ruc del usuario:', this.userRuc);
+
           } catch (error) {
             console.error('Error al conseguir el nombre o rol', error);
-            this.userName = ''; // colocar algo si hay un error, por el momento lo dejo en vacio
-            this.userRole = ''; // colocar algo si hay un error, por el momento lo dejo en vacio
+            this.userName = ''; 
+            this.userRole = ''; 
+            this.userRuc = ''; 
+            this.userUid = ''; 
+
           }
         } else {
           // El usuario ha cerrado sesión.
           this.userName = '';
           this.userRole = '';
+          this.userUid = ''; 
+          this.userRuc = ''; 
           this.user = user;
+          
         }
       })
     );
   }
 
+  
   @HostListener('window:scroll', [])
   onWindowScroll() {
     if (window.pageYOffset > 0) {

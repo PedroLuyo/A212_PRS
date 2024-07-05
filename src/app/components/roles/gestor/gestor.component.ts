@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { FormGroup, FormControl } from '@angular/forms';
+import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/authService';
 import { Users } from '../../../models/users.model';
 import Swal from 'sweetalert2';
@@ -10,9 +10,6 @@ import Swal from 'sweetalert2';
   styleUrls: ['./gestor.component.css'],
 })
 export class GestorComponent implements OnInit {
-irARestaurante() {
-throw new Error('Method not implemented.');
-}
   gestorForm: FormGroup;
   nombreGestor: any;
   isAdmin: any;
@@ -20,14 +17,14 @@ throw new Error('Method not implemented.');
 
   constructor(private authService: AuthService) {
     this.gestorForm = new FormGroup({
-      direccion: new FormControl(),
-      dni: new FormControl(),
-      email: new FormControl(),
-      password: new FormControl(),
-      name: new FormControl(),
-      role: new FormControl('gestor'),
-      ruc: new FormControl(),
-      estado: new FormControl('A'),
+      direccion: new FormControl('', Validators.required),
+      dni: new FormControl('', Validators.required),
+      email: new FormControl('', [Validators.required, Validators.email]),
+      password: new FormControl('', Validators.required),
+      name: new FormControl('', Validators.required),
+      role: new FormControl({ value: 'gestor', disabled: true }),
+      ruc: new FormControl('', [Validators.required, Validators.maxLength(11)]),
+      estado: new FormControl({ value: 'A', disabled: true }),
     });
   }
 

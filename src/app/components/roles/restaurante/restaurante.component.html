@@ -1,4 +1,4 @@
-<div class="container mt-4">
+<section id="crearRestaurante" class="mt-5">
   <!-- Formulario para crear nuevo restaurante -->
   <div class="card mb-4">
     <div class="card-header">
@@ -49,7 +49,6 @@
       </form>
     </div>
   </div>
-
   <!-- Mostrar el restaurante creado -->
   <div *ngIf="restauranteCreado" class="card mb-4">
     <div class="card-header">
@@ -64,66 +63,60 @@
       <p><strong>Horario de Funcionamiento:</strong> {{ restauranteCreado.horarioFuncionamiento }}</p>
       <p><strong>Estado:</strong> {{ restauranteCreado.estado_activo ? 'Activo' : 'Inactivo' }}</p>
       <p><strong>ID del Gestor:</strong> {{ restauranteCreado.docid }}</p>
-      <img *ngIf="restauranteCreado.imagenRestaurante" [src]="restauranteCreado.imagenRestaurante" alt="Imagen del Restaurante" class="img-fluid">
+      <img *ngIf="restauranteCreado.imagenRestaurante" [src]="restauranteCreado.imagenRestaurante"
+        alt="Imagen del Restaurante" class="img-fluid">
     </div>
   </div>
-
-  <div>
-    <button class="btn btn-success btn-sm ml-2" (click)="exportCSVRestaurante()">
-      <i class="fas fa-download mr-1"></i> Descargar CSV
-    </button>
-    <button class="btn btn-danger btn-sm ml-2">
-      <i class="fas fa-download mr-1"></i> Descargar PDF
-    </button>
-  </div>
-
   <!-- Listado de restaurantes -->
-<div class="card mb-4">
-  <div class="card-header">
-    <h2>Lista de Restaurantes</h2>
+  <div class="card mb-4">
+    <div class="card-header">
+      <h2>Lista de Restaurantes</h2>
+    </div>
+    <div class="card-body">
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Dirección</th>
+              <th>Teléfono</th>
+              <th>Tipo de Cocina</th>
+              <th>Capacidad</th>
+              <th>Horario</th>
+              <th>Estado</th>
+              <!-- <th>DocID</th> -->
+              <th>Imagen</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let restaurante of restaurantes">
+              <td>{{ restaurante.nombre }}</td>
+              <td>{{ restaurante.direccion }}</td>
+              <td>{{ restaurante.telefono }}</td>
+              <td>{{ restaurante.tipoCocina }}</td>
+              <td>{{ restaurante.capacidadPersonas }}</td>
+              <td>{{ restaurante.horarioFuncionamiento }}</td>
+              <td>{{ restaurante.estado_activo ? 'Activo' : 'Inactivo' }}</td>
+                <!-- <td>{{ restaurante.docid }}</td> -->
+              <td>
+                <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante"
+                  alt="Imagen del Restaurante" class="img-thumbnail" style="max-width: 100px;">
+              </td>
+              <td>
+                <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
+                <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante)"
+                  *ngIf="restaurante.estado_activo">Desactivar</button>
+                <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante)"
+                  *ngIf="!restaurante.estado_activo">Restaurar</button>
+                <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
-  <div class="card-body">
-    <!-- Tabla de restaurantes -->
-    <table class="table table-striped">
-      <thead>
-        <tr>
-          <th>Nombre</th>
-          <th>Dirección</th>
-          <th>Teléfono</th>
-          <th>Tipo de Cocina</th>
-          <th>Capacidad</th>
-          <th>Horario</th>
-          <th>Estado</th>
-          <th>DocID</th>
-          <th>Imagen</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let restaurante of restaurantes">
-          <td>{{ restaurante.nombre }}</td>
-          <td>{{ restaurante.direccion }}</td>
-          <td>{{ restaurante.telefono }}</td>
-          <td>{{ restaurante.tipoCocina }}</td>
-          <td>{{ restaurante.capacidadPersonas }}</td>
-          <td>{{ restaurante.horarioFuncionamiento }}</td>
-          <td>{{ restaurante.estado_activo ? 'Activo' : 'Inactivo' }}</td>
-          <td>{{ restaurante.docid }}</td>
-          <td>
-            <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante" alt="Imagen del Restaurante" style="max-width: 100px;">
-          </td>
-          <td>
-            <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
-            <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante)" *ngIf="restaurante.estado_activo">Desactivar</button>
-            <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante)" *ngIf="!restaurante.estado_activo">Restaurar</button>
-            <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-</div>
-
 
   <!-- Detalles del restaurante seleccionado -->
   <div *ngIf="restauranteSeleccionado" class="card mb-4">
@@ -131,15 +124,7 @@
       <h2>Detalles del Restaurante</h2>
     </div>
     <div class="card-body">
-      <p><strong>Nombre:</strong> {{ restauranteSeleccionado.nombre }}</p>
-      <p><strong>Dirección:</strong> {{ restauranteSeleccionado.direccion }}</p>
-      <p><strong>Teléfono:</strong> {{ restauranteSeleccionado.telefono }}</p>
-      <p><strong>Tipo de Cocina:</strong> {{ restauranteSeleccionado.tipoCocina }}</p>
-      <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
-      <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
-      <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado_activo ? 'Activo' : 'Inactivo' }}</p>
-      <p><strong>ID del Gestor:</strong> {{ restauranteSeleccionado.docid }}</p>
-      <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante" alt="Imagen del Restaurante" class="img-fluid">
+      <!-- Detalles del restaurante seleccionado... -->
     </div>
   </div>
-</div>
+</section>
