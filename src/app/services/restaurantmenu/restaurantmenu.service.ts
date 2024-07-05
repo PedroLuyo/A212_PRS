@@ -26,7 +26,7 @@ export class RestauranteMenuService {
     return this.http.get<any>(`${this.apiUrl}/obtener/menus`).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo.`);
-        return this.http.get<any>(`${this.apiUrlAngelo}obtener/menus`);
+        return this.http.get<any>(`${this.apiUrlAngelo}/obtener/menus`);
       })
     );  
   }
