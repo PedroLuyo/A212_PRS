@@ -30,6 +30,7 @@ import { RestauranteComponent } from './components/roles/restaurante/restaurante
 import {MatIconModule} from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { ToastrService } from 'ngx-toastr';
+import { NgxPaginationModule } from 'ngx-pagination';
 
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
@@ -70,6 +71,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     MatAutocompleteModule,
     MatInputModule,
     MatIconModule,
+    NgxPaginationModule,
   ],
   providers: [
     { provide: Auth, useValue: getAuth(initializeApp(environment.firebase)) },
