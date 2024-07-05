@@ -3,6 +3,7 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { RestauranteService } from '../../../services/restaurante.service';
 import jsPDF from 'jspdf';
+import { AuthService } from '../../../services/authService';
 
 @Component({
   selector: 'app-restaurante',
@@ -15,11 +16,13 @@ export class RestauranteComponent implements OnInit {
   restauranteCreado: any;
   restauranteEditando: any = null; // Variable para almacenar el restaurante en edición
   restauranteSeleccionado: any = null; // Variable para almacenar el restaurante seleccionado
-  private docid: string = ''; // ID del gestor
+  docid: string = ''; // ID del gestor
+
 
   constructor(
     private restauranteService: RestauranteService,
-    private fb: FormBuilder
+    private fb: FormBuilder,
+    private authService: AuthService
   ) {
     this.restauranteForm = this.fb.group({
       id: [''],
@@ -31,13 +34,18 @@ export class RestauranteComponent implements OnInit {
       horarioFuncionamiento: [''],
       estado: [true],
       imagenRestaurante: [''], // Campo para la imagen del restaurante
-      docid: [this.docid, Validators.required] // Campo para el ID del gestor
+      docid: [''] // Inicialmente vacío, se asignará en ngOnInit
+      
     });
   }
+  
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
+    const userUid = await this.authService.getUserUid();
+    this.restauranteForm.get('docid')?.setValue(userUid);
     this.listarRestaurantes();
   }
+  
 
   crearRestaurante(): void {
     if (this.restauranteForm.valid) {

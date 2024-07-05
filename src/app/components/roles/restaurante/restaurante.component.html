@@ -84,7 +84,7 @@
               <th>Capacidad</th>
               <th>Horario</th>
               <th>Estado</th>
-              <!-- <th>DocID</th> -->
+            <th>DocID</th> 
               <th>Imagen</th>
               <th>Acciones</th>
             </tr>
@@ -98,7 +98,7 @@
               <td>{{ restaurante.capacidadPersonas }}</td>
               <td>{{ restaurante.horarioFuncionamiento }}</td>
               <td>{{ restaurante.estado_activo ? 'Activo' : 'Inactivo' }}</td>
-                <!-- <td>{{ restaurante.docid }}</td> -->
+              <td>{{ restaurante.docid }}</td> 
               <td>
                 <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante"
                   alt="Imagen del Restaurante" class="img-thumbnail" style="max-width: 100px;">
