@@ -3,7 +3,7 @@ import {
   AngularFirestore,
   AngularFirestoreCollection,
 } from '@angular/fire/compat/firestore';
-import { Users } from '../../models/menu/users.model';
+import { Users } from '../../models/users/users.model';
 import {
   Auth,
   getAuth,

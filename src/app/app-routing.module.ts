@@ -16,17 +16,15 @@ const routes: Routes = [
   { path: 'users', component: UsersComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
   { path: 'login', component: LoginComponent },
 
-  { path: 'main', component: MainComponent},
+  { path: 'main', component: MainComponent },
   { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
-  { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor','comensal' ] } },
-
-
-  //{ path: 'vista', component: ComidaVistaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor','comensal' ] } },
+  { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
+  { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
 ];
 
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {}
+export class AppRoutingModule { }

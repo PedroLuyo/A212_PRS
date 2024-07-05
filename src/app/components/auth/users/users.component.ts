@@ -1,7 +1,7 @@
 // users.component.ts
 import { Component, OnInit } from '@angular/core';
 import { AuthService } from '../../../services/auth/authService';
-import { Users } from '../../../models/menu/users.model';
+import { Users } from '../../../models/users/users.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';

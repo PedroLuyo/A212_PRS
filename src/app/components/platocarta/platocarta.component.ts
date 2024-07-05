@@ -17,7 +17,7 @@ declare var $: any;
 export class PlatocartaComponent {
 
   //baseUrl= 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io';
-  private readonly baseUrl = 'https://9095-vallegrande-msplatocart-kne1m7vwrtl.ws-us114.gitpod.io/api/v1';
+  private readonly baseUrl = 'http://localhost:9095/api/v1';
   private readonly estadoActivo = 'A';
   private readonly estadoInactivo = 'I';
 
@@ -55,120 +55,84 @@ export class PlatocartaComponent {
     this.presentacionControl.setValue(this.presentaciones[0]);
   }
 
-  generarReportePDF() {
-    const logoUrl = 'https://marketplace.canva.com/EAFVq1ge0ZU/1/0/1600w/canva-logo-restaurante-circular-sencillo-negro-blanco-QEgdJHSl6GE.jpg';
-    const nombreRestaurante = 'Grill House';
-
-    // Crear el documento jsPDF
+  generarReportePDF(): void {
     const doc = new jsPDF({
-      orientation: 'portrait'
+        orientation: 'landscape' // también se puede usar 'portrait'
     });
 
-    // Establecer la fecha de creación del reporte
-    const fecha = new Date().toLocaleDateString();
-
-    // Configurar la posición y tamaño del logo
-    const imgWidth = 45;
-    const imgHeight = 45;
-    const margin = 10;
-    const imgX = margin; // Ajusta la posición X del logo
-    const imgY = margin; // Ajusta la posición Y del logo
-
-    // Cargar el logo
     const img = new Image();
-    img.src = logoUrl;
-
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png'; // Ruta de la imagen del logo
     img.onload = () => {
-      // Añadir el logo al documento
-      doc.addImage(img, 'JPEG', imgX, imgY, imgWidth, imgHeight);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const logoWidth = pageWidth * 0.2; // Ajustar el ancho del logo al 20% de la página
+        const logoHeight = img.height * (logoWidth / img.width);
+        const logoX = (pageWidth - logoWidth) / 2;
+        doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
 
-      // Agregar el texto "Restaurante"
-      doc.setFont('courier', 'normal'); // Cambia el tipo de fuente a Courier sin negrita
-      doc.setFontSize(13); // Cambia el tamaño de la fuente a 13
-      const restauranteText = 'Restaurante';
-      const restauranteX = imgX + imgWidth + 10; // Posiciona el texto "Restaurante" a la derecha del logo
-      const restauranteY = imgY + imgHeight / 2 - doc.getFontSize() / 2; // Centra verticalmente el texto "Restaurante" con respecto al logo
-      doc.text(restauranteText, restauranteX, restauranteY);
+        const fecha = new Date().toLocaleDateString();
 
-      // Agregar el título del reporte
-      doc.setFont('courier', 'bold'); // Cambia el tipo de fuente a Courier Bold
-      doc.setFontSize(45);
-      const tituloX = imgX + imgWidth + 10; // Posiciona el título a la derecha del logo
-      const tituloY = restauranteY + doc.getFontSize() - 30; // Posiciona el título justo debajo del texto "Restaurante"
-      doc.text(nombreRestaurante, tituloX, tituloY);
-      doc.setFont('courier'); // Cambia el tipo de fuente a Courier para el resto del documento
+        doc.setFont('courier', 'bold');
+        doc.setFontSize(20);
+        const titulo = 'Reporte de Platos';
+        const tituloY = logoHeight + 20; // Espacio después del logo
+        doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
 
-      // Agregar el subtítulo del reporte
-      const subtitulo = 'Reporte de platos:';
-      const subtituloY = imgY + imgHeight + 5; // Ajusta la posición Y del subtítulo
-      doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
-      doc.setFontSize(10);
-      doc.text(subtitulo, imgX + 4, subtituloY);
+        // Añadir fecha a la derecha del título
+        doc.setFontSize(12); // Tamaño de fuente para la fecha
+        const fechaX = pageWidth - 14; // Margen derecho
+        doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
 
+        const head = [['Nro', 'Nombre', 'Descripción', 'Precio', 'Categoría', 'Presentación', 'Stock', 'Estado']];
+        const data = this.platos.map((plato: any, index: number) => [
+            index + 1,
+            plato.nombre,
+            plato.descripcion,
+            `S/ ${plato.precio.toFixed(2)}`,
+            this.getNombreCategoria(plato.id_categoria),
+            this.getTipoPresentacion(plato.id_presentacion),
+            plato.stock,
+            plato.estado === 'A' ? 'Activo' : 'Inactivo'
+        ]);
 
-      // Configurar la tabla de datos
-      const head = [['Nro', 'Nombre', 'Descripción', 'Precio', 'Categoría', 'Presentación', 'Stock', 'Estado']];
-      const data = this.platos.map((plato, index) => [
-        index + 1,
-        plato.nombre,
-        plato.descripcion,
-        `S/ ${plato.precio.toFixed(2)}`,
-        this.getNombreCategoria(plato.id_categoria),
-        this.getTipoPresentacion(plato.id_presentacion),
-        plato.stock,
-        plato.estado === 'A' ? 'Activo' : 'Inactivo'
-      ]);
+        (doc as any).autoTable({
+            head: head,
+            body: data,
+            startY: tituloY + 10,
+            styles: {
+                cellWidth: 'auto',
+                fontSize: 10,
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1
+            },
+            headStyles: {
+                fillColor: [0, 0, 0],
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                textColor: 0
+            },
+            alternateRowStyles: {
+                fillColor: [235, 235, 235]
+            }
+        });
 
-      // Generar la tabla de datos
-      (doc as any).autoTable({
-        head: head,
-        body: data,
-        startY: imgY + imgHeight + 10, // Ajusta la posición de inicio de la tabla
-        styles: {
-          cellWidth: 'auto',
-          fontSize: 10,
-          lineColor: [0, 0, 0],
-          lineWidth: 0.1
-        },
-        headStyles: {
-          fillColor: [0, 0, 0],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        bodyStyles: {
-          fillColor: [255, 255, 255],
-          textColor: 0
-        },
-        alternateRowStyles: {
-          fillColor: [235, 235, 235]
-        },
-        columnStyles: {
-          0: { cellWidth: 'auto' },
-          1: { cellWidth: '30' },
-          2: { cellWidth: 'auto' },
-          3: { cellWidth: 18 },
-          4: { cellWidth: 23 },
-          5: { cellWidth: 27 },
-          6: { cellWidth: '8' },
-          7: { cellWidth: 'auto' },
-
+        // Añadir la fecha en la esquina inferior derecha de cada página
+        const fechaPosX = pageWidth - 10;
+        const fechaPosY = pageHeight - 10;
+        doc.setFont('arial', 'normal');
+        doc.setFontSize(10);
+        for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+            doc.setPage(i);
+            doc.text(`Fecha de creación: ${fecha}`, fechaPosX, fechaPosY, { align: 'right' });
         }
-      });
 
-      // Establecer la fecha en todas las páginas del documento
-      const fechaX = doc.internal.pageSize.width - margin; // Ajusta la posición X de la fecha
-      const fechaY = doc.internal.pageSize.height - margin; // Ajusta la posición Y de la fecha
-      doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
-      doc.setFontSize(10);
-      for (let i = 1; i <= doc.getNumberOfPages(); i++) {
-        doc.setPage(i);
-        doc.text(`Fecha de creación: ${fecha}`, fechaX, fechaY, { align: 'right' });
-      }
-
-      // Guardar el documento PDF
-      doc.save('reporte_platos.pdf');
+        doc.save('reporte_platos.pdf');
     };
-  }
+}
+
 
 
 

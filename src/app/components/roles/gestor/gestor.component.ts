@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth/authService';
-import { Users } from '../../../models/menu/users.model';
+import { Users } from '../../../models/users/users.model';
 import Swal from 'sweetalert2';
 import { RestauranteComponent } from '../restaurante/restaurante.component';
 

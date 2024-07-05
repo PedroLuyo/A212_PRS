@@ -1,13 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ComidaVista } from '../../models/menu/comida-vista';
+import { ComidaVista } from '../../../models/menu/comida/comida-vista';
 @Injectable({
   providedIn: 'root'
 })
 export class VistaMenuService {
   
-  private apiUrl = 'http://localhost:8080/api/vista-menu-comida';
+  private apiUrl = 'http://localhost:8080/api/v1/menu/seleccion';
 
   constructor(private http: HttpClient) {}
 
@@ -15,7 +15,8 @@ export class VistaMenuService {
     return this.http.get<ComidaVista[]>(this.apiUrl);
   }
 
-  getComidasPorMenu(nombreMenu: string): Observable<ComidaVista[]> {
-    return this.http.get<ComidaVista[]>(`${this.apiUrl}/${nombreMenu}`);
+  getComidasPorMenu(nombremenu: string): Observable<ComidaVista[]> {
+    // Ajusta la URL para usar el menuid
+    return this.http.get<ComidaVista[]>(`${this.apiUrl}/${nombremenu}`);
   }
 }
