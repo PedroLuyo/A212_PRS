@@ -20,9 +20,9 @@ spec:
         - containerPort: 4200
         env:
         - name: BACKEND_URL
-          value: "http://service-ms-platocarta:9095"  # URL del servicio backend usando el nombre del servicio
+          value: "http://service-ms-platocarta"  # URL del servicio backend usando el nombre del servicio
         - name: MENU_URL
-          value: "http://service-ms-menurestaurant:8086"  # URL del servicio menu usando el nombre del servicio
+          value: "http://service-ms-menurestaurant"  # URL del servicio menu usando el nombre del servicio
 ---
 # Frontend Service
 apiVersion: v1

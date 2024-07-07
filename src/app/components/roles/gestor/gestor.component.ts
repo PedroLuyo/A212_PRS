@@ -1,8 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
-import { AuthService } from '../../../services/authService';
-import { Users } from '../../../models/users.model';
+import { AuthService } from '../../../services/auth/authService';
+import { Users } from '../../../models/users/users.model';
 import Swal from 'sweetalert2';
+import { RestauranteComponent } from '../restaurante/restaurante.component';
+
 
 @Component({
   selector: 'app-gestor',

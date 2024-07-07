@@ -1,4 +1,4 @@
-import { AuthService } from './../services/authService';
+import { AuthService } from '../services/auth/authService';
 import { Component, OnInit } from '@angular/core';
 import { RestauranteMenuService } from '../services/restaurantmenu/restaurantmenu.service';
 import jsPDF from 'jspdf';
@@ -99,53 +99,70 @@ export class MainComponent implements OnInit {
 
   async generarReportePDF(): Promise<void> {
     const doc = new jsPDF({
-      orientation: "landscape",
+      orientation: 'landscape', // también se puede usar 'portrait'
       unit: "mm",
       format: "a4"
     });
-
-    doc.setFont("Arial");
-
-    // Título
-    doc.setFontSize(24);
-    doc.setFont("bold");
-    doc.text("REPORTE DE PLATOS", 105, 20, { align: "center" });
-
-    // Restablecer para contenido
-    doc.setFontSize(12);
-    doc.setFont("normal");
-    const lineHeight = 12 * 1.5; // Tamaño de letra 12 con interlineado 1.5
-
-    const columnas = ['Nombre', 'Descripción', 'Precio'];
-    const filas: (string | number)[][] = [];
-
-    // Obtener los platos y preparar las filas para el reporte
-    const platos = await this.restauranteMenuService.getPlatos().toPromise();
-    platos.forEach((plato: { nombre: string; descripcion: string; precio: number }) => {
-      filas.push([plato.nombre, plato.descripcion, plato.precio]);
-    });
-
-    // Agregar una tabla al documento con márgenes personalizados
-    doc.autoTable(columnas, filas, {
-      startY: 40, // Margen superior de 4 cm
-      margin: { bottom: 25 }, // Margen inferior de 2.5 cm
-      styles: { font: "Arial", fontSize: 12, cellPadding: 1.5, overflow: 'linebreak' },
-      bodyStyles: { valign: 'top' },
-      didDrawPage: function (data: any) {
-        // Asegurar que el margen inferior se respeta en cada página
-        if (doc.internal.pageSize.height - data.cursor.y < 25) {
-          doc.addPage();
+  
+    const img = new Image();
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+    img.onload = async () => {
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const logoWidth = pageWidth * 0.2; // Ajustar el ancho del logo al 20% de la página
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+  
+      const fecha = new Date().toLocaleDateString();
+  
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(20);
+      const titulo = 'Reporte de Platos';
+      const tituloY = logoHeight + 20; // Espacio después del logo
+      doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
+  
+      // Añadir fecha a la derecha del título
+      doc.setFontSize(12); // Tamaño de fuente para la fecha
+      const fechaX = pageWidth - 14; // Margen derecho
+      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
+  
+      // Obtener los platos y preparar las filas para el reporte
+      const platos = await this.restauranteMenuService.getPlatos().toPromise();
+      const head = [['Nombre', 'Descripción', 'Precio']];
+      const data = platos.filter((plato: { estado: string }) => plato.estado === 'A')
+        .map((plato: { nombre: string; descripcion: string; precio: number }) => [
+          plato.nombre,
+          plato.descripcion,
+          plato.precio
+        ]);
+  
+      (doc as any).autoTable({
+        head: head,
+        body: data,
+        startY: tituloY + 10,
+        styles: {
+          cellWidth: 'auto',
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [0, 0, 0],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+          textColor: 0
+        },
+        alternateRowStyles: {
+          fillColor: [235, 235, 235]
         }
-      }
-    });
-
-    // Fecha en la esquina inferior derecha
-    const fecha = new Date().toLocaleDateString('es-ES', { year: 'numeric', month: 'long', day: 'numeric' });
-    doc.setFontSize(12);
-    doc.setFont("normal");
-    doc.text(fecha, doc.internal.pageSize.width - 20, doc.internal.pageSize.height - 10, { align: "right" });
-
-    // Guardar el PDF
-    doc.save(`reporte-platos-${fecha}.pdf`);
+      });
+  
+      doc.save(`reporte-platos-${fecha}.pdf`);
+    };
   }
+  
 }

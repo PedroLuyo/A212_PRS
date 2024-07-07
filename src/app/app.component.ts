@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy,HostListener } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
-import { AuthService } from './services/authService';
+import { AuthService } from './services/auth/authService';
 import { Subscription } from 'rxjs';
 import { User } from 'firebase/auth';
 import { Router } from '@angular/router';
