@@ -20,13 +20,14 @@ export class RestauranteComponent implements OnInit {
   docid: string = '';
   selectedFile: File | undefined;
   imageUrl: string | undefined;
+  p: number = 1; // Página actual
 
   constructor(
-    private restauranteService: RestauranteService,
-    private fb: FormBuilder,
-    private authService: AuthService,
-    private cloudinaryService: CloudinaryService // Inyectar el servicio Cloudinary
-  ) {
+      private restauranteService: RestauranteService,
+      private fb: FormBuilder,
+      private authService: AuthService,
+      private cloudinaryService: CloudinaryService // Inyectar el servicio Cloudinary
+    ) {
     this.restauranteForm = this.fb.group({
       id: [''],
       nombre: ['', Validators.required],

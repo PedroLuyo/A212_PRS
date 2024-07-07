@@ -99,55 +99,57 @@
       </div>
     </div>
     <!-- Listado de restaurantes -->
-    <div class="card mb-4">
-      <div class="card-header">
-        <h2>Lista de Restaurantes</h2>
-      </div>
-      <div class="card-body">
-        <div class="table-responsive">
-          <table class="table table-striped table-hover">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Dirección</th>
-                <th>Teléfono</th>
-                <th>Tipo de Cocina</th>
-                <th>Capacidad</th>
-                <th>Horario</th>
-                <th>Estado</th>
-                <!--<th>DocID</th> -->
-                <th>Imagen</th>
-                <th>Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let restaurante of restaurantes">
-                <td>{{ restaurante.nombre }}</td>
-                <td>{{ restaurante.direccion }}</td>
-                <td>{{ restaurante.telefono }}</td>
-                <td>{{ restaurante.tipoCocina }}</td>
-                <td>{{ restaurante.capacidadPersonas }}</td>
-                <td>{{ restaurante.horarioFuncionamiento }}</td>
-                <td>{{ restaurante.estado ? 'Activo' : 'Inactivo' }}</td>
-                <!-- <td>{{ restaurante.docid }}</td> -->
-                <td>
-                  <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante"
-                    alt="Imagen del Restaurante" class="img-thumbnail" style="max-width: 100px;">
-                </td>
-                <td>
-                  <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
-                  <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante)"
-                    *ngIf="restaurante.estado">Desactivar</button>
-                  <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante)"
-                    *ngIf="!restaurante.estado">Restaurar</button>
-                  <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
+<div class="card mb-4">
+  <div class="card-header">
+    <h2>Lista de Restaurantes</h2>
+  </div>
+  <div class="card-body">
+    <div class="table-responsive">
+      <table class="table table-striped table-hover">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Dirección</th>
+            <th>Teléfono</th>
+            <th>Tipo de Cocina</th>
+            <th>Capacidad</th>
+            <th>Horario</th>
+            <th>Estado</th>
+            <!--<th>DocID</th> -->
+            <th>Imagen</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 5, currentPage: p }">
+            <td>{{ restaurante.nombre }}</td>
+            <td>{{ restaurante.direccion }}</td>
+            <td>{{ restaurante.telefono }}</td>
+            <td>{{ restaurante.tipoCocina }}</td>
+            <td>{{ restaurante.capacidadPersonas }}</td>
+            <td>{{ restaurante.horarioFuncionamiento }}</td>
+            <td>{{ restaurante.estado ? 'Activo' : 'Inactivo' }}</td>
+            <!-- <td>{{ restaurante.docid }}</td> -->
+            <td>
+              <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante"
+                alt="Imagen del Restaurante" class="img-thumbnail" style="max-width: 100px;">
+            </td>
+            <td>
+              <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
+              <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante)"
+                *ngIf="restaurante.estado">Desactivar</button>
+              <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante)"
+                *ngIf="!restaurante.estado">Restaurar</button>
+              <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+  </div>
+</div>
+
 
     <!-- Detalles del restaurante seleccionado -->
     <div *ngIf="restauranteSeleccionado" class="card mb-4">
