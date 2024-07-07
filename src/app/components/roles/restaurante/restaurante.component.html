@@ -46,8 +46,29 @@
               </select>
             </div>
             <div class="form-group">
-              <label for="imagenRestaurante">Imagen de Restaurante</label>
-              <input type="file" class="form-control" id="imagenRestaurante" formControlName="imagenRestaurante">
+              <label for="opcionImagen">Opción de Imagen</label>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="subir" value="subir" [(ngModel)]="opcionImagen" name="opcionImagen" (change)="cambiarOpcionImagen('subir')" checked>
+                <label class="form-check-label" for="subir">Subir Imagen</label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="url" value="url" [(ngModel)]="opcionImagen" name="opcionImagen" (change)="cambiarOpcionImagen('url')">
+                <label class="form-check-label" for="url">Pegar URL de Imagen</label>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="opcionImagen === 'url'">
+              <label for="urlImagen">URL de Imagen</label>
+              <input type="text" class="form-control" id="urlImagen" formControlName="urlImagen">
+              <div *ngIf="imagenPreview">
+                <img [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-thumbnail mt-2" style="max-width: 200px;">
+              </div>
+            </div>
+            <div class="form-group" *ngIf="opcionImagen === 'subir'">
+              <label for="imagenRestaurante">Subir Imagen de Restaurante</label>
+              <input type="file" class="form-control-file" id="imagenRestaurante" formControlName="imagenRestaurante" (change)="onFileSelected($event)">
+              <div *ngIf="imagenPreview">
+                <img [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-thumbnail mt-2" style="max-width: 200px;">
+              </div>
             </div>
             <button type="button" class="btn btn-primary" (click)="crearRestaurante()">Crear Restaurante</button>
             <button type="button" class="btn btn-success ml-2" (click)="exportCSVRestaurante()">Exportar CSV</button>
@@ -98,7 +119,7 @@
         </div>
       </div>
     </div>
-    <!-- Listado de restaurantes -->
+<!-- Listado de restaurantes -->
 <div class="card mb-4">
   <div class="card-header">
     <h2>Lista de Restaurantes</h2>
@@ -115,7 +136,6 @@
             <th>Capacidad</th>
             <th>Horario</th>
             <th>Estado</th>
-            <!--<th>DocID</th> -->
             <th>Imagen</th>
             <th>Acciones</th>
           </tr>
@@ -129,7 +149,6 @@
             <td>{{ restaurante.capacidadPersonas }}</td>
             <td>{{ restaurante.horarioFuncionamiento }}</td>
             <td>{{ restaurante.estado ? 'Activo' : 'Inactivo' }}</td>
-            <!-- <td>{{ restaurante.docid }}</td> -->
             <td>
               <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante"
                 alt="Imagen del Restaurante" class="img-thumbnail" style="max-width: 100px;">
@@ -150,24 +169,23 @@
   </div>
 </div>
 
-
-    <!-- Detalles del restaurante seleccionado -->
-    <div *ngIf="restauranteSeleccionado" class="card mb-4">
-      <div class="card-header">
-        <h2>Detalles del Restaurante</h2>
-      </div>
-      <div class="card-body">
-        <p><strong>Nombre:</strong> {{ restauranteSeleccionado.nombre }}</p>
-        <p><strong>Dirección:</strong> {{ restauranteSeleccionado.direccion }}</p>
-        <p><strong>Teléfono:</strong> {{ restauranteSeleccionado.telefono }}</p>
-        <p><strong>Tipo de Cocina:</strong> {{ restauranteSeleccionado.tipoCocina }}</p>
-        <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
-        <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
-        <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
-        <p><strong>ID del Gestor:</strong> {{ restauranteSeleccionado.docid }}</p>
-        <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
-          alt="Imagen del Restaurante" class="img-fluid">
-      </div>
-    </div>
+<!-- Detalles del restaurante seleccionado -->
+<div *ngIf="restauranteSeleccionado" class="card mb-4">
+  <div class="card-header">
+    <h2>Detalles del Restaurante</h2>
   </div>
+  <div class="card-body">
+    <p><strong>Nombre:</strong> {{ restauranteSeleccionado.nombre }}</p>
+    <p><strong>Dirección:</strong> {{ restauranteSeleccionado.direccion }}</p>
+    <p><strong>Teléfono:</strong> {{ restauranteSeleccionado.telefono }}</p>
+    <p><strong>Tipo de Cocina:</strong> {{ restauranteSeleccionado.tipoCocina }}</p>
+    <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
+    <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
+    <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
+    <!--<p><strong>ID del Gestor:</strong> {{ restauranteSeleccionado.docid }}</p>-->
+    <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
+      alt="Imagen del Restaurante" class="img-fluid">
+  </div>
+</div>
+</div>
 </div>
