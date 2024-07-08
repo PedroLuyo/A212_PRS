@@ -9,6 +9,7 @@ import { PlatocartaComponent } from './components/platocarta/platocarta.componen
 import { SelectorComponent } from './components/roles/selector/selector.component';
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
 import { GestorComponent } from './components/roles/gestor/gestor.component';
+import { MenuComponent } from './components/menu/crear-menu/crear-menu';
 
 
 const routes: Routes = [
@@ -21,6 +22,7 @@ const routes: Routes = [
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
   { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  { path: 'menu', component: MenuComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
 ];
 
 @NgModule({

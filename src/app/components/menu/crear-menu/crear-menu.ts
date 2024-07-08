@@ -4,8 +4,8 @@ import { switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
-import { MenuService } from 'src/app/services/menu/menu.service';
-import { Menu } from 'src/app/models/menu/menu';
+import { MenuService } from '../../../services/menu/menu/menu.service';
+import { Menu } from '../../../models/menu/menu/menu';
 import { NgxPaginationModule } from 'ngx-pagination';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
@@ -16,9 +16,9 @@ import 'jspdf-autotable';
   styleUrls: ['./crear-menu.css']
 })
 export class MenuComponent implements OnInit {
-  filtroForm: FormGroup;
-  menus: Menu[];
-  pagedMenus: Menu[];
+  filtroForm!: FormGroup;
+  menus!: Menu[];
+  pagedMenus: Menu[] = [];
   nuevoMenu: Menu = { menuid: null!, nombrem: '', estado: 'A' };
   editandoId: number | null = null;
   filtroEstado: string = 'A';

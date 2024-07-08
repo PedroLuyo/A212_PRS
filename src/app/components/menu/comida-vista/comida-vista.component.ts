@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { GroupedMenu } from '../../models/menu/GroupedMenu';
-import { VistaMenuService } from '../../services/comida/vista-menu.service';
+import { GroupedMenu } from '../../../models/menu/menu/GroupedMenu';
+import { VistaMenuService } from '../../../services/menu/comida/vista-menu.service';
 
 @Component({
   selector: 'app-comida-vista',

@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { GroupedMenu } from 'src/app/models/menu/GroupedMenu';
-import { ReservaDetalleService } from 'src/app/services/reserva/reserva-detalle.service';
-import { VistaMenuService } from 'src/app/services/comida/vista-menu.service';
-import { ComidaService } from 'src/app/services/comida/comida.service';
+import { GroupedMenu } from '../../../models/menu/menu/GroupedMenu';
+import { ReservaDetalleService } from '../../../services/menu/reserva/reserva-detalle.service';
+import { VistaMenuService } from '../../../services/menu/comida/vista-menu.service';
 import Swal from 'sweetalert2';
+import { ComidaService } from '../../../services/menu/comida/comida.service';
 
 
 @Component({
@@ -53,13 +53,13 @@ export class ReservaComponent implements OnInit {
   }
 
   getReservaDetalleList(): void {
-    this.reservaDetalleService.getAllReservas().subscribe(data => {
+    this.reservaDetalleService.getAllReservas().subscribe((data: any[]) => {
       this.reservaDetalles = data;
     });
   }
 
   obtenerNombresMenu(): void {
-    this.vistaMenuService.getNombresMenu().subscribe(nombres => {
+    this.vistaMenuService.getNombresMenu().subscribe((nombres: any[]) => {
       this.nombresMenu = nombres;
       this.uniqueMenus = this.getUniqueMenuNames(nombres);
       this.menusDisponibles = this.uniqueMenus.slice(); // Clona el array de nombres de menú
@@ -76,15 +76,15 @@ export class ReservaComponent implements OnInit {
   obtenerComidasPorMenu(): void {
     if (this.nombreMenuSeleccionado) {
       this.vistaMenuService.getComidasPorMenu(this.nombreMenuSeleccionado).subscribe(
-        comidas => {
+        (        comidas: any[]) => {
           this.comidasPorCategoria = {
-            Entrada: comidas.filter(comida => comida.categoria === 'Entrada'),
-            Fondo: comidas.filter(comida => comida.categoria === 'Fondo'),
-            Postre: comidas.filter(comida => comida.categoria === 'Postre'),
-            Bebida: comidas.filter(comida => comida.categoria === 'Bebida')
+            Entrada: comidas.filter((comida: { categoria: string; }) => comida.categoria === 'Entrada'),
+            Fondo: comidas.filter((comida: { categoria: string; }) => comida.categoria === 'Fondo'),
+            Postre: comidas.filter((comida: { categoria: string; }) => comida.categoria === 'Postre'),
+            Bebida: comidas.filter((comida: { categoria: string; }) => comida.categoria === 'Bebida')
           };
         },
-        error => console.error('Error al obtener productos:', error)
+        (        error: any) => console.error('Error al obtener productos:', error)
       );
     }
   }
@@ -92,7 +92,7 @@ export class ReservaComponent implements OnInit {
   toggleComida(comida: any, event: any) {
     const checked = event.target.checked;
     if (checked) {
-      this.comidaService.getComidaIdByNombre(comida.nombrecomida).subscribe(comidaId => {
+      this.comidaService.getComidaIdByNombre(comida.nombrecomida).subscribe((comidaId: any) => {
         // Añade comidaid obtenido y cantidad inicial (inicia en 1)
         this.comidasSeleccionasTemp.push({ ...comida, comidaid: comidaId, cantidad: 1 }); 
         this.groupedMenu = this.groupByCategoryAndMenu(this.comidasSeleccionasTemp);
@@ -149,7 +149,7 @@ export class ReservaComponent implements OnInit {
   
     const menusTransformados = this.groupedMenu.map(categoria => ({
       categoria: categoria.categoria,
-      data: categoria.data.flatMap(menu => menu.comidas.map(comida => ({
+      data: categoria.data.flatMap((menu: { comidas: any[]; nombremenu: any; }) => menu.comidas.map((comida: { nombrecomida: any; precio: any; }) => ({
         categoria: categoria.categoria,
         nombremenu: menu.nombremenu,
         nombrecomida: comida.nombrecomida,
@@ -217,7 +217,7 @@ export class ReservaComponent implements OnInit {
         this.pedidoCounter = 1; // Reinicia el contador después de guardar la reserva
 
       },
-      error => {
+        (      error: any) => {
         console.error('Error al crear nueva reserva:', error);
         Swal.fire('Error', 'Ocurrió un error al crear la reserva', 'error');
       });

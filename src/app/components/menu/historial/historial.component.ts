@@ -1,10 +1,10 @@
 import { Component, OnInit } from '@angular/core';
-import { ReservaDetalleService } from 'src/app/services/reserva/reserva-detalle.service';
-import { ReservaDto } from 'src/app/models/reserva/reserva'; // Assuming this is your model
+import { ReservaDetalleService } from '../../../services/menu/reserva/reserva-detalle.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
+import { ReservaDto } from '../../../models/menu/reserva/reserva'; // Assuming this is your model
 
 @Component({
   selector: 'app-historial',

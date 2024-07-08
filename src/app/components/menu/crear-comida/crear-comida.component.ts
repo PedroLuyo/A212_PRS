@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Comida } from '../../models/comida/comida';
-import { ComidaService } from '../../services/comida/comida.service';
+import { Comida } from '../../../models/menu/comida/comida';
+import { ComidaService } from '../../../services/menu/comida/comida.service';
 import { FormGroup, FormControl } from '@angular/forms';
 import { switchMap } from 'rxjs/operators';
 //seleccionar menu importar
-import { MenuService } from '../../services/menu/menu.service';
-import { Menu } from '../../models/menu/menu';
+import { MenuService } from '../../../services/menu/menu/menu.service';
+import { Menu } from '../../../models/menu/menu/menu';
 import * as XLSX from 'xlsx';
 import Swal from 'sweetalert2';
-import { CloudinaryService } from '../../services/comida/cloudinary.service';
+import { CloudinaryService } from '../../../services/cloudinary/Cloudinary.service';
 import { jsPDF } from 'jspdf';
 import 'jspdf-autotable';
 
@@ -19,8 +19,8 @@ import 'jspdf-autotable';
 })
 export class ComidaComponent implements OnInit {
   
-  filtroForm: FormGroup;
-  comidas: Comida[];
+  filtroForm!: FormGroup;
+  comidas!: Comida[];
   nuevaComida: Comida = { comidaid: null!, nombrec: '', categoria: '', precio: null!, stock: null!,image:null!, menuid: null!, estado: 'A' };
   editandoId: number | null = null;
   filtroEstado: string = 'A';
