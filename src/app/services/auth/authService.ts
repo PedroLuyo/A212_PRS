@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {
   AngularFirestore,
   AngularFirestoreCollection,
+  AngularFirestoreDocument, // <-- Añadido
 } from '@angular/fire/compat/firestore';
 import { Users } from '../../models/users/users.model';
 import {
@@ -27,6 +28,7 @@ export class AuthService {
   private userData: any;
 
   userLoggedIn = new EventEmitter<void>();
+  getCurrentUser: any;
 
   constructor(
     private db: AngularFirestore,
@@ -108,13 +110,58 @@ export class AuthService {
   getAll(): AngularFirestoreCollection<Users> {
     return this.usersCollection;
   }
+  
 
-  // Método para iniciar sesión con correo y contraseña
-  async login({ email, password }: any) {
-    const result = await signInWithEmailAndPassword(this.auth, email, password);
-    this.userLoggedIn.emit();
-    return result;
+  // Método para verificar el rol del usuario autenticado
+  async verificarRolGestor(): Promise<boolean> {
+    const auth = getAuth();
+    const user = auth.currentUser;
+
+    if (user) {
+      const userDoc = await this.db.collection('users').doc(user.uid).get().toPromise();
+      if (userDoc && userDoc.exists) {
+        const userData = userDoc.data() as { role?: string };
+        return userData.role === 'gestor';
+      }
+    }
+    return false;
   }
+
+
+// Método para iniciar sesión con correo y contraseña
+async login({ email, password }: any) {
+  try {
+    // Inicia sesión con el correo y contraseña proporcionados
+    const result = await signInWithEmailAndPassword(this.auth, email, password);
+
+    // Obtiene el UID del usuario autenticado
+    const user = result.user;
+
+    // Verifica el rol del usuario en Firestore
+    const userDoc = await this.db.collection('users').doc(user.uid).get().toPromise();
+    if (userDoc && userDoc.exists) {
+      const userData = userDoc.data() as { role?: string };
+      
+      if (userData.role === 'gestor') {
+        // Si el rol es "gestor", permite el acceso y emite el evento
+        this.userLoggedIn.emit();
+        return result;
+      } else {
+        // Si el rol no es "gestor", cierra sesión y muestra un mensaje de error
+        await signOut(this.auth);
+        throw new Error('No tienes el rol adecuado. Regístrate o ingresa con una cuenta válida.');
+      }
+    } else {
+      // Si no se encuentra el usuario en Firestore, cierra sesión y muestra un mensaje de error
+      await signOut(this.auth);
+      throw new Error('No se encontró el usuario en Firestore.');
+    }
+  } catch (error) {
+    // Maneja errores de inicio de sesión
+    throw new Error((error as any).message);
+  }
+}
+
 
   // Método para iniciar sesión con Google
   loginWithGoogle() {
@@ -224,61 +271,28 @@ export class AuthService {
     });
   }
 
-// Método para obtener el RUC del usuario desde Firestore
-async getUserRUC(): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const user = JSON.parse(localStorage.getItem('user')!);
-    if (user) {
-      this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
-        if (doc.exists) {
-          const userData = doc.data() as { ruc?: string }; 
-          resolve(userData.ruc || ''); 
-        } else {
-          reject('No se encontró el documento del usuario en Firestore');
-        }
-      });
-    } else {
-      reject('No hay usuario');
-    }
-  });
-}
-
-
-
-  // Método para iniciar sesión con Google
-  async signInWithGoogle() {
-    const provider = new GoogleAuthProvider();
-    const credential = await signInWithPopup(this.auth, provider);
-    const user = credential.user;
-
-    if (user) {
-      await this.db.collection('users').doc(user.uid).set(
-        {
-          uid: user.uid,
-          email: user.email,
-          name: user.displayName,
-          role: 'comensal',
-          direccion: '',
-          dni: null,
-          estado: 'A',
-          ruc: null,
-          active: true
-        },
-        { merge: true }
-      );
-    }
+  // Método para obtener el RUC del usuario desde Firestore
+  async getUserRUC(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      const user = JSON.parse(localStorage.getItem('user')!);
+      if (user) {
+        this.db.collection('users').doc(user.uid).get().subscribe((doc) => {
+          if (doc.exists) {
+            const userData = doc.data() as { ruc?: string }; 
+            resolve(userData.ruc || ''); 
+          } else {
+            reject('No se encontró el documento del usuario en Firestore');
+          }
+        });
+      } else {
+        reject('No hay usuario');
+      }
+    });
   }
 
   // Método para actualizar un usuario en Firestore
   updateUser(id: string, userData: Partial<Users>) {
     // Realiza la actualización solo con las propiedades provistas en userData
     return this.usersCollection.doc(id).update(userData);
-  }
-
-
-
-  // Método para eliminar un usuario en Firestore
-  deleteUser(id: string) {
-    return this.usersCollection.doc(id).delete();
   }
 }

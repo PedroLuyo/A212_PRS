@@ -1,17 +1,19 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { AuthService } from '../../../services/auth/authService';
 import { ToastrService } from 'ngx-toastr';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-selector',
   templateUrl: './selector.component.html',
   styleUrls: ['./selector.component.css']
 })
-export class SelectorComponent {
+export class SelectorComponent implements OnInit {
   isLoginModalOpen = false;
   loginForm: FormGroup;
+  userRole: string | null = null;
 
   constructor(
     private router: Router,
@@ -25,36 +27,48 @@ export class SelectorComponent {
     });
   }
 
-  ngOnInit(): void {}
-
-  openLoginModal(): void {
-    this.isLoginModalOpen = true;
+  ngOnInit(): void {
+    this.checkUserRole();
   }
 
-  closeLoginModal(): void {
+  async checkUserRole(): Promise<void> {
+    try {
+      const user = await this.authService.getCurrentUser();
+      if (user) {
+        this.userRole = await this.authService.getUserRole();
+      }
+    } catch (error) {
+      console.error('Error al verificar el rol del usuario:', error);
+    }
+  }
+
+  async openLoginModal() {
+    // Verificar si el usuario autenticado tiene el rol de "gestor"
+    const isGestor = await this.authService.verificarRolGestor();
+    if (isGestor) {
+      // Si el usuario ya tiene el rol de "gestor", redirigirlo sin pedir credenciales
+      Swal.fire('Bienvenido de nuevo!', 'Has sido autenticado automáticamente.', 'success');
+      this.router.navigate(['/restaurante']); // Redirige al componente de restaurante
+    } else {
+      // Si no es "gestor", mostrar el modal de inicio de sesión
+      this.isLoginModalOpen = true;
+    }
+  }
+  
+  closeLoginModal() {
     this.isLoginModalOpen = false;
   }
 
-  async onLoginSubmit(): Promise<void> {
-    if (this.loginForm.invalid) {
-      return;
-    }
-
-    const { email, password } = this.loginForm.value;
-
-    try {
-      await this.authService.login({ email, password });
-      this.toastr.success('Inicio de sesión exitoso', 'Correcto');
-      this.closeLoginModal();
-      this.router.navigate(['/restaurante']);
-    } catch (error: any) {
-      if (error.code === 'auth/user-not-found') {
-        this.toastr.error('No existe un usuario con ese correo electrónico', 'Error');
-        this.router.navigate(['/gestor'], { queryParams: { message: 'Regístrese primero como gestor' } });
-      } else if (error.code === 'auth/wrong-password') {
-        this.toastr.error('Contraseña incorrecta', 'Error');
-      } else {
-        this.toastr.error('Error al iniciar sesión', 'Error');
+  async onLoginSubmit() {
+    if (this.loginForm.valid) {
+      const { email, password } = this.loginForm.value;
+      try {
+        await this.authService.login({ email, password });
+        Swal.fire('Inicio de sesión exitoso!', 'Bienvenido!', 'success');
+        this.closeLoginModal();
+        this.router.navigate(['/dashboard']); // Redirige al dashboard o página correspondiente
+      } catch (error) {
+        Swal.fire('Error de inicio de sesión', (error as Error).message, 'error');
       }
     }
   }
