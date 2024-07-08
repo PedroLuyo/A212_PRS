@@ -1,0 +1,72 @@
+/* comida.component.css */
+.container {
+    max-width: 1050px;
+  }
+  
+  .mt-3 {
+    margin-top: 1.5rem;
+  }
+  
+  .table th, .table td {
+    text-align: center;
+  }
+  
+  .btn {
+    margin-right: 5px;
+  }
+  
+  /* Estilos adicionales */
+  h3 {
+    color: #007bff; /* Azul brillante */
+  }
+  
+  .btn-primary {
+    background-color: #28a745; /* Verde */
+    border-color: #28a745;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545; /* Rojo */
+    border-color: #dc3545;
+  }
+  
+  .btn-success {
+    background-color: #17a2b8; /* Cyan */
+    border-color: #17a2b8;
+  }
+  
+  .badge-success {
+    background-color: #28a745; /* Verde */
+    border-color: #28a745;
+  }
+  
+  .badge-danger {
+    background-color: #dc3545; /* Rojo */
+  }
+
+  .editing-card {
+    box-shadow: 0 0 8px rgba(50, 205, 50, 0.8); /* Verde inicial */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Animación suave */
+    animation: jumpAndFade 0.6s ease forwards;
+
+  }
+  
+  .editing-card.active {
+    animation: jumpAndFade 0.6s ease forwards;
+  }
+  
+  @keyframes jumpAndFade {
+    0% {
+      transform: translateY(0);
+      box-shadow: 0 0 8px rgba(50, 205, 50, 0.8); /* Verde */
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Negro */
+    }
+  }
+  
+  

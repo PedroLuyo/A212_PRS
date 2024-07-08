@@ -1,0 +1,124 @@
+<div class="container mt-2">
+  <div class="row">
+    <!-- Formulario de reserva -->
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <form (ngSubmit)="guardarEdicion()" #reservaForm="ngForm">
+            <h3 class="card-title">Registra tu reserva</h3>
+            <div class="form-group">
+              <label for="nombreu" class="lead">Nombre y Apellido:</label>
+              <input type="text" class="form-control" id="nombreu" [(ngModel)]="nuevaReserva.nombre" name="nombreu" required>
+              <div *ngIf="reservaForm.controls['nombreu'].invalid && (reservaForm.controls['nombreu'].dirty || reservaForm.controls['nombreu'].touched)" class="text-danger">
+                Nombre y Apellido es requerido.
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="correo" class="lead">Correo personal:</label>
+              <input type="email" class="form-control" id="correo" [(ngModel)]="nuevaReserva.correo" name="correo" required>
+              <div *ngIf="reservaForm.controls['correo'].invalid && (reservaForm.controls['correo'].dirty || reservaForm.controls['correo'].touched)" class="text-danger">
+                Correo es requerido y debe ser válido.
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="hora_reserva" class="lead">Hora Reserva:</label>
+                <input type="time" class="form-control" id="hora_reserva" [(ngModel)]="nuevaReserva.hora_reserva" name="hora_reserva" required>
+                <div *ngIf="reservaForm.controls['hora_reserva'].invalid && (reservaForm.controls['hora_reserva'].dirty || reservaForm.controls['hora_reserva'].touched)" class="text-danger">
+                  Hora de reserva es requerida.
+                </div>
+              </div>
+              <div class="form-group col-md-6">
+                <label for="num_personas" class="lead">Número de Personas:</label>
+                <input type="text" class="form-control" id="num_personas" [(ngModel)]="nuevaReserva.num_personas" name="num_personas" required pattern="[0-9]*">
+                <div *ngIf="reservaForm.controls['num_personas'].invalid && (reservaForm.controls['num_personas'].dirty || reservaForm.controls['num_personas'].touched)" class="text-danger">
+                  Número de personas es requerido.
+                </div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-lg-12 d-flex justify-content-between align-items-center">
+                <button class="btn btn-success" type="submit" [disabled]="!reservaForm.valid || nuevaReserva.monto_total === 0 || pedidos.length === 0 || !todosCamposCantidadLlenos()">
+                  Guardar Reserva
+                </button>
+                
+                
+                <span class="fw-bold" style="color: #ff6600; font-weight: bold;">Total de la reserva: </span>
+                <i>S/ {{ calcularTotalPrecios() }}</i>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+    <!-- Selección de menú -->
+    <div class="col-lg-6 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Selecciona tu Menú</h3>
+          <select class="form-control mb-3" [(ngModel)]="nombreMenuSeleccionado" (change)="obtenerComidasPorMenu()">
+            <option value="">Seleccionar Menú</option>
+            <ng-container *ngFor="let menu of menusDisponibles">
+              <option [value]="menu">{{ menu }}</option>
+            </ng-container>
+          </select>
+          <div class="row" *ngIf="nombreMenuSeleccionado">
+            <!-- Visualización de comidas por categoría -->
+            <div class="col-12">
+              <div class="card w-100">
+                <div class="card-body">
+                  <h5 class="text-center mb-3">{{ nombreMenuSeleccionado }}</h5>
+                  <!-- Iteración sobre las categorías en dos filas, dos columnas -->
+                  <div class="row">
+                    <ng-container *ngFor="let categoria of ['Entrada', 'Fondo', 'Bebida', 'Postre']; let i = index;">
+                      <div class="col-lg-6 mb-3">
+                        <div class="card">
+                          <div class="card-body">
+                            <h6 class="card-title">{{ categoria }}</h6>
+                            <div *ngFor="let comida of comidasPorCategoria[categoria]">
+                              <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                  <p class="mb-0">{{ comida.nombrecomida }}</p>
+                                  <p class="text-muted mb-0">S/ {{ comida.precio }}</p>
+                                </div>
+                                <input type="checkbox" class="ml-2" (change)="toggleComida(comida, $event)" >
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div *ngIf="(i + 1) % 2 === 0" class="w-100"></div>
+                    </ng-container>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary mt-3" (click)="guardarSeleccion()" [disabled]="comidasSeleccionasTemp.length === 0">Guardar selección</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Resumen del Pedido -->
+<div class="card-deck mt-4 mb-4" *ngIf="pedidos.length > 0">
+  <div class="card" *ngFor="let pedido of pedidos; let i = index;">
+    <button class="btn btn-sm btn-danger mb-2" (click)="eliminarPedido(i)">Eliminar Pedido</button>
+
+    <div class="card-body">
+      <h5 class="card-title">{{ pedido.pedidos }}</h5>
+      <div *ngFor="let categoria of pedido.menusSeleccionados">
+        <h6 class="card-subtitle mb-2 text-muted" style="padding: 10px">{{ categoria.categoria }}</h6>
+        <ul class="list-group">
+          <li *ngFor="let comida of categoria.data" class="list-group-item d-flex justify-content-between align-items-center">
+            {{ comida.nombremenu }}: {{ comida.nombrecomida }} - S/ {{ comida.precio }}
+            <input type="number" [(ngModel)]="comida.cantidad" min="1" (change)="actualizarTotal()" class="form-control form-control-sm ms-2" style="max-width: 80px;">
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+</div>
