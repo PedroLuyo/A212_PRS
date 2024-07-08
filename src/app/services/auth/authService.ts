@@ -127,7 +127,6 @@ export class AuthService {
     return false;
   }
 
-
 // Método para iniciar sesión con correo y contraseña
 async login({ email, password }: any) {
   try {
@@ -140,28 +139,28 @@ async login({ email, password }: any) {
     // Verifica el rol del usuario en Firestore
     const userDoc = await this.db.collection('users').doc(user.uid).get().toPromise();
     if (userDoc && userDoc.exists) {
-      const userData = userDoc.data() as { role?: string };
-      
-      if (userData.role === 'gestor') {
-        // Si el rol es "gestor", permite el acceso y emite el evento
-        this.userLoggedIn.emit();
-        return result;
-      } else {
-        // Si el rol no es "gestor", cierra sesión y muestra un mensaje de error
-        await signOut(this.auth);
-        throw new Error('No tienes el rol adecuado. Regístrate o ingresa con una cuenta válida.');
-      }
+      // Elimina la verificación específica del rol "gestor" para permitir el acceso a cualquier usuario autenticado
+      this.userLoggedIn.emit();
+      return result;
     } else {
       // Si no se encuentra el usuario en Firestore, cierra sesión y muestra un mensaje de error
       await signOut(this.auth);
       throw new Error('No se encontró el usuario en Firestore.');
     }
   } catch (error) {
+    console.error("Error de inicio de sesión:", error);
+    
+    // Si es posible, muestra más detalles del error
+    if (error instanceof Error) {
+        console.error("Mensaje de error:", error.message);
+        console.error("Pila de error:", error.stack);
+    } else if (typeof error === 'object') {
+        console.error("Detalles del error:", JSON.stringify(error, null, 2));
+    }
     // Maneja errores de inicio de sesión
     throw new Error((error as any).message);
   }
 }
-
 
   // Método para iniciar sesión con Google
   loginWithGoogle() {
@@ -207,7 +206,7 @@ async login({ email, password }: any) {
   async register({ email, password, name, role, direccion, dni, estado, ruc }: any) {
     const credential = await createUserWithEmailAndPassword(this.auth, email, password);
     const user = credential.user;
-
+  
     if (user) {
       await updateProfile(user, { displayName: name });
       const userData = {
@@ -215,10 +214,10 @@ async login({ email, password }: any) {
         email,
         name,
         role,
-        direccion: direccion ?? null,
-        dni: dni ?? null,
-        estado: estado ?? null,
-        ruc: ruc ?? null,
+        direccion: direccion ?? null, 
+        dni: dni ?? null,             
+        estado: estado ?? null,        
+        ruc: ruc ?? null,              
         active: true
       };
       await this.db
@@ -226,8 +225,7 @@ async login({ email, password }: any) {
         .doc(user.uid)
         .set(userData, { merge: true });
     }
-  }
-
+}
   // Método para verificar si hay un usuario autenticado
   get isLoggedIn(): boolean {
     const user = JSON.parse(localStorage.getItem('user')!);
