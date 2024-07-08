@@ -245,70 +245,101 @@ export class RestauranteComponent implements OnInit {
 
   generarReportePDFRestaurantes(): void {
     const doc = new jsPDF({
-      orientation: 'landscape' // También se puede usar 'portrait'
+        orientation: 'landscape' // también se puede usar 'portrait'
     });
 
     const img = new Image();
     img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = () => {
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const logoWidth = pageWidth * 0.2; // Ajustar el ancho del logo al 20% de la página
-      const logoHeight = img.height * (logoWidth / img.width);
-      const logoX = (pageWidth - logoWidth) / 2;
-      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const logoWidth = pageWidth * 0.2; // Ajustar el ancho del logo al 20% de la página
+        const logoHeight = img.height * (logoWidth / img.width);
+        const logoX = (pageWidth - logoWidth) / 2;
+        doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
 
-      const fecha = new Date().toLocaleDateString();
+        // Agregar texto debajo del logo
+        const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+        const sloganX = pageWidth / 2; // Centrar el eslogan
+        const sloganY = logoHeight; // Posición Y debajo del logo
+        doc.setTextColor(31, 30, 30); // Color del texto #1F1E1E
+        doc.setFontSize(12); // Tamaño de fuente para el eslogan
+        doc.text(slogan, sloganX, sloganY, { align: 'center' }); // Alineación centrada
 
-      doc.setFont('courier', 'bold');
-      doc.setFontSize(20);
-      const titulo = 'Reporte de Restaurantes';
-      const tituloY = logoHeight + 20; // Espacio después del logo
-      doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
+        const fecha = new Date().toLocaleDateString('en-GB', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric'
+        }).replace(/ /g, '/').replace(/\//g, '-');
+        
+        doc.setFont('courier', 'bold');
+        doc.setFontSize(20);
+        const titulo = 'Reporte de Restaurantes';
+        const tituloY = sloganY + 10; // Espacio después del eslogan
+        doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
+        
+        // Añadir fecha a la derecha del título
+        doc.setFontSize(12); // Tamaño de fuente para la fecha
+        const fechaX = pageWidth - 14; // Margen derecho
 
-      // Añadir fecha a la derecha del título
-      doc.setFontSize(12); // Tamaño de fuente para la fecha
-      const fechaX = pageWidth - 14; // Margen derecho
-      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
+        
+        doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
 
-      const head = [['Nombre', 'Dirección', 'Teléfono', 'Tipo de Cocina', 'Capacidad', 'Horario', 'Estado', 'DocID']];
-      const data = this.restaurantes.map((restaurante) => [
-        restaurante.nombre,
-        restaurante.direccion,
-        restaurante.telefono,
-        restaurante.tipoCocina,
-        restaurante.capacidadPersonas,
-        restaurante.horarioFuncionamiento,
-        restaurante.estado ? 'Activo' : 'Inactivo',
-        restaurante.docid,
-      ]);
+        const head = [['Nombre', 'Dirección', 'Teléfono', 'Tipo de Cocina', 'Capacidad', 'Horario', 'Estado', 'DocID']];
+        const data = this.restaurantes.map((restaurante) => [
+          restaurante.nombre,
+          restaurante.direccion,
+          restaurante.telefono,
+          restaurante.tipoCocina,
+          restaurante.capacidadPersonas,
+          restaurante.horarioFuncionamiento,
+          restaurante.estado ? 'Activo' : 'Inactivo',
+          restaurante.docid,
+        ]);
 
-      (doc as any).autoTable({
-        head: head,
-        body: data,
-        startY: tituloY + 10,
-        styles: {
-          cellWidth: 'auto',
-          fontSize: 10,
-          lineColor: [0, 0, 0],
-          lineWidth: 0.1
-        },
-        headStyles: {
-          fillColor: [0, 0, 0],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        bodyStyles: {
-          fillColor: [255, 255, 255],
-          textColor: 0
-        },
-        alternateRowStyles: {
-          fillColor: [235, 235, 235]
+        (doc as any).autoTable({
+            head: head,
+            body: data,
+            startY: tituloY + 10,
+            styles: {
+                cellWidth: 'auto',
+                fontSize: 10,
+                lineColor: [0, 0, 0],
+                lineWidth: 0.1
+            },
+            headStyles: {
+                fillColor: [0, 0, 0],
+                textColor: 255,
+                fontStyle: 'bold'
+            },
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                textColor: 0
+            },
+            alternateRowStyles: {
+                fillColor: [235, 235, 235]
+            }
+        });
+        const pageCount = doc.getNumberOfPages();
+        for (let i = 1; i <= pageCount; i++) {
+          doc.setPage(i);
+          // Configurar el estilo del pie de página
+          doc.setFont('courier', 'normal');
+          doc.setFontSize(10);
+          // Establecer el color de la letra
+          doc.setTextColor(31, 30, 30); // Usando RGB
+          // Calcular la posición para el número de página alineado a la esquina inferior derecha
+          const pageNumberText = `Página ${i}`;
+          const pageSize = doc.internal.pageSize;
+          const pageWidth = pageSize.getWidth();
+          const pageHeight = pageSize.getHeight();
+          const footerY = pageHeight - 10; // Ajusta este valor según sea necesario
+          // Añadir el número de página
+          doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY); // Alineado a la derecha
         }
-      });
-
-      doc.save('reporte_restaurantes.pdf');
+        
+        doc.save('reporte_restaurantes.pdf');
     };
-  }
+}
 
 }
