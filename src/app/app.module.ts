@@ -28,11 +28,13 @@ import { RestauranteComponent } from './components/roles/restaurante/restaurante
 import { MatIconModule } from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
 import { NgxPaginationModule } from 'ngx-pagination';
-import { ComidaComponent } from './components/menu/crear-comida/crear-comida.component';
 import { ComidaVistaComponent } from './components/menu/comida-vista/comida-vista.component';
-import { MenuComponent } from './components/menu/crear-menu/crear-menu';
+import { CrearMenu } from './components/menu/crear-menu/crear-menu';
 import { ReservaComponent } from './components/menu/reserva/reserva.component';
 import { HistorialComponent } from './components/menu/historial/historial.component';
+import { VistaMenuPlatosComponent } from './components/vista-menu-platos/vista-menu-platos.component';
+import { CrearComidaComponent } from './components/menu/crear-comida/crear-comida.component';
+import { MenuComponent } from './components/menu/menu.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -53,11 +55,13 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     GestorComponent,
     RestauranteComponent,
     SelectorComponent,
-    ComidaComponent,
+    CrearComidaComponent,
     ComidaVistaComponent,
     MenuComponent,
     ReservaComponent,
     HistorialComponent,
+    VistaMenuPlatosComponent,
+    CrearMenu,
   ],
   imports: [
     BrowserModule,

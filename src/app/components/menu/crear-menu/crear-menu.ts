@@ -11,11 +11,11 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 
 @Component({
-  selector: 'app-menu',
+  selector: 'app-crearmenu',
   templateUrl: './crear-menu.html',
   styleUrls: ['./crear-menu.css']
 })
-export class MenuComponent implements OnInit {
+export class CrearMenu implements OnInit {
   filtroForm!: FormGroup;
   menus!: Menu[];
   pagedMenus: Menu[] = [];

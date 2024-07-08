@@ -4,7 +4,7 @@ import { ReservaDetalleService } from '../../../services/menu/reserva/reserva-de
 import { VistaMenuService } from '../../../services/menu/comida/vista-menu.service';
 import Swal from 'sweetalert2';
 import { ComidaService } from '../../../services/menu/comida/comida.service';
-
+import { NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-reserva',

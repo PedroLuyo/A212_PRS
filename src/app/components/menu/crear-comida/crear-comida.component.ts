@@ -17,7 +17,7 @@ import 'jspdf-autotable';
   templateUrl: './crear-comida.component.html',
   styleUrls: ['./crear-comida.component.css']
 })
-export class ComidaComponent implements OnInit {
+export class CrearComidaComponent implements OnInit {
   
   filtroForm!: FormGroup;
   comidas!: Comida[];
