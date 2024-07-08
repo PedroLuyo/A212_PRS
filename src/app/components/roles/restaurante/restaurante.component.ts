@@ -67,9 +67,11 @@ export class RestauranteComponent implements OnInit {
   }
 
   // Método para subir la imagen a Cloudinary y obtener la URL
-  subirImagenYObtenerUrl(): void {
+subirImagenYObtenerUrl(): Promise<string> {
+  return new Promise((resolve, reject) => {
     if (!this.selectedFile) {
       console.error('No se ha seleccionado ningún archivo.');
+      reject('No se ha seleccionado ningún archivo.');
       return;
     }
 
@@ -81,53 +83,59 @@ export class RestauranteComponent implements OnInit {
       (response: any) => {
         if (response && response.secure_url) {
           console.log('URL de la imagen subida:', response.secure_url);
-          // Establecer la URL de la imagen en el formulario después de subir
-          this.restauranteForm.get('imagenRestaurante')?.setValue(response.secure_url);
-          this.crearRestauranteEnBackend(this.restauranteForm.value); // Llamar a crearRestauranteEnBackend después de obtener la URL
+          resolve(response.secure_url);
         } else {
           console.error('No se recibió la URL de la imagen desde Cloudinary.');
+          reject('No se recibió la URL de la imagen desde Cloudinary.');
         }
       },
       error => {
         console.error('Error al subir imagen a Cloudinary:', error);
+        reject(error);
       }
     );
-  }
+  });
+}
 
-  // Método para crear restaurante, llamando a subirImagenYObtenerUrl() antes de crear
-  crearRestaurante(): void {
-    if (this.restauranteForm.valid) {
-      const nuevoRestaurante = this.restauranteForm.value;
-      nuevoRestaurante.horarioFuncionamiento = `${nuevoRestaurante.horaApertura} - ${nuevoRestaurante.horaCierre}`;
+// Método para crear restaurante, llamando a subirImagenYObtenerUrl() antes de crear
+crearRestaurante(): void {
+  if (this.restauranteForm.valid) {
+    const nuevoRestaurante = this.restauranteForm.value;
+    nuevoRestaurante.horarioFuncionamiento = `${nuevoRestaurante.horaApertura} - ${nuevoRestaurante.horaCierre}`;
 
-      // Subir imagen a Cloudinary antes de crear el restaurante
-      if (this.opcionImagen === 'subir' && this.selectedFile) {
-        this.subirImagenYObtenerUrl(); // Subir imagen y obtener URL
-      } else if (this.opcionImagen === 'url' && this.restauranteForm.get('urlImagen')?.value) {
-        this.restauranteForm.get('imagenRestaurante')?.setValue(this.restauranteForm.get('urlImagen')?.value);
-        this.crearRestauranteEnBackend(nuevoRestaurante); // Crear restaurante con la URL de la imagen
-      } else {
-        Swal.fire('Error', 'Por favor seleccione una imagen o ingrese una URL.', 'error');
-      }
+    // Subir imagen a Cloudinary antes de crear el restaurante
+    if (this.opcionImagen === 'subir' && this.selectedFile) {
+      this.subirImagenYObtenerUrl().then((urlImagen: string) => {
+        nuevoRestaurante.imagenRestaurante = urlImagen;
+        this.crearRestauranteEnBackend(nuevoRestaurante);
+      }).catch((error) => {
+        Swal.fire('Error', 'No se pudo subir la imagen.', 'error');
+      });
+    } else if (this.opcionImagen === 'url' && this.restauranteForm.get('urlImagen')?.value) {
+      nuevoRestaurante.imagenRestaurante = this.restauranteForm.get('urlImagen')?.value;
+      this.crearRestauranteEnBackend(nuevoRestaurante); // Crear restaurante con la URL de la imagen
     } else {
-      Swal.fire('Error', 'Por favor complete el formulario correctamente.', 'error');
+      Swal.fire('Error', 'Por favor seleccione una imagen o ingrese una URL.', 'error');
     }
+  } else {
+    Swal.fire('Error', 'Por favor complete el formulario correctamente.', 'error');
   }
+}
 
-  crearRestauranteEnBackend(nuevoRestaurante: any): void {
-    this.restauranteService.crearRestaurante(nuevoRestaurante).subscribe(
-      (restauranteCreado: any) => {
-        this.restauranteCreado = restauranteCreado;
-        Swal.fire('Creado!', 'El restaurante ha sido creado exitosamente.', 'success');
-        this.restauranteForm.reset();
-        this.listarRestaurantes();
-      },
-      (error: any) => {
-        console.error('Error al crear restaurante', error);
-        Swal.fire('Error', 'Hubo un problema al crear el restaurante. Por favor, inténtelo de nuevo.', 'error');
-      }
-    );
-  }
+crearRestauranteEnBackend(nuevoRestaurante: any): void {
+  this.restauranteService.crearRestaurante(nuevoRestaurante).subscribe(
+    (restauranteCreado: any) => {
+      Swal.fire('Creado!', 'El restaurante ha sido creado exitosamente.', 'success');
+      this.restauranteForm.reset();
+      this.listarRestaurantes();
+    },
+    (error: any) => {
+      console.error('Error al crear restaurante', error);
+      Swal.fire('Error', 'Hubo un problema al crear el restaurante. Por favor, inténtelo de nuevo.', 'error');
+    }
+  );
+}
+
 
   cambiarOpcionImagen(opcion: string) {
     this.opcionImagen = opcion;
