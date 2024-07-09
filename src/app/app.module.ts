@@ -7,7 +7,7 @@ import { AngularFirestoreModule } from '@angular/fire/compat/firestore';
 import { environment } from '../environments/environment';
 import { UsersComponent } from './components/auth/users/users.component';
 import { AngularFireAuthModule } from '@angular/fire/compat/auth';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormsModule } from '@angular/forms';
 import { initializeApp } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { Auth } from '@angular/fire/auth';
@@ -18,20 +18,23 @@ import { AngularFireModule } from '@angular/fire/compat';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ToastrModule } from 'ngx-toastr';
 import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { PlatocartaComponent } from './components/platocarta/platocarta.component';
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
-import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { MatInputModule } from '@angular/material/input';
 import { SelectorComponent } from './components/roles/selector/selector.component';
 import { GestorComponent } from './components/roles/gestor/gestor.component';
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
-import {MatIconModule} from '@angular/material/icon';
+import { MatIconModule } from '@angular/material/icon';
 import { NgSelectModule } from '@ng-select/ng-select';
-import { ToastrService } from 'ngx-toastr';
 import { NgxPaginationModule } from 'ngx-pagination';
-
+import { ComidaVistaComponent } from './components/menu/comida-vista/comida-vista.component';
+import { CrearMenu } from './components/menu/crear-menu/crear-menu';
+import { ReservaComponent } from './components/menu/reserva/reserva.component';
+import { HistorialComponent } from './components/menu/historial/historial.component';
+import { VistaMenuPlatosComponent } from './components/vista-menu-platos/vista-menu-platos.component';
+import { CrearComidaComponent } from './components/menu/crear-comida/crear-comida.component';
+import { MenuComponent } from './components/menu/menu.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -41,6 +44,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
   ],
   credentialHelper: firebaseui.auth.CredentialHelper.NONE
 };
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -51,26 +55,32 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     GestorComponent,
     RestauranteComponent,
     SelectorComponent,
+    CrearComidaComponent,
+    ComidaVistaComponent,
+    MenuComponent,
+    ReservaComponent,
+    HistorialComponent,
+    VistaMenuPlatosComponent,
+    CrearMenu,
   ],
   imports: [
     BrowserModule,
-    FormsModule,    
+    FormsModule,
     AppRoutingModule,
-    FormsModule,    
+    ReactiveFormsModule,
+    HttpClientModule,
+    AngularFireModule.initializeApp(environment.firebase),
     AngularFirestoreModule,
     AngularFireAuthModule,
-    ReactiveFormsModule,
+    AngularFireDatabaseModule,
     FirebaseUIModule.forRoot(firebaseUiAuthConfig),
-    AngularFireModule.initializeApp(environment.firebase),
     BrowserAnimationsModule,
     ToastrModule.forRoot(),
-    HttpClientModule,
     MatFormFieldModule,
-    NgSelectModule,
-    AngularFireDatabaseModule,
     MatAutocompleteModule,
     MatInputModule,
     MatIconModule,
+    NgSelectModule,
     NgxPaginationModule,
   ],
   providers: [

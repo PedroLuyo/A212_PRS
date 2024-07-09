@@ -9,6 +9,11 @@ import { PlatocartaComponent } from './components/platocarta/platocarta.componen
 import { SelectorComponent } from './components/roles/selector/selector.component';
 import { RestauranteComponent } from './components/roles/restaurante/restaurante.component';
 import { GestorComponent } from './components/roles/gestor/gestor.component';
+import { VistaMenuPlatosComponent } from './components/vista-menu-platos/vista-menu-platos.component';
+import { ReservaComponent } from './components/menu/reserva/reserva.component';
+import { HistorialComponent } from './components/menu/historial/historial.component';
+import { CrearComidaComponent } from './components/menu/crear-comida/crear-comida.component';
+import { MenuComponent } from './components/menu/menu.component';
 
 
 const routes: Routes = [
@@ -20,7 +25,12 @@ const routes: Routes = [
   { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
-  { path: 'platos', component: PlatocartaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  { path: 'platos', component: VistaMenuPlatosComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+
+  { path: 'comida', component: CrearComidaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor' ] }},
+  { path: 'reserva', component: ReservaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['comensal' ] } },
+  { path: 'historial', component: HistorialComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] }  },
+  { path: 'menu', component: MenuComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
 ];
 
 @NgModule({
