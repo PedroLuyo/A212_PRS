@@ -175,17 +175,21 @@
     <h2>Detalles del Restaurante</h2>
   </div>
   <div class="card-body">
-    <p><strong>Nombre:</strong> {{ restauranteSeleccionado.nombre }}</p>
-    <p><strong>Dirección:</strong> {{ restauranteSeleccionado.direccion }}</p>
-    <p><strong>Teléfono:</strong> {{ restauranteSeleccionado.telefono }}</p>
-    <p><strong>Tipo de Cocina:</strong> {{ restauranteSeleccionado.tipoCocina }}</p>
-    <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
-    <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
-    <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
-    <!--<p><strong>ID del Gestor:</strong> {{ restauranteSeleccionado.docid }}</p>-->
-    <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
-      alt="Imagen del Restaurante" class="img-fluid">
+    <div class="row">
+      <div class="col-md-8">
+        <p><strong>Nombre:</strong> {{ restauranteSeleccionado.nombre }}</p>
+        <p><strong>Dirección:</strong> {{ restauranteSeleccionado.direccion }}</p>
+        <p><strong>Teléfono:</strong> {{ restauranteSeleccionado.telefono }}</p>
+        <p><strong>Tipo de Cocina:</strong> {{ restauranteSeleccionado.tipoCocina }}</p>
+        <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
+        <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
+        <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
+        <!--<p><strong>ID del Gestor:</strong> {{ restauranteSeleccionado.docid }}</p>-->
+      </div>
+      <div class="col-md-4">
+        <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
+          alt="Imagen del Restaurante" class="img-fluid">
+      </div>
+    </div>
   </div>
-</div>
-</div>
 </div>
