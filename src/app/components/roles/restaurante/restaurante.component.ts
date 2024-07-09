@@ -23,10 +23,6 @@ export class RestauranteComponent implements OnInit {
   p: number = 1; // Página actual
   imagenPreview: string | ArrayBuffer | null = null;
   opcionImagen: string = 'subir';
-  platosMenu: any[] = [];
-  platosCarta: any[] = [];
-  bebidas: any[] = [];
-  mostrarPresentacionRestaurante: boolean = false;
 
   constructor(
     private restauranteService: RestauranteService,
@@ -236,33 +232,6 @@ crearRestauranteEnBackend(nuevoRestaurante: any): void {
   verRestaurante(restaurante: any): void {
     this.restauranteSeleccionado = restaurante;
   }
-  agregarPlatoMenu() {
-    const plato = prompt('Ingrese el nombre del plato para el menú:');
-    if (plato) {
-      this.platosMenu.push({ nombre: plato, descripcion: 'Descripción del plato del menú' });
-    }
-  }
-  agregarPlatoCarta() {
-    const plato = prompt('Ingrese el nombre del plato para la carta:');
-    if (plato) {
-      this.platosCarta.push({ nombre: plato, descripcion: 'Descripción del plato a la carta' });
-    }
-  }
-  agregarBebida() {
-    const bebida = prompt('Ingrese el nombre de la bebida:');
-    if (bebida) {
-      this.bebidas.push({ nombre: bebida, descripcion: 'Descripción de la bebida' });
-    }
-  }
-
-mostrarPresentacion() {
-  this.mostrarPresentacionRestaurante = true;
-}
-
-cerrarPresentacion() {
-  this.mostrarPresentacionRestaurante = false;
-}
-
 
   exportCSVRestaurante(): void {
     let csvData = 'Nombre,Dirección,Teléfono,Tipo de Cocina,Capacidad,Horario,Estado,DocID\n';
