@@ -1,6 +1,8 @@
 <!-- Creditos: AngeloLaMadrid --> 
 
-
+```bash
+git clone -b wiki https://github.com/PedroLuyo/A212_PRS.git
+```
 
 # 🐳 Dockerización y Kubernetes
 
