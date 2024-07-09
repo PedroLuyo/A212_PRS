@@ -1,0 +1,113 @@
+# Frontend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      containers:
+      - name: frontend
+        image: angelolm/unificado
+        ports:
+        - containerPort: 4200
+        env:
+        - name: BACKEND_URL
+          value: "http://service-ms-platocarta"  # URL del servicio backend usando el nombre del servicio
+        - name: MENU_URL
+          value: "http://service-ms-menurestaurant"  # URL del servicio menu usando el nombre del servicio
+---
+# Frontend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-frontend
+spec:
+  selector:
+    app: frontend
+  ports:
+    - protocol: TCP
+      port: 4200
+      targetPort: 4200
+      nodePort: 30000
+  type: NodePort
+---
+# Backend Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-ms-platocarta
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: alexito03/ms-platocarta
+        ports:
+        - containerPort: 9095
+---
+# Backend Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-ms-platocarta
+spec:
+  selector:
+    app: backend
+  ports:
+    - protocol: TCP
+      name: service-ms-platocarta
+      port: 9095
+      targetPort: 9095
+      nodePort: 30001  # NodePort para el backend
+  type: NodePort
+---
+# Menu Deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-ms-menurestaurant
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: menu
+  template:
+    metadata:
+      labels:
+        app: menu
+    spec:
+      containers:
+      - name: menu
+        image: pedroluyo/ms-menurestaurant
+        ports:
+        - containerPort: 8086
+---
+# Menu Service
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-ms-menurestaurant
+spec:
+  selector:
+    app: menu
+  ports:
+    - protocol: TCP
+      port: 8086
+      targetPort: 8086
+      nodePort: 30002  # NodePort para el menu
+  type: NodePort
