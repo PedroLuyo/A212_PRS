@@ -112,7 +112,6 @@ async onSubmit() {
       .then(() => {
         console.log('Usuario registrado con éxito');
         this.toastr.success('Usuario registrado con éxito', 'Correcto');
-        this.router.navigate(['/main']);
       })
       .catch((error) => {
         console.log('Error al registrar el usuario', error);

@@ -263,8 +263,7 @@ export class UsersComponent implements OnInit {
           // Establecer el color de la letra
           doc.setTextColor(31, 30, 30); // Usando RGB
           // Calcular la posición para el número de página alineado a la esquina inferior derecha
-          const pageNumberText = `Página ${i}/${pageCount}`;
-        //const pageNumberText = `Página ${i}`;
+          const pageNumberText = `Página ${i}`;
           const pageSize = doc.internal.pageSize;
           const pageWidth = pageSize.getWidth();
           const pageHeight = pageSize.getHeight();

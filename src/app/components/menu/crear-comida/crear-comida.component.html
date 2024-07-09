@@ -1,0 +1,173 @@
+<div class="container mt-4">
+    <div class="row">
+        <!-- Nueva Comida -->
+        <div class="col-lg-4 mb-5" style="margin-left: -150px;">
+            <div class="card" [ngClass]="{'editing-card': editandoId !== null}">
+                <div class="card-body" style="background-color: rgb(253, 253, 253);">
+                    <h3 class="card-title">{{ editandoId !== null ? 'Editar Producto' : 'Nuevo Producto' }}</h3>
+                    <form (submit)="guardarEdicion()" #comidaForm="ngForm">
+                        <!-- Para el campo de Nombre -->
+                        <div class="form-group">
+                            <label for="nombre" class="lead">Nombre:</label>
+                            <input type="text" class="form-control" id="nombre" [(ngModel)]="nuevaComida.nombrec" name="nombre" required pattern="^[A-Za-z\s]+$" (keypress)="validarLetras($event)">
+                            <div *ngIf="comidaForm.controls['nombre']?.hasError('pattern')">
+                                Solo se permiten letras en el nombre.
+                            </div>
+                        </div>
+
+                        <!-- Para el campo de Categoría -->
+                        <div class="form-group">
+                            <label for="categoria" class="lead">Categoría:</label>
+                            <select class="form-control" id="categoria" [(ngModel)]="nuevaComida.categoria" name="categoria" required>
+                <option value="">Seleccionar</option>
+                <option value="Entrada">Entrada</option>
+                <option value="Fondo">Fondo</option>
+                <option value="Bebida">Bebida</option>
+                <option value="Postre">Postre</option>
+              </select>
+                        </div>
+
+                        <!-- Para el campo de Menú -->
+                        <div class="form-group">
+                            <label for="menu" class="lead">Menú:</label>
+                            <select class="form-control" id="menu" [(ngModel)]="nuevaComida.menuid" name="menu" required>
+                <option value="">Seleccionar</option>
+                <option *ngFor="let menu of menus" [value]="menu.menuid">{{ menu.nombrem }}</option>
+              </select>
+                        </div>
+
+                        <!-- Para Precio y Stock en la misma fila -->
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="precio" class="lead">Precio:</label>
+                                <input type="text" class="form-control" id="precio" [(ngModel)]="nuevaComida.precio" name="precio" (keypress)="validarNumeros($event)">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="stock" class="lead">Stock:</label>
+                                <input type="number" class="form-control" id="stock" [(ngModel)]="nuevaComida.stock" name="stock" min="1" (keypress)="validarNumeros($event)">
+                            </div>
+                        </div>
+
+                        <!-- Para el campo de Imagen -->
+                        <div class="form-group">
+                            <label for="image" class="lead">Imagen:</label>
+                            <input type="file" class="form-control" id="image" (change)="onFileSelected($event)" accept="image/*">
+                        </div>
+
+
+                        <div class="form-group d-flex justify-content-between">
+                            <!-- Botón Cancelar Edición -->
+                            <button type="button" class="btn btn-secondary mr-2" *ngIf="editandoId !== null" (click)="cancelarEdicion()">Cancelar</button>
+
+                            <!-- Botón Guardar Cambios / Crear Nueva -->
+                            <button type="submit" class="btn btn-primary">
+                {{ editandoId !== null ? 'Guardar cambios' : 'Crear nuevo' }}
+              </button>
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+        </div>
+        <!-- Listado de Comidas -->
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <h3 class="card-title mb-0">Listado de Productos - {{ filtroEstado === 'A' ? 'Disponibles' : 'Archivados' }}</h3>
+                        <button (click)="exportarAExcel()" class="btn btn-success">
+              <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
+            </button>
+                        <button (click)="exportarAPDF()" class="btn btn-danger">
+              <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
+            </button>
+                    </div>
+
+
+                    <div class="mb-3 d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <span class="badge badge-warning mr-4">Cantidad total de productos: {{ comidas.length }}</span>
+
+                            <label for="filtroEstado" style="margin-right: 10px;">Filtrar:</label>
+                            <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()" class="form-control mr-4">
+                <option value="A">Disponibles</option>
+                <option value="I">Archivados</option>
+              </select>
+                        </div>
+
+                        <div class="form-group mb-0">
+                            <label for="busqueda" class="sr-only">Buscar:</label>
+                            <input type="text" class="form-control" id="busqueda" [(ngModel)]="terminoBusqueda" (input)="buscarComidas()" placeholder="Buscar">
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+
+                        <table class="table table-bordered table-striped" *ngIf="comidas.length > 0 && !errorAlCargarComidas; else noComidas">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <!-- <th>ID</th> -->
+                                    <th>Imagen</th>
+                                    <th style="width: 170px">Nombre</th>
+                                    <th>Categoría</th>
+                                    <th style="width: 100px">Precio</th>
+                                    <th>Menu</th>
+                                    <th>Stock</th>
+                                    <!-- <th>Estado</th> -->
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let comida of comidas | paginate: { itemsPerPage: pagination.itemsPerPage, currentPage: pagination.currentPage }">
+                                    <!-- <td>{{ comida.menuid }}</td> -->
+                                    <!-- Dentro de tu tabla -->
+                                    <td style="width: 150px; height: 80px; overflow: hidden;">
+                                        <img [src]="comida.image" alt="Imagen de {{ comida.nombrec }}" class="img-fluid" style="max-width: 100%; max-height: 100%;">
+                                    </td>
+
+                                    <td>{{ comida.nombrec }}</td>
+                                    <td>{{ comida.categoria | slice:0:15 }}</td>
+                                    <td>S/ {{ comida.precio | number:'1.2-2' }}</td>
+                                    <td>{{ obtenerNombreMenu(comida.menuid) }}</td>
+                                    <td>
+                                        <span class="badge badge-success">{{ comida.stock }}</span>
+                                    </td>
+                                    <!-- <td>
+                    <span class="badge" [ngClass]="{'badge-success': comida.estado === 'A', 'badge-danger': comida.estado === 'I'}">
+                      {{ comida.estado === 'A' ? 'Activo' : 'Inactivo' }}
+                    </span>
+                  </td> -->
+
+                                    <td class="d-flex flex-column">
+                                        <button *ngIf="mostrarBoton(comida.estado) && filtroEstado === 'A'" class="btn btn-danger btn-sm mb-1" (click)="eliminarComida(comida.comidaid)">Archivar</button>
+                                        <button *ngIf="mostrarBoton(comida.estado) && filtroEstado === 'A'" class="btn btn-primary btn-sm mb-1" (click)="editarComida(comida.comidaid)">Editar</button>
+                                        <button *ngIf="mostrarBoton(comida.estado) && filtroEstado === 'I'" class="btn btn-success btn-sm" (click)="restaurarComida(comida.comidaid)">Restaurar</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <pagination-controls class="my-pagination" previousLabel="Anterior" nextLabel="Siguiente" *ngIf="comidas.length > 4" (pageChange)="pageChanged($event)">
+                        </pagination-controls>
+
+
+
+
+                        <ng-template #noComidas>
+                            <div class="alert alert-warning" role="alert" *ngIf="errorAlCargarComidas; else noData">
+                                Error al cargar las comidas. Intente nuevamente más tarde.
+                            </div>
+                            <ng-template #noData>
+                                <div class="alert alert-warning" role="alert">
+                                    No hay comidas por mostrar.
+                                </div>
+                            </ng-template>
+                        </ng-template>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

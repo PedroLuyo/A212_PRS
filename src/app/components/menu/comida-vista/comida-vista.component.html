@@ -1,0 +1,174 @@
+<aside class="container mt-2">
+  <div class="row">
+    <div class="col-lg-4 mb-4">
+      <div class="card">
+        <div class="card-body">
+          <h3 class="card-title">Seleccionar Menú</h3>
+          <select class="form-control" [(ngModel)]="nombreMenuSeleccionado" (change)="obtenerComidasPorMenu()">
+            <option value="">Seleccionar Menú</option>
+            <ng-container *ngFor="let menu of uniqueMenus">
+              <option [value]="menu">{{ menu }}</option>
+            </ng-container>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- Menú Items -->
+<div class="container mt-3">
+  <div class="row">
+    <div class="col-lg-3 p-0 d-flex align-items-stretch"
+      *ngFor="let categoria of ['Entrada', 'Fondo', 'Bebida', 'Postre']">
+      <div class="card w-100">
+        <div class="card-body d-flex flex-column pr-0 pl-0">
+          <h3 class="text-center flex-grow-0">{{ categoria }}</h3>
+          <div class="row mt-2 flex-grow-1 d-flex align-items-center" *ngIf="nombreMenuSeleccionado">
+            <div class="col">
+              <table class="table">
+                <tbody>
+                  <ng-container *ngFor="let comida of comidasPorCategoria[categoria]">
+                    <tr>
+                      <td>
+                        <div class="form-check d-flex justify-content-between align-items-center">
+                          <div>
+                            <input class="form-check-input" type="checkbox" [value]="comida.nombrecomida"
+                              [id]="'comida' + comida.nombrecomida" (change)="toggleComida(comida, $event)" />
+                            <label class="form-check-label" [for]="'comida' + comida.nombrecomida">
+                              {{ comida.nombrecomida }}
+                            </label>
+                          </div>
+                          <div>
+                            {{
+                            comida.precio
+                            | currency : "S/." : "symbol" : "1.2-2"
+                            }}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </ng-container>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Guardar Selección -->
+<div class="container mt-3">
+  <div class="row">
+    <div class="col-lg-3 mb-6">
+      <button class="btn btn-primary" (click)="guardarSeleccion()" [disabled]="validarSeleccionMenu()">
+        Guardar
+      </button>
+    </div>
+  </div>
+</div>
+
+<div class="container mt-3 text-center">
+  <p class="display-4">
+    Total: {{ calcularTotalPrecios() | currency : "S/." : "symbol" : "1.2-2" }}
+  </p>
+  <div *ngIf="this.pedidos.length != 0">
+    <button class="btn btn-success mb-3" (click)="confirmarPedido()">
+      Confirmar pedido
+    </button>
+  </div>
+</div>
+
+<div class="container mt-6">
+  <div class="row">
+    <div class="col-lg-6 col-md-6 col-sm-12 mb-4" *ngFor="let pedido of pedidos; let pedidoIndex = index">
+      <div class="card">
+        <div class="card-body d-flex flex-column flex-wrap">
+          <h3 class="card-title text-center mb-3">{{ pedido.pedidos }}</h3>
+          <div *ngFor="
+              let menuSeleccionado of pedido.menusSeleccionados;
+              let menuIndex = index
+            ">
+            <h5 class="text-center mb-3">
+              {{ menuSeleccionado.nombremenu }}
+            </h5>
+            <table class="table table-borderless">
+              <thead>
+                <tr>
+                  <th scope="col">Categoría</th>
+                  <th scope="col">Comida</th>
+                  <th scope="col">Precio</th>
+                  <th scope="col">Opciones</th>
+                </tr>
+              </thead>
+              <tbody *ngFor="let data of menuSeleccionado.data; let comidaIndex = index">
+                <tr>
+                  <td>
+                    <ng-container *ngIf="data.isEditing; else displayCategoria">
+                      <select class="form-control" [(ngModel)]="data.selectedCategoria"
+                        (ngModelChange)="obtenerComidasParaEditar(menuSeleccionado.nombremenu)">
+                        <option *ngFor="let categoria of ['Entrada', 'Fondo', 'Bebida', 'Postre']" [value]="categoria">
+                          {{ categoria }}</option>
+                      </select>
+
+                    </ng-container>
+                    <ng-template #displayCategoria>{{ data.categoria }}</ng-template>
+                  </td>
+
+                  <td>
+                    <ng-container *ngIf="data.isEditing; else displayComida">
+                      <select class="form-control" [(ngModel)]="data.selectedComida" (change)="actualizarPrecio(data)">
+                        <option *ngFor="let comida of comidaSelccionadaEdit[data.selectedCategoria]"
+                          [value]="comida.nombrecomida">{{ comida.nombrecomida }}</option>
+                      </select>
+                    </ng-container>
+                    <ng-template #displayComida>{{ data.nombrecomida }}</ng-template>
+                  </td>
+
+                  <td>
+                    {{ data.precio | currency : "S/." : "symbol": "1.2-2" }}
+                  </td>
+
+                  <td class="btn-group">
+                    <ng-container *ngIf="!data.isEditing; else displayOptions">
+                      <button class="btn btn-warning" (click)="
+                          habilitarEdicion(pedidoIndex, menuIndex, comidaIndex)
+                        ">
+                        <i class="bi bi-pencil"></i>
+                      </button>
+
+                      <button class="btn btn-danger" (click)="
+                          eliminarComida(
+                            pedido,
+                            menuSeleccionado.nombremenu,
+                            data.nombrecomida
+                          )
+                        ">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </ng-container>
+                    <ng-template #displayOptions>
+                      <button class="btn btn-success" *ngIf="data.isEditing" (click)="
+                          guardarComida(pedidoIndex, menuIndex, comidaIndex)
+                        ">
+                        <i class="bi bi-check"></i>
+                      </button>
+
+                      <button class="btn btn-danger" (click)="
+                      cancelarEdicion(pedidoIndex, menuIndex, comidaIndex)
+                    ">
+                        <i class="bi bi-x-circle-fill"></i>
+                      </button>
+                    </ng-template>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

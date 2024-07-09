@@ -1,0 +1,47 @@
+<h1 class="text-center">Historial de Reserva</h1>
+<div class="container">
+    <div class="card-body">
+        <div class="d-flex justify-content-end mb-3">
+            <button (click)="exportarAPDF()" class="btn btn-danger">
+        <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
+      </button>
+            <button (click)="exportarAExcel()" class="btn btn-success ms-2">
+        <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
+      </button>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>ID</th>
+                        <th>Nombre y Apellido</th>
+                        <th>Correo</th>
+                        <th>Hora Reserva</th>
+                        <th>Número de Personas</th>
+                        <th>Acciones</th>
+                        <!-- Add more headers as needed -->
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let reserva of reservas">
+                        <td>{{ reserva.id_reserva }}</td>
+                        <td>{{ reserva.nombre }}</td>
+                        <td>{{ reserva.correo }}</td>
+                        <td>{{ reserva.hora_reserva }}</td>
+                        <td>{{ reserva.num_personas }}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger me-2" (click)="cancelarReserva(reserva.id_reserva)">
+                Anular
+              </button>
+                            <button class="btn btn-sm btn-success" (click)="confirmarReserva(reserva.id_reserva)">
+                Confirmar
+              </button>
+                        </td>
+                        <!-- Add more columns as needed -->
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

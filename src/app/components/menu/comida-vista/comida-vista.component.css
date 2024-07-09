@@ -1,0 +1,38 @@
+
+.card {
+  max-width: 600px; /* Adjust the value as needed */
+  margin-left: 1rem; /* Agrega un margen a la izquierda */
+  margin-right: 1rem; /* Agrega un margen a la derecha */
+}
+
+.list-group-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.list-group-item .flex-grow-1 {
+  flex-grow: 1; /* Allow the text to expand */
+}
+
+.list-group-item .text-end {
+  text-align: right; /* Align price to the right */
+}
+
+.price {
+  text-align: right; /* Align text to the right */
+}
+
+.card-body {
+  /* Existing styles */
+  height: auto;
+}
+
+
+.card-container {
+  height: 300px; /* Establece una altura fija para las tarjetas */
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
