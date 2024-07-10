@@ -27,6 +27,8 @@ export class RestauranteComponent implements OnInit {
   platosCarta: any[] = [];
   bebidas: any[] = [];
   mostrarPresentacionRestaurante: boolean = false;
+  convertirHora: any;
+  estaAbierto: boolean = false;
 
   constructor(
     private restauranteService: RestauranteService,
@@ -263,6 +265,51 @@ cerrarPresentacion() {
   this.mostrarPresentacionRestaurante = false;
 }
 
+
+formatearHorario(horario: string, tipo: 'apertura' | 'cierre'): string {
+  const [apertura, cierre] = horario.split('-');
+  return tipo === 'apertura' ? apertura.trim() : cierre.trim();
+}
+
+convertirAMPM(hora24: string): string {
+  let [horas, minutos] = hora24.split(':');
+  const periodo = +horas >= 12 ? 'pm' : 'am';
+  horas = (+horas % 12 || 12).toString();
+  return `${horas}:${minutos} ${periodo}`;
+}
+
+verificarEstadoRestaurante() {
+  const horario = this.restauranteSeleccionado.horarioFuncionamiento;
+  const [apertura, cierre] = horario.split('-');
+
+  const horaActual = new Date().getHours();
+  const aperturaHora = +apertura.split(':')[0];
+  const cierreHora = +cierre.split(':')[0];
+
+  // Verificar si la hora actual está entre la hora de apertura y cierre del restaurante
+  this.estaAbierto = horaActual >= aperturaHora && horaActual < cierreHora && this.restauranteSeleccionado.estadoActivo;
+}
+
+
+ajustarHora(hora: number): string {
+  return hora < 10 ? `0${hora}` : `${hora}`;
+}
+
+ajustarMinutos(minutos: number): string {
+  return minutos < 10 ? `0${minutos}` : `${minutos}`;
+}
+
+estaDentroDelHorario(actual: string, apertura: string, cierre: string): boolean {
+  const [horaActual, minutoActual] = actual.split(':').map(Number);
+  const [horaApertura, minutoApertura] = apertura.split(':').map(Number);
+  const [horaCierre, minutoCierre] = cierre.split(':').map(Number);
+
+  const timeActual = horaActual * 60 + minutoActual;
+  const timeApertura = horaApertura * 60 + minutoApertura;
+  const timeCierre = horaCierre * 60 + minutoCierre;
+
+  return timeActual >= timeApertura && timeActual <= timeCierre;
+}
 
   exportCSVRestaurante(): void {
     let csvData = 'Nombre,Dirección,Teléfono,Tipo de Cocina,Capacidad,Horario,Estado,DocID\n';
