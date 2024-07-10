@@ -182,6 +182,7 @@ export class ProductosComponent implements OnInit {
       this.actualizarPlato();
     } else {
       this.crearPlato();
+      this.uploadImageToCloudinary(); // Añadir llamada aquí si quieres subir la imagen al crear el plato
 
     }
   }
