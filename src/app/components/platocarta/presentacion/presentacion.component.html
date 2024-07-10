@@ -1,0 +1,139 @@
+<!-- Listado de presentaciones -->
+<div class="container">
+    <!-- Botón para abrir cuadro de diálogo para agregar nuevo presentacion-->
+    <br>
+    <br>
+    <div class="row">
+        <div class="col-12">
+            <button class="btn btn-success float-right" data-toggle="modal" data-target="#agregarPresentacionModal"
+                (click)="nuevoPresentacion()">Agregar Presentacion</button>
+            <div class="dropdown float-right mr-2">
+                <button class="btn btn-primary dropdown-toggle" type="button" id="filtroDropdown" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
+                    <i class="fa fa-filter"></i> Filtrar
+                </button>
+                <div class="dropdown-menu" aria-labelledby="filtroDropdown">
+                    <button class="dropdown-item" (click)="filtrarPresentaciones('')"
+                        [class.active]="filtroPresentaciones === ''">Todos</button>
+                    <button class="dropdown-item" (click)="filtrarPresentaciones('/activo')"
+                        [class.active]="filtroPresentaciones === '/activo'">Activos</button>
+                    <button class="dropdown-item" (click)="filtrarPresentaciones('/inactivo')"
+                        [class.active]="filtroPresentaciones === '/inactivo'">Inactivos</button>
+                </div>
+                <br>
+                <br>
+                <br>
+            </div>
+            <h1>Listado de Presentacion</h1>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nro</th>
+                        <th>Tipo</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr *ngFor="let presentacion of presentaciones">
+                        <td><strong>{{ presentacion.id }}</strong></td>
+                        <td>{{ presentacion.tipo }}</td>
+                        <td class="text-center">
+                            <button class="btn"
+                                [ngClass]="{'btn-success': presentacion.estado === 'A', 'btn-danger': presentacion.estado === 'I'}"
+                                style="width: 100px; pointer-events: none;">
+                                {{ presentacion.estado === 'A' ? 'Activo' : 'Inactivo' }}
+                            </button>
+                        </td>
+                        <td class="text-center">
+                            <button class="btn btn-primary mr-1" (click)="editarPresentacion(presentacion)"
+                                data-target="#editarPresentacionModal" data-toggle="modal">Editar
+                            </button>
+                            <button class="btn"
+                                [ngClass]="{'btn-success': presentacion.estado === 'I', 'btn-danger': presentacion.estado === 'A'}"
+                                (click)="presentacion.estado === 'I' ? cambiarEstadoPresentacion(presentacion) : eliminarPresentacion(presentacion)"
+                                style="width: 100px;">
+                                {{ presentacion.estado === 'I' ? 'Activar' : 'Eliminar' }}
+                            </button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- Cuadro de diálogo para agregar nuevo presentacion -->
+        <div class="modal fade" id="agregarPresentacionModal" tabindex="-1" role="dialog"
+            aria-labelledby="agregarPresentacionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="agregarPresentacionModalLabel">{{ modoEdicion ? 'Editar' : 'Agregar'
+                            }} Presentacion</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            (click)="cerrarModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formulario para agregar presentacion-->
+                        <form (ngSubmit)="guardarPresentacion()" #presentacionForm="ngForm">
+                            <div class="form-group">
+                                <label for="tipo">tipo(s):</label>
+                                <input type="text" class="form-control" id="tipo" [(ngModel)]="presentacion.tipo"
+                                    name="tipo" required>
+                                <div *ngIf="presentacionForm.controls['tipo'].invalid && presentacionForm.controls['tipo'].touched"
+                                    class="text-danger">Campo requerido</div>
+                            </div>
+                            <div class="form-group">
+                                <label for="estado">Estado:</label>
+                                <select class="form-control" id="estado" [(ngModel)]="presentacion.estado" name="estado"
+                                    required disabled>
+                                    <option value="A">Activo</option>
+                                    <option value="I">Inactivo</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar'
+                                }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cuadro de diálogo para editar presentacion -->
+        <div class="modal fade" id="editarPresentacionModal" role="dialog"
+            aria-labelledby="editarPresentacionModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editarPresentacionModalLabel">Editar Presentacion</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                            (click)="cerrarModal()">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Formulario para editar presentacion -->
+                        <form (ngSubmit)="guardarPresentacion()" #presentacionForm="ngForm">
+                            <div class="form-group">
+                                <label for="tipo">tipo:</label>
+                                <input type="text" class="form-control" id="tipo" [(ngModel)]="presentacion.tipo"
+                                    name="tipo" required>
+                                <div *ngIf="presentacionForm.controls['tipo'].invalid && presentacionForm.controls['tipo'].touched"
+                                    class="text-danger">Campo requerido</div>
+                            </div>
+                            <div class="form-group">
+                                <div *ngIf="presentacionForm.controls['estado'].invalid && presentacionForm.controls['estado'].touched"
+                                    class="text-danger">Campo requerido</div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar'
+                                }}</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

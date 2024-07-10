@@ -14,6 +14,9 @@ import { ReservaComponent } from './components/menu/reserva/reserva.component';
 import { HistorialComponent } from './components/menu/historial/historial.component';
 import { CrearComidaComponent } from './components/menu/crear-comida/crear-comida.component';
 import { MenuComponent } from './components/menu/menu.component';
+import { ProductosComponent } from './components/platocarta/productos/productos.component';
+import { CategoriaComponent } from './components/platocarta/categoria/categoria.component';
+import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
 
 
 const routes: Routes = [
@@ -31,6 +34,15 @@ const routes: Routes = [
   { path: 'reserva', component: ReservaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['comensal' ] } },
   { path: 'historial', component: HistorialComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] }  },
   { path: 'menu', component: MenuComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
+
+
+  {path: 'productos' , component: ProductosComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  {path: 'categorias' , component: CategoriaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  {path: 'presentaciones' , component: PresentacionComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
+  {path: 'reservas' , component: PresentacionComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } }
+
+
+
 ];
 
 @NgModule({

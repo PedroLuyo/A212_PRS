@@ -35,6 +35,10 @@ import { HistorialComponent } from './components/menu/historial/historial.compon
 import { VistaMenuPlatosComponent } from './components/vista-menu-platos/vista-menu-platos.component';
 import { CrearComidaComponent } from './components/menu/crear-comida/crear-comida.component';
 import { MenuComponent } from './components/menu/menu.component';
+import { ProductosComponent } from './components/platocarta/productos/productos.component';
+import { ReservasComponent } from './components/platocarta/reservas/reservas.component';
+import { CategoriaComponent } from './components/platocarta/categoria/categoria.component';
+import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -62,6 +66,10 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     HistorialComponent,
     VistaMenuPlatosComponent,
     CrearMenu,
+    ProductosComponent,
+    ReservasComponent,
+    CategoriaComponent,
+    PresentacionComponent,
   ],
   imports: [
     BrowserModule,
