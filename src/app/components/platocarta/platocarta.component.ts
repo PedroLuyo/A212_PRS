@@ -10,7 +10,7 @@ declare var $: any;
 })
 export class PlatocartaComponent {
 
-  selectedComponent: string = 'presentacion'; // Inicia con el componente 'presentacion' visible
+  selectedComponent: string = 'productos'; // Inicia con el componente 'productos' visible
 
   showComponent(component: string): void {
     this.selectedComponent = component;
