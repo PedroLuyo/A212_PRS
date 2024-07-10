@@ -1,8 +1,7 @@
-# Frontend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-frontend
+  name: frontend-deployment
 spec:
   replicas: 1
   selector:
@@ -15,99 +14,155 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: angelolm/unificado
+        image: angelolm/unificado:latest
         ports:
         - containerPort: 4200
-        env:
-        - name: BACKEND_URL
-          value: "http://service-ms-platocarta"  # URL del servicio backend usando el nombre del servicio
-        - name: MENU_URL
-          value: "http://service-ms-menurestaurant"  # URL del servicio menu usando el nombre del servicio
+
 ---
-# Frontend Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-frontend
+  name: frontend-service
 spec:
+  type: LoadBalancer
   selector:
     app: frontend
   ports:
-    - protocol: TCP
-      port: 4200
-      targetPort: 4200
-      nodePort: 30000
-  type: NodePort
+  - protocol: TCP
+    port: 80  
+    targetPort: 4200 # El puerto externo sigue siendo 80
+
 ---
-# Backend Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-ms-platocarta
+  name: ms-menurestaurant-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: ms-menurestaurant
   template:
     metadata:
       labels:
-        app: backend
+        app: ms-menurestaurant
     spec:
       containers:
-      - name: backend
-        image: alexito03/ms-platocarta
+      - name: ms-menurestaurant
+        image: pedroluyo/ms-menurestaurant:latest
+        ports:
+        - containerPort: 8086
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-menurestaurant-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ms-menurestaurant
+  ports:
+  - protocol: TCP
+    port: 8086
+    targetPort: 8086 # El puerto externo sigue siendo 80
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-letterplate-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-letterplate
+  template:
+    metadata:
+      labels:
+        app: ms-letterplate
+    spec:
+      containers:
+      - name: ms-letterplate
+        image: alexito03/ms-letterplate:latest
         ports:
         - containerPort: 9095
 ---
-# Backend Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-ms-platocarta
+  name: ms-letterplate-service
 spec:
+  type: LoadBalancer
   selector:
-    app: backend
+    app: ms-letterplate
   ports:
-    - protocol: TCP
-      name: service-ms-platocarta
-      port: 9095
-      targetPort: 9095
-      nodePort: 30001  # NodePort para el backend
-  type: NodePort
+  - protocol: TCP
+    port: 9095  # Puerto externo del servicio
+    targetPort: 9095  # Puerto del contenedor
 ---
-# Menu Deployment
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: deployment-ms-menurestaurant
+  name: ms-restaurant
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: menu
+      app: ms-restaurant
   template:
     metadata:
       labels:
-        app: menu
+        app: ms-restaurant
     spec:
       containers:
-      - name: menu
-        image: pedroluyo/ms-menurestaurant
+      - name: ms-restaurant
+        image: erickportuguez/ms-restaurant:latest
         ports:
-        - containerPort: 8086
+        - containerPort: 8090
 ---
-# Menu Service
 apiVersion: v1
 kind: Service
 metadata:
-  name: service-ms-menurestaurant
+  name: ms-restaurant-service
 spec:
+  type: LoadBalancer
   selector:
-    app: menu
+    app: ms-restaurant
   ports:
-    - protocol: TCP
-      port: 8086
-      targetPort: 8086
-      nodePort: 30002  # NodePort para el menu
-  type: NodePort
+  - protocol: TCP
+    port: 8090
+    targetPort: 8090
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-menu
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ms-menu
+  template:
+    metadata:
+      labels:
+        app: ms-menu
+    spec:
+      containers:
+      - name: ms-menu
+        image: naomicama/ms-menu:latest
+        ports:
+        - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: ms-menu-service
+spec:
+  type: LoadBalancer
+  selector:
+    app: ms-menu
+  ports:
+  - protocol: TCP
+    port: 8080
+    targetPort: 8080
