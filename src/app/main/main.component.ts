@@ -23,41 +23,70 @@ export class MainComponent implements OnInit {
   searchResults: any[] = [];
   showResultBox: boolean = false;
   limitedSearchResults: any[] = []
-
+  currentCartaPage: number = 1;
+  currentMenuPage: number = 1;
+  pageSize: number = 8;
+  paginatedPlatosCarta: any[] = [];
+  paginatedPlatosMenu: any[] = [];
+  totalPagesCarta: number = 1;
+  totalPagesMenu: number = 1;
   searchTerm: string = '';
 
   constructor(private authService: AuthService, private restauranteMenuService: RestauranteMenuService) { }
 
   async ngOnInit(): Promise<void> {
     this.updatePage();
+    this.initCarousel();
 
-    
     this.restauranteMenuService.getCartas().subscribe((platos: any[]) => {
       this.platoscarta = platos.filter((plato: { estado: string }) => plato.estado === 'A');
-      console.log('Listado de platos carta',this.platoscarta);
+      this.updatePaginatedPlatosCarta();
     });
 
     this.restauranteMenuService.getMenus().subscribe((platos: any[]) => {
       this.platosmenu = platos.filter((plato: { estado: string }) => plato.estado === 'A');
-      console.log('Listado de platos menu',this.platosmenu);
+      this.updatePaginatedPlatosMenu();
     });
-    
-
 
     this.restauranteMenuService.getPlatos().subscribe((platos: any[]) => {
-      this.limitedSearchResults = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+      this.allPlatos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
     });
+  }
 
-    this.initCarousel();
+  onCartaPageChange(page: number): void {
+    if (page < 1 || page > this.totalPagesCarta) return;
+    this.currentCartaPage = page;
+    this.updatePaginatedPlatosCarta();
+  }
+
+  onMenuPageChange(page: number): void {
+    if (page < 1 || page > this.totalPagesMenu) return;
+    this.currentMenuPage = page;
+    this.updatePaginatedPlatosMenu();
+  }
+
+  updatePaginatedPlatosCarta(): void {
+    const start = (this.currentCartaPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedPlatosCarta = this.platoscarta.slice(start, end);
+    this.totalPagesCarta = Math.ceil(this.platoscarta.length / this.pageSize);
+  }
+
+  updatePaginatedPlatosMenu(): void {
+    const start = (this.currentMenuPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedPlatosMenu = this.platosmenu.slice(start, end);
+    this.totalPagesMenu = Math.ceil(this.platosmenu.length / this.pageSize);
+  }
+
+  getPaginationArray(totalPages: number): number[] {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
 
   searchPlatos(): void {
     this.searchResults = this.allPlatos.filter(plato => plato.nombre.toLowerCase().includes(this.searchTerm.toLowerCase()));
-    this.limitedSearchResults = this.searchResults.slice(0, 5); 
-    this.showResultBox = true;
-    if (this.searchTerm.trim() === '' || this.searchResults.length === 0) {
-      this.showResultBox = false;
-    }
+    this.limitedSearchResults = this.searchResults.slice(0, 5);
+    this.showResultBox = this.searchTerm.trim() !== '' && this.searchResults.length > 0;
   }
 
   getPrecioTachado(precio: number): number {
@@ -89,11 +118,7 @@ export class MainComponent implements OnInit {
     let heroCarouselItems = select('#heroCarousel .carousel-item', true) as HTMLElement[];
 
     heroCarouselItems.forEach((item: HTMLElement, index: number) => {
-      if (index === 0) {
-        heroCarouselIndicators.innerHTML += `<li data-bs-target='#heroCarousel' data-bs-slide-to='${index}' class='active'></li>`;
-      } else {
-        heroCarouselIndicators.innerHTML += `<li data-bs-target='#heroCarousel' data-bs-slide-to='${index}'></li>`;
-      }
+      heroCarouselIndicators.innerHTML += `<li data-bs-target='#heroCarousel' data-bs-slide-to='${index}' class='${index === 0 ? 'active' : ''}'></li>`;
     });
   }
 
@@ -103,7 +128,7 @@ export class MainComponent implements OnInit {
       unit: "mm",
       format: "a4"
     });
-  
+
     const img = new Image();
     img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = async () => {
@@ -113,20 +138,20 @@ export class MainComponent implements OnInit {
       const logoHeight = img.height * (logoWidth / img.width);
       const logoX = (pageWidth - logoWidth) / 2;
       doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
-  
+
       const fecha = new Date().toLocaleDateString();
-  
+
       doc.setFont('courier', 'bold');
       doc.setFontSize(20);
       const titulo = 'Reporte de Platos';
       const tituloY = logoHeight + 20; // Espacio después del logo
       doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
-  
+
       // Añadir fecha a la derecha del título
       doc.setFontSize(12); // Tamaño de fuente para la fecha
       const fechaX = pageWidth - 14; // Margen derecho
       doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
-  
+
       // Obtener los platos y preparar las filas para el reporte
       const platos = await this.restauranteMenuService.getPlatos().toPromise();
       const head = [['Nombre', 'Descripción', 'Precio']];
@@ -136,7 +161,7 @@ export class MainComponent implements OnInit {
           plato.descripcion,
           plato.precio
         ]);
-  
+
       (doc as any).autoTable({
         head: head,
         body: data,
@@ -160,9 +185,8 @@ export class MainComponent implements OnInit {
           fillColor: [235, 235, 235]
         }
       });
-  
+
       doc.save(`reporte-platos-${fecha}.pdf`);
     };
   }
-  
 }
