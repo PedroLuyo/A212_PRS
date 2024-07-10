@@ -17,7 +17,7 @@ export class RestauranteService {
     return request.pipe(
       catchError((error: any) => {
         console.error('Error en la primera API', error);
-        Swal.fire('Error', 'Hubo un problema al comunicarse con la primera API. Intentando con la segunda API.', 'warning');
+        //Swal.fire('Error', 'Hubo un problema al comunicarse con la primera API. Intentando con la segunda API.', 'warning');
         return throwError(error);
       })
     );
