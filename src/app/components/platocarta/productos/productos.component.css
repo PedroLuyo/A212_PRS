@@ -1,0 +1,160 @@
+.container-fluid {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+.col-md-5 {
+    padding: 0 15px;
+}
+
+.col-md-7 {
+    padding: 0 15px;
+}
+
+.table-responsive {
+    margin-top: 20px;
+}
+
+.table {
+    width: 100%;
+    margin-bottom: 20px;
+    table-layout: fixed;
+}
+
+.table th, .table td {
+    word-wrap: break-word;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.table th {
+    text-align: center;
+}
+
+
+
+
+
+
+
+
+
+/* comida.component.css */
+.container {
+    max-width: 2050px;
+  }
+  
+  .mt-3 {
+    margin-top: 1.5rem;
+  }
+  
+  .table th, .table td {
+    text-align: center;
+  }
+  
+  .btn {
+    margin-right: 5px;
+  }
+  
+  /* Estilos adicionales */
+  h3 {
+    color: #007bff; /* Azul brillante */
+  }
+  
+  .btn-primary {
+    background-color: #28a745; /* Verde */
+    border-color: #28a745;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545; /* Rojo */
+    border-color: #dc3545;
+  }
+  
+  .btn-success {
+    background-color: #17a2b8; /* Cyan */
+    border-color: #17a2b8;
+  }
+  
+  .badge-success {
+    background-color: #28a745; /* Verde */
+    border-color: #28a745;
+  }
+  
+  .badge-danger {
+    background-color: #dc3545; /* Rojo */
+  }
+
+  .editing-card {
+    box-shadow: 0 0 8px rgba(50, 205, 50, 0.8); /* Verde inicial */
+    transition: box-shadow 0.3s ease, transform 0.3s ease; /* Animación suave */
+    animation: jumpAndFade 0.6s ease forwards;
+
+  }
+  
+  .editing-card.active {
+    animation: jumpAndFade 0.6s ease forwards;
+  }
+  
+  @keyframes jumpAndFade {
+    0% {
+      transform: translateY(0);
+      box-shadow: 0 0 8px rgba(50, 205, 50, 0.8); /* Verde */
+    }
+    50% {
+      transform: translateY(-5px);
+    }
+    100% {
+      transform: translateY(0);
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.2); /* Negro */
+    }
+  }
+  
+  
+
+/* Estilos para los cards */
+.formulario-card, .listado-card {
+    border: 1px solid #dee2e6; /* Color del borde */
+    border-radius: 8px; /* Radio de borde */
+    padding: 20px; /* Espaciado interno */
+    margin-bottom: 20px; /* Espaciado inferior */
+    transition: box-shadow 0.3s ease; /* Transición suave de la sombra */
+
+    /* Ajustes adicionales */
+    background-color: #fff; /* Fondo blanco */
+ 
+}
+
+::ng-deep .ng-select {
+    border: 1px solid #ced4da; /* Borde del ng-select */
+    border-radius: 4px; /* Radio de borde */
+}
+
+/* Estilos CSS para ng-select */
+::ng-deep .ng-dropdown-panel {
+    
+    background-color: #ffffff; /* Color de fondo del panel desplegable */
+    border: 1px solid #ccc; /* Borde del panel desplegable */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Sombra del panel desplegable */
+}
+
+::ng-deep .ng-option {
+    padding: 8px 12px; /* Ajuste de padding para las opciones */
+}
+
+::ng-deep .ng-option.ng-option-marked {
+    background-color: #f0f0f0; /* Color de fondo de la opción marcada */
+}
+
+::ng-deep .ng-option.ng-option-selected {
+    background-color: #e0e0e0; /* Color de fondo de la opción seleccionada */
+}
+
+::ng-deep .ng-option.ng-option-highlighted {
+    background-color: #d0d0d0; /* Color de fondo de la opción resaltada */
+}
+
+  
+

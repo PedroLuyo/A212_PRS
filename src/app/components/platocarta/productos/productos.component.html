@@ -1,308 +1,177 @@
-<div class="container">
-    <br>
-    <br>
+<div class="container  mt-4">
     <div class="row">
-        <div class="col-12">
-            <button class="btn btn-success float-right" data-toggle="modal" data-target="#agregarPlatoModal"
-                (click)="nuevoPlato()">Agregar Plato</button>
-            <div class="dropdown float-right mr-2">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="filtroDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-filter"></i> Filtrar
-                </button>
-                <div class="dropdown-menu" aria-labelledby="filtroDropdown">
-                    <button class="dropdown-item" (click)="filtrarPlatos('')"
-                        [class.active]="filtroPlatos === ''">Todos</button>
-                    <button class="dropdown-item" (click)="filtrarPlatos('/activo')"
-                        [class.active]="filtroPlatos === '/activo'">Activos</button>
-                    <button class="dropdown-item" (click)="filtrarPlatos('/inactivo')"
-                        [class.active]="filtroPlatos === '/inactivo'">Inactivos</button>
+
+
+
+        <!-- Columna del Formulario -->
+        <div class="col-md-3 formulario-card">
+            <h3>{{ modoEdicion ? 'Editar Plato' : 'Agregar Plato' }}</h3>
+            <form (ngSubmit)="guardarPlato()" #platoForm="ngForm">
+                <div class="form-group">
+                    <label for="nombre">Nombre(s):</label>
+                    <input type="text" class="form-control" id="nombre" [(ngModel)]="plato.nombre" name="nombre"
+                        required>
+                    <div *ngIf="platoForm.controls['nombre'].invalid && platoForm.controls['nombre'].touched"
+                        class="text-danger">Campo requerido</div>
                 </div>
-                <br>
-                <br>
-                <br>
-            </div>
-            <h1>Listado de Platos</h1>
-        </div>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Nro</th>
-                        <th>Imagen</th>
-                        <th>Nombre</th>
-                        <th>Descripción</th>
-                        <th>Precio</th>
-                        <th>Categoría</th>
-                        <th>Presentación</th>
-                        
-                        <th>Stock</th>
-                        <th class="text-center">Estado</th>
-                        <th class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr *ngFor="let plato of platos">
-                        <td><strong>{{ plato.id}}</strong></td>
-                        <td>
-                            <img [src]="plato.image" alt="Imagen del plato" style="width:80px; height:auto">
-                        </td>
-                        <td>{{ plato.nombre }}</td>
-                        <td>{{ plato.descripcion }}</td>
-                        <td>S/ {{ plato.precio.toFixed(2) }}</td>
-                        <td>{{ getNombreCategoria(plato.id_categoria) }}</td>
-                        <td>{{ getTipoPresentacion(plato.id_presentacion) }}</td>
-                        <td>{{ plato.stock }}</td>
-                        <td class="text-center">
-                            <button class="btn"
-                                [ngClass]="{'btn-success': plato.estado === 'A', 'btn-danger': plato.estado === 'I'}"
-                                style="width: 100px; pointer-events: none;">
-                                {{ plato.estado === 'A' ? 'Activo' : 'Inactivo' }}
-                            </button>
-                        </td>
-                        <td class="text-center">
-                            <button class="btn btn-primary mr-1" (click)="editarPlato(plato)"
-                                data-target="#editarPlatoModal" data-toggle="modal">Editar</button>
-                            <button class="btn"
-                                [ngClass]="{'btn-success': plato.estado === 'I', 'btn-danger': plato.estado === 'A'}"
-                                (click)="plato.estado === 'I' ? cambiarEstadoPlato(plato) : eliminarPlato(plato)"
-                                style="width: 100px;">
-                                {{ plato.estado === 'I' ? 'Activar' : 'Eliminar' }}
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <input type="text" class="form-control" id="descripcion" [(ngModel)]="plato.descripcion"
+                        name="descripcion" required>
+                    <div *ngIf="platoForm.controls['descripcion'].invalid && platoForm.controls['descripcion'].touched"
+                        class="text-danger">Campo requerido</div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="precio">Precio:</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">S/</span>
+                            </div>
+                            <input type="number" class="form-control" id="precio" [(ngModel)]="plato.precio"
+                                name="precio" required min="1">
+                        </div>
+                        <div *ngIf="platoForm.controls['precio'].invalid && platoForm.controls['precio'].touched"
+                            class="text-danger">Campo requerido</div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="stock">Stock:</label>
+                        <input type="number" class="form-control" id="stock" [(ngModel)]="plato.stock" name="stock"
+                            required min="1">
+                        <div *ngIf="platoForm.controls['stock'].invalid && platoForm.controls['stock'].touched"
+                            class="text-danger">Campo requerido</div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-6">
+                        <label for="id_categoria">Categoría:</label>
+                        <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
+                            [placeholder]="plato.id_categoria ? '' : 'Selecciona una categoría'"
+                            [(ngModel)]="plato.id_categoria" name="id_categoria" required>
+                        </ng-select>
+                        <div *ngIf="platoForm.controls['id_categoria'].invalid && platoForm.controls['id_categoria'].touched"
+                            class="text-danger">Campo requerido
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6">
+                        <label for="id_presentacion">Presentación:</label>
+                        <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
+                            [placeholder]="plato.id_presentacion ? '' : 'Selecciona una presentación'"
+                            [(ngModel)]="plato.id_presentacion" name="id_presentacion" required>
+                        </ng-select>
+                        <div *ngIf="platoForm.controls['id_presentacion'].invalid && platoForm.controls['id_presentacion'].touched"
+                            class="text-danger">Campo requerido
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="imagen">Imagen:</label>
+                    <input type="file" class="form-control-file" id="image" (change)="onFileSelected($event)" accept="image/*">
+                </div>
+                
+                
+                
+                
+                <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar' }}</button>
+                <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion"
+                    (click)="cancelarEdicion()">Cancelar</button>
+            </form>
         </div>
 
-        <!-- Cuadro de diálogo para agregar nuevo plato -->
-        <div class="modal fade" id="agregarPlatoModal" tabindex="-1" role="dialog"
-            aria-labelledby="agregarPlatoModalLabel" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document" style="margin-top: 6%;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="agregarPlatoModalLabel">{{ modoEdicion ? 'Editar' : 'Agregar' }}
-                            Plato</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                            (click)="cerrarModal()">
-                            <span aria-hidden="true">&times;</span>
+
+
+
+        <!-- Columna del Listado -->
+        <div class="col-md-9 listado-card">
+            <div class="card-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="card-title mb-0" style="padding-bottom: 30px;">
+                        Listado de Productos - {{ filtroEstado === 'A' ? 'Disponibles' : 'Archivados' }}
+                    </h3>
+
+                    <!-- Botones de exportar a Excel y PDF -->
+                    <div class="d-flex">
+                        <button (click)="exportarAExcel()" class="btn btn-success ml-3">
+                            <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
+                        </button>
+                        <button (click)="exportarAPDF()" class="btn btn-danger ml-2">
+                            <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
                         </button>
                     </div>
-                    <div class="modal-body">
-                        <form (ngSubmit)="guardarPlato()" #platoForm="ngForm">
-                            <div class="row">
-                                <div class="col-6">
-                                    <!-- Primera columna del formulario -->
-                                    <div class="form-group">
-                                        <label for="nombre">Nombre(s):</label>
-                                        <input type="text" class="form-control" id="nombre" [(ngModel)]="plato.nombre"
-                                            name="nombre" required>
-                                        <div *ngIf="platoForm.controls['nombre'].invalid && platoForm.controls['nombre'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="descripcion">Descripción:</label>
-                                        <input type="text" class="form-control" id="descripcion"
-                                            [(ngModel)]="plato.descripcion" name="descripcion" required>
-                                        <div *ngIf="platoForm.controls['descripcion'].invalid && platoForm.controls['descripcion'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="precio">Precio:</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">S/</span>
-                                            </div>
-                                            <input type="number" class="form-control" id="precio" [(ngModel)]="plato.precio" name="precio" required min="1">
-                                            <div *ngIf="platoForm.controls['precio'].invalid && platoForm.controls['precio'].touched"
-                                                class="text-danger">Campo requerido</div>
-                                        </div>
-                                    </div>
-                                    
-                                    
-                                    <div class="form-group">
-                                        <label for="imagen">URL de la imagen:</label>
-                                        <input type="text" class="form-control" id="imagen" [(ngModel)]="plato.image" name="imagen" required>
-                                        <div *ngIf="platoForm.controls['imagen'].invalid && platoForm.controls['imagen'].touched" class="text-danger">Campo requerido</div>
-                                    </div>
-                                    <!-- Otros campos de la primera columna ... -->
-                                </div>
-                                <div class="col-6">
-                                    <!-- Segunda columna del formulario -->
-
-
-
-
-
-                                    <div class="form-group">
-                                        <label for="id_categoria">Categoría:</label>
-                                        <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
-                                            placeholder="Selecciona una categoría" [(ngModel)]="plato.id_categoria"
-                                            name="id_categoria" required
-                                            style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
-                                        </ng-select>
-                                        <div *ngIf="platoForm.controls['id_categoria'].invalid && platoForm.controls['id_categoria'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-
-
-
-
-
-                                    <div class="form-group">
-                                        <label for="id_presentacion">Presentación:</label>
-                                        <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
-                                            placeholder="Selecciona una presentación"
-                                            [(ngModel)]="plato.id_presentacion" name="id_presentacion" required
-                                            style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
-                                        </ng-select>
-
-                                        <div *ngIf="platoForm.controls['id_presentacion'].invalid && platoForm.controls['id_presentacion'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-
-
-
-
-
-
-
-
-
-                                    <div class="form-group">
-                                        <label for="stock">Stock:</label>
-                                        <input type="number" class="form-control" id="stock" [(ngModel)]="plato.stock"
-                                            name="stock" required min="1">
-                                        <div *ngIf="platoForm.controls['stock'].invalid && platoForm.controls['stock'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        <label for="estado">Estado:</label>
-                                        <select class="form-control" id="estado" [(ngModel)]="plato.estado"
-                                            name="estado" required disabled>
-                                            <option value="A">Activo</option>
-                                            <option value="I">Inactivo</option>
-                                        </select>
-                                    </div>
-                                    <!-- Otros campos de la segunda columna ... -->
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar'
-                                }}</button>
-                        </form>
-                    </div>
                 </div>
             </div>
-        </div>
+            <!-- Filtrado y búsqueda -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <span class="badge badge-warning mr-3">Cantidad total de productos: {{ totalidad }}</span>
 
-        <!-- Cuadro de diálogo para editar plato -->
-        <div class="modal fade" id="editarPlatoModal" role="dialog" aria-labelledby="editarPlatoModalLabel"
-            aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document" style="margin-top: 6%;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="editarPlatoModalLabel">Editar Plato</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"
-                            (click)="cerrarModal()">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                    <div class="modal-body">
-                        <form (ngSubmit)="guardarPlato()" #platoForm="ngForm">
-                            <div class="row">
-                                <div class="col-6">
-                                    <!-- Primera columna del formulario -->
-                                    <div class="form-group">
-                                        <label for="nombre">Nombre(s):</label>
-                                        <input type="text" class="form-control" id="nombre" [(ngModel)]="plato.nombre"
-                                            name="nombre" required>
-                                        <div *ngIf="platoForm.controls['nombre'].invalid && platoForm.controls['nombre'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="descripcion">Descripción:</label>
-                                        <input type="text" class="form-control" id="descripcion"
-                                            [(ngModel)]="plato.descripcion" name="descripcion" required>
-                                        <div *ngIf="platoForm.controls['descripcion'].invalid && platoForm.controls['descripcion'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="precio">Precio:</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">S/</span>
-                                            </div>
-                                            <input type="number" class="form-control" id="precio" [(ngModel)]="plato.precio" name="precio" required min="1">
-                                            <div *ngIf="platoForm.controls['precio'].invalid && platoForm.controls['precio'].touched"
-                                                class="text-danger">Campo requerido</div>
-                                        </div>
-                                    </div>
-                                    
-                                    <!-- Otros campos de la primera columna ... -->
-                                </div>
-                                <div class="col-6">
-                                    <!-- Segunda columna del formulario -->
+                <span style="margin-right: 10px;">Filtrar por:</span>
+                <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()"
+                    class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
+                    <option value="A">Disponibles</option>
+                    <option value="I">Archivados</option>
+                </select>
 
-
-<!-- Modifica el ng-select para categoría -->
-<div class="form-group">
-    <label for="categoria">Categoría:</label>
-    <ng-select [items]="categorias" bindLabel="nombre" bindValue="id"
-               placeholder="Selecciona una categoría" [(ngModel)]="plato.id_categoria"
-               (ngModelChange)="onCategoriaChange($event)" name="categoria" required
-               style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
-    </ng-select>
-    <div *ngIf="platoForm.controls['id_categoria'].invalid && platoForm.controls['id_categoria'].touched"
-         class="text-danger">Campo requerido</div>
-  </div>
-  
-  <!-- Modifica el ng-select para presentación -->
-  <div class="form-group">
-    <label for="presentacion">Presentación:</label>
-    <ng-select [items]="presentaciones" bindLabel="tipo" bindValue="id"
-               placeholder="Selecciona una presentación"
-               [(ngModel)]="plato.id_presentacion" (ngModelChange)="onPresentacionChange($event)"
-               name="presentacion" required
-               style="width: 100%; background-color: #fff !important; border: 1px solid #ced4da; padding: 8px 12px;">
-    </ng-select>
-    <div *ngIf="platoForm.controls['id_presentacion'].invalid && platoForm.controls['id_presentacion'].touched"
-         class="text-danger">Campo requerido</div>
-  </div>
-  
-  
-  
-
-
-                                    <div class="form-group">
-                                        <label for="stock">Stock:</label>
-                                        <input type="number" class="form-control" id="stock" [(ngModel)]="plato.stock"
-                                            name="stock" required min="1">
-                                        <div *ngIf="platoForm.controls['stock'].invalid && platoForm.controls['stock'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-
-
-                                    <div class="form-group">
-                                        <label for="imagen">URL de la imagen:</label>
-                                        <input type="text" class="form-control" id="imagen" [(ngModel)]="plato.image" name="imagen" required>
-                                        <div *ngIf="platoForm.controls['imagen'].invalid && platoForm.controls['imagen'].touched" class="text-danger">Campo requerido</div>
-                                    </div>
-                                    
-                                    <div class="form-group">
-                                        <div *ngIf="platoForm.controls['estado'].invalid && platoForm.controls['estado'].touched"
-                                            class="text-danger">Campo requerido</div>
-                                    </div>
-                                    <!-- Otros campos de la segunda columna ... -->
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar'
-                                }}</button>
-                        </form>
-                    </div>
-                </div>
+                <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;"
+                    (input)="buscarPlatos($event)">
             </div>
+
+            <div class="table-responsive" *ngIf="platosFiltrados?.length && !errorAlCargar">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th style="width: 10%;">Imagen</th>
+                            <th style="width: 15%;">Nombre</th>
+                            <th style="width: 25%;">Descripción</th>
+                            <th style="width: 10%;">Precio</th>
+                            <th style="width: 10%;">Categoría</th>
+                            <th style="width: 10%;">Presentación</th>
+                            <th style="width: 10%;">Stock</th>
+                            <th style="width: 10%;" class="text-center">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Utilizamos el paginate pipe para mostrar los platos por página -->
+                        <tr
+                            *ngFor="let plato of platosFiltrados | paginate: { itemsPerPage: 4, currentPage: page, totalItems: totalPlatos }">
+                            <td><img [src]="plato.image" alt="Imagen del plato" style="width:80px; height:auto"></td>
+                            <td style="word-wrap: break-word;">{{ plato.nombre }}</td>
+                            <td style="word-wrap: break-word;">{{ plato.descripcion }}</td>
+                            <td>S/ {{ plato.precio.toFixed(2) }}</td>
+                            <td>{{ getNombreCategoria(plato.id_categoria) }}</td>
+                            <td>{{ getTipoPresentacion(plato.id_presentacion) }}</td>
+                            <td>{{ plato.stock }}</td>
+                            <td class="text-center">
+                                <button class="btn btn-primary mb-1" (click)="editarPlato(plato)">Editar</button><br>
+                                <button class="btn mb-1"
+                                    [ngClass]="{'btn-success': plato.estado === 'I', 'btn-danger': plato.estado === 'A'}"
+                                    (click)="plato.estado === 'I' ? restaurarplato(plato) : desactivarPlato(plato)"
+                                    style="width: 100px;">
+                                    {{ plato.estado === 'I' ? 'Restaurar' : 'Archivar' }}
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <!-- Paginación -->
+            <pagination-controls *ngIf="platosFiltrados?.length && !errorAlCargar"
+                (pageChange)="page = $event"></pagination-controls>
+
+            <!-- Mensaje de error -->
+            <ng-container *ngIf="errorAlCargar">
+                <div class="alert alert-warning" role="alert" style="padding-top: 5px; margin-top: 30px;">
+                    Error al cargar los productos. Intente nuevamente más tarde.
+                </div>
+            </ng-container>
+
+            <!-- Mensaje de no hay platos -->
+            <ng-container *ngIf="!platosFiltrados?.length && !errorAlCargar">
+                <div class="alert alert-warning" role="alert" style="padding-top: 5px; margin-top: 30px;">
+                    No hay productos por mostrar.
+                </div>
+            </ng-container>
+
         </div>
     </div>
 </div>

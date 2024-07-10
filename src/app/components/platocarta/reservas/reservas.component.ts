@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { AuthService } from '../../../services/auth/authService';
+
 
 declare var $: any;
 
@@ -37,7 +39,11 @@ export class ReservasComponent {
   @ViewChild('agregarReservaModal') agregarReservaModal!: ElementRef;
   @ViewChild('editarReservaModal') editarReservaModal!: ElementRef;
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private authService: AuthService,
+
+  ) { }
+  
 
   ngOnInit() {
     this.getReservas();
