@@ -1,0 +1,9 @@
+.nav-item .nav-link {
+    cursor: pointer; /* Aplica el cursor de selección */
+}
+
+.nav-item .nav-link.active {
+    color: #007bff;
+    font-weight: bold;
+    border-bottom: 2px solid #007bff;
+}
