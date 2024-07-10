@@ -116,7 +116,6 @@
 
 /* Estilos para los cards */
 .formulario-card, .listado-card {
-    border: 1px solid #dee2e6; /* Color del borde */
     border-radius: 8px; /* Radio de borde */
     padding: 20px; /* Espaciado interno */
     margin-bottom: 20px; /* Espaciado inferior */

@@ -116,7 +116,7 @@ export class ProductosComponent implements OnInit {
   }
 
   getPresentacionesActivas() {
-    this.http.get(this.baseUrlPresentacion + '/obtener/activo').subscribe(
+    this.http.get(this.baseUrlPresentacion + '/obtener/estado/A').subscribe(
       (data: any) => {
         this.presentaciones = data;
       },
@@ -127,7 +127,7 @@ export class ProductosComponent implements OnInit {
   }
 
   getCategoriasActivas() {
-    this.http.get(this.baseUrlCategoria + '/obtener/activo').subscribe(
+    this.http.get(this.baseUrlCategoria + '/obtener/estado/A').subscribe(
       (data: any) => {
         this.categorias = data;
       },
@@ -167,7 +167,8 @@ export class ProductosComponent implements OnInit {
       })
     ).subscribe(
       (data: any) => {
-        this.platos = data;
+        // Ordenar los platos por ID de forma decreciente
+        this.platos = data.sort((a: any, b: any) => b.id - a.id);
         this.totalPlatos = this.platos.length; // Actualizar el total de platos
         this.platosFiltrados = this.platos; // Asignar platos filtrados al cargar
       },
@@ -175,7 +176,8 @@ export class ProductosComponent implements OnInit {
         console.error('Error al obtener platos:', error);
       }
     );
-  }
+}
+
 
   guardarPlato() {
     if (this.modoEdicion) {

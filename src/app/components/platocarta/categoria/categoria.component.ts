@@ -1,7 +1,11 @@
-import { Component, OnInit, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
+import { catchError, map, throwError } from 'rxjs';
+import * as XLSX from 'xlsx';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 declare var $: any;
 
@@ -10,167 +14,167 @@ declare var $: any;
   templateUrl: './categoria.component.html',
   styleUrl: './categoria.component.css'
 })
-export class CategoriaComponent implements OnInit {
+export class CategoriaComponent  {
   private readonly baseUrl = 'http://localhost:9095/api/v1/categoria';
-  private readonly estadoActivo = 'A';
-  private readonly estadoInactivo = 'I';
 
   categorias: any[] = [];
   categoria: any = {};
   modoEdicion = false;
-  filtroCategorias: string = '';
 
-  @ViewChild('agregarCategoriaModal') agregarCategoriaModal!: ElementRef;
-  @ViewChild('editarCategoriaModal') editarCategoriaModal!: ElementRef;
+  totalCategorias: number = 0;
+  page: number = 1; // Página actual inicializada en 1
+  errorAlCargar = false;
+  filtroEstado: string = 'A'; // Filtro inicial para categorías activas
 
   constructor(private http: HttpClient) { }
 
   ngOnInit() {
     this.getCategorias();
-    this.filtrarCategorias('/activo');
+    this.getTotalCategorias(); // Llamar aquí para asegurarse de obtener el total inicial
   }
 
-  filtrarCategorias(estado: string) {
-    this.filtroCategorias = estado;
-    this.getCategorias();
+  buscarCategorias(event: Event) {
+    const termino = (event.target as HTMLInputElement).value.trim().toLowerCase();
+  
+    if (termino === '') {
+      this.getCategorias(); // Obtener todas las categorías nuevamente
+    } else {
+      // Filtrar categorías según el término de búsqueda
+      this.categorias = this.categorias.filter(categoria =>
+        categoria.nombre.toLowerCase().includes(termino)
+      );
+      this.totalCategorias = this.categorias.length; // Actualizar el total de categorías
+    }
+  }
+
+  cambiarFiltroEstado() {
+    this.getCategorias(); // Llamar a la función para obtener categorías según el nuevo filtro seleccionado
   }
 
   getCategorias() {
-    let url = `${this.baseUrl}/obtener`;
-
-    if (this.filtroCategorias) {
-        url += `${this.filtroCategorias}`;
-    }
-
-    url += '?sort=-id';
-
-    this.http.get(url).subscribe(
-        (data: any) => {
-            this.categorias = data.sort((a: any, b: any) => b.id - a.id);
-        },
+    let url = `${this.baseUrl}/obtener/estado/${this.filtroEstado}`;
+    this.http.get(url).pipe(
+      map((data: any) => data.sort((a: any, b: any) => b.id - a.id)), // Ordenar las categorías por ID de forma decreciente
+      catchError(error => {
+        this.errorAlCargar = true;
+        return throwError(error);
+      })
+    ).subscribe(
+      (data: any) => {
+        this.categorias = data;
+        this.totalCategorias = this.categorias.length; // Actualizar el total de categorías
+      },
       (error) => {
-        console.error('Error en la solicitud HTTP:', error);
-        this.showErrorAlert('Error', 'Hubo un error en la solicitud. Por favor, inténtelo de nuevo.');
+        console.error('Error al obtener categorías:', error);
       }
     );
   }
 
-  nuevoCategoria() {
-    this.categoria = {
-      nombre: '',
-      estado: this.estadoActivo
-    };
-    this.modoEdicion = false;
+  getTotalCategorias() {
+    let url = `${this.baseUrl}/obtener`;
+    this.http.get(url).subscribe(
+      (data: any) => {
+      },
+      (error) => {
+        console.error('Error al obtener categorías:', error);
+      }
+    );
   }
 
   guardarCategoria() {
-    if (this.camposVacios()) {
-      this.showErrorAlert('Error', 'Por favor, complete todos los campos.');
-      return;
-    }
-
     if (this.modoEdicion) {
-      this.actualizarCategoria(this.categoria.id);
+      this.actualizarCategoria();
     } else {
-      const url = `${this.baseUrl}/crear`;
-      this.http.post(url, this.categoria).subscribe(
-        (data: any) => {
-          this.categorias.push(data);
-          this.categoria = { id: null, nombre: '', estado: this.estadoActivo };
-          this.getCategorias();
-          this.cerrarModal();
-          this.showSuccessAlert('Éxito', `Categoria '${data.nombre}' creada con éxito.`);
-        },
-        (error) => {
-          console.error('Error al crear la categoria:', error);
-          this.showErrorAlert('Error', 'Error al crear la categoria. Por favor, inténtelo de nuevo.');
-        }
-      );
+      this.crearCategoria();
     }
   }
 
-  private camposVacios(): boolean {
-    return !this.categoria.nombre;
-  }
-
-  actualizarCategoria(id: number) {
-    this.categoria.estado = this.getEstadoAbreviado(this.categoria.estado);
-    const url = `${this.baseUrl}/editar/${id}`;
-
-    this.http.put(url, this.categoria).subscribe(
-      (data: any) => {
-        const indice = this.categorias.findIndex((e) => e.id === data.id);
-        if (indice !== -1) {
-          this.categorias[indice] = data;
-        }
-
-        this.categoria = { nombre: '', estado: this.estadoActivo };
-        this.getCategorias();
-        this.cerrarModal();
-        this.showSuccessAlert('Éxito', `Categoria '${data.nombre}' editada con éxito.`);
+  crearCategoria() {
+    this.http.post(`${this.baseUrl}/crear`, this.categoria).subscribe(
+      (response: any) => {
+        console.log('Categoría creada:', response);
+        Swal.fire('¡Éxito!', 'La categoría ha sido creada exitosamente.', 'success');
+        
+        // Agregar la nueva categoría al inicio de la lista existente
+        this.categorias.unshift(response);
+  
+        // Actualizar el total de categorías
+        this.totalCategorias++;
+  
+        // Resetear el formulario y modo de edición
+        this.resetCategoriaForm();
       },
       (error) => {
-        console.error('Error en la solicitud HTTP:', error);
-        this.showErrorAlert('Error', 'Error al editar la categoria.');
+        console.error('Error al crear la categoría:', error);
+        Swal.fire('¡Error!', 'No se pudo crear la categoría. Por favor, inténtelo de nuevo.', 'error');
       }
     );
   }
 
   editarCategoria(categoria: any) {
-    try {
-      this.categoria = { ...categoria };
-      this.modoEdicion = true;
-      this.categoria.estado = this.getEstadoAbreviado(categoria.estado);
-
-      const url = `${this.baseUrl}/editar/${this.categoria.id}`;
-      this.http.put(url, this.categoria).subscribe(/* ... */);
-    } catch (error) {
-      console.log('--ERROR Datos del categoria:', this.categoria);
-    }
+    this.categoria = { ...categoria }; // Copiar la categoría para editar
+    this.modoEdicion = true; // Activar el modo de edición
   }
 
-  private getEstadoAbreviado(estado: string): string {
-    return estado === 'Activo' ? this.estadoActivo : this.estadoInactivo;
-  }
-
-  cerrarModal() {
-    $('#agregarCategoriaModal').modal('hide');
-    $('#editarCategoriaModal').modal('hide');
-  }
-
-  eliminarCategoria(categoria: any) {
-    const url = `${this.baseUrl}/desactivar/${categoria.id}`;
-    const id = categoria.id;
-
-    this.http.patch(url, {}, { responseType: 'text' }).subscribe(
-      (response: any) => {
+  actualizarCategoria() {
+    this.http.put(`${this.baseUrl}/editar/${this.categoria.id}`, this.categoria).subscribe(
+      (response) => {
+        console.log('Categoría actualizada:', response);
+        Swal.fire('¡Éxito!', 'La categoría ha sido actualizada exitosamente.', 'success');
         this.getCategorias();
-        this.showSuccessAlert('Éxito', `Categoria '${categoria.nombre}' eliminada con éxito.`);
+        this.resetCategoriaForm();
       },
-      (error: any) => {
-        console.error('Error en la solicitud HTTP:', error);
-        this.showErrorAlert('Error', 'Error al eliminar la categoria.');
+      (error) => {
+        console.error('Error al actualizar la categoría:', error);
+        Swal.fire('¡Error!', 'No se pudo actualizar la categoría. Por favor, inténtelo de nuevo.', 'error');
       }
     );
   }
 
-  cambiarEstadoCategoria(categoria: any) {
-    const url = `${this.baseUrl}/restaurar/${categoria.id}`;
-    const id = categoria.id;
-    const nuevoEstado = categoria.estado === this.estadoActivo ? this.estadoInactivo : this.estadoActivo;
-
-    this.http.patch(url, {}, { responseType: 'text' }).subscribe(() => {
-      const mensaje = nuevoEstado === this.estadoActivo ? 'Activado' : 'Desactivado';
-      this.getCategorias();
-      this.showSuccessAlert('Éxito', `Categoria '${categoria.nombre}' restaurada con éxito.`);
-    });
+  desactivarCategoria(categoria: any) {
+    this.http.patch(`${this.baseUrl}/desactivar/${categoria.id}`, null, { responseType: 'text' }).subscribe(
+      (response) => {
+        console.log('Categoría desactivada:', response);
+        Swal.fire('¡Éxito!', 'La categoría ha sido desactivada exitosamente.', 'success');
+        this.getCategorias(); // Volver a cargar las categorías después de desactivar
+      },
+      (error) => {
+        console.error('Error al desactivar la categoría:', error);
+        Swal.fire('¡Error!', 'No se pudo desactivar la categoría. Por favor, inténtelo de nuevo.', 'error');
+      }
+    );
   }
 
-  private showSuccessAlert(title: string, message: string): void {
-    Swal.fire(title, message, 'success');
+  restaurarCategoria(categoria: any) {
+    this.http.patch(`${this.baseUrl}/restaurar/${categoria.id}`, null, { responseType: 'text' }).subscribe(
+      (response) => {
+        console.log('Categoría restaurada:', response);
+        Swal.fire('¡Éxito!', 'La categoría ha sido restaurada exitosamente.', 'success');
+        this.getCategorias(); // Volver a cargar las categorías después de restaurar
+      },
+      (error) => {
+        console.error('Error al restaurar la categoría:', error);
+        Swal.fire('¡Error!', 'No se pudo restaurar la categoría. Por favor, inténtelo de nuevo.', 'error');
+      }
+    );
   }
 
-  private showErrorAlert(title: string, message: string): void {
-    Swal.fire(title, message, 'error');
+  exportarAExcel() {
+    const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.categorias);
+    const workbook: XLSX.WorkBook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+    XLSX.writeFile(workbook, 'categorias.xlsx');
+  }
+
+  exportarAPDF() {
+    // Implementar lógica para exportar a PDF si es necesario
+  }
+
+  resetCategoriaForm() {
+    this.categoria = {};
+    this.modoEdicion = false;
+  }
+
+  cancelarEdicion() {
+    this.resetCategoriaForm();
   }
 }
