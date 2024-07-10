@@ -44,65 +44,51 @@ export class ReservasComponent {
     this.filtrarReservas('/activo');
   }
 
-  generarReportePDF() {
-    const logoUrl = 'https://marketplace.canva.com/EAFVq1ge0ZU/1/0/1600w/canva-logo-restaurante-circular-sencillo-negro-blanco-QEgdJHSl6GE.jpg';
-    const nombreRestaurante = 'Grill House';
-  
-    // Crear el documento jsPDF
+  generarReportePDF(): void {
     const doc = new jsPDF({
       orientation: 'landscape'
     });
-  
-    // Establecer la fecha de creación del reporte
-    const fecha = new Date().toLocaleDateString();
-  
-    // Configurar la posición y tamaño del logo
-    const imgWidth = 45;
-    const imgHeight = 45;
-    const margin = 10;
-    const imgX = margin; // Ajusta la posición X del logo
-    const imgY = margin; // Ajusta la posición Y del logo
-  
-    // Cargar el logo
+
     const img = new Image();
-    img.src = logoUrl;
-  
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = () => {
-      // Añadir el logo al documento
-      doc.addImage(img, 'JPEG', imgX, imgY, imgWidth, imgHeight);
-  
-      // Agregar el texto "Restaurante"
-      doc.setFont('courier', 'normal'); // Cambia el tipo de fuente a Courier sin negrita
-      doc.setFontSize(13); // Cambia el tamaño de la fuente a 13
-      const restauranteText = 'Restaurante';
-      const restauranteX = imgX + imgWidth + 10; // Posiciona el texto "Restaurante" a la derecha del logo
-      const restauranteY = imgY + imgHeight / 2 - doc.getFontSize() / 2; // Centra verticalmente el texto "Restaurante" con respecto al logo
-      doc.text(restauranteText, restauranteX, restauranteY);
-  
-      // Agregar el título del reporte
-      doc.setFont('courier', 'bold'); // Cambia el tipo de fuente a Courier Bold
-      doc.setFontSize(45);
-      const tituloX = imgX + imgWidth + 10; // Posiciona el título a la derecha del logo
-      const tituloY = restauranteY + doc.getFontSize() - 30; // Posiciona el título justo debajo del texto "Restaurante"
-      doc.text(nombreRestaurante, tituloX, tituloY);
-      doc.setFont('courier'); // Cambia el tipo de fuente a Courier para el resto del documento
-  
-      // Agregar el subtítulo del reporte
-      const subtitulo = 'Reporte de reservas:';
-      const subtituloY = imgY + imgHeight + 5; // Ajusta la posición Y del subtítulo
-      doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
-      doc.setFontSize(10);
-      doc.text(subtitulo, imgX + 4, subtituloY);
-  
-      // Configurar la tabla de datos
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const logoWidth = pageWidth * 0.2;
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+
+      const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+      const sloganX = pageWidth / 2;
+      const sloganY = logoHeight + 20;
+      doc.setTextColor(31, 30, 30);
+      doc.setFontSize(12);
+      doc.text(slogan, sloganX, sloganY, { align: 'center' });
+
+      const fecha = new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).replace(/ /g, '/').replace(/\//g, '-');
+
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(20);
+      const titulo = 'Reporte de Reservas';
+      const tituloY = sloganY + 20;
+      doc.text(titulo, 14, tituloY);
+
+      doc.setFontSize(12);
+      const fechaX = pageWidth - 14;
+      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
+
       const head = [['ID', 'Cliente', 'Restaurante', 'Email', 'Fecha Destino', 'Personas', 'Monto', 'Observación', 'Situación', 'Detalle']];
-      const data = this.reservas.map((reserva, index) => {
-        // Construir el detalle de la reserva como texto
+      const data = this.reservas.map((reserva) => {
         let detalle = '';
         reserva.reserva_detalle.forEach((item: { id_carta: number; cantidad: number }, idx: number) => {
           detalle += `${idx + 1}. Plato: ${item.id_carta}, Cantidad: ${item.cantidad}\n`;
         });
-  
+
         return [
           reserva.id,
           reserva.cliente_id,
@@ -113,15 +99,14 @@ export class ReservasComponent {
           reserva.monto,
           reserva.observacion,
           reserva.situacion,
-          detalle  // Agregar el detalle de la reserva
+          detalle
         ];
       });
-  
-      // Generar la tabla de datos
+
       (doc as any).autoTable({
         head: head,
         body: data,
-        startY: imgY + imgHeight + 10, // Ajusta la posición de inicio de la tabla
+        startY: tituloY + 20,
         styles: {
           cellWidth: 'auto',
           fontSize: 10,
@@ -139,32 +124,23 @@ export class ReservasComponent {
         },
         alternateRowStyles: {
           fillColor: [235, 235, 235]
-        },
-        columnStyles: {
-          0: { cellWidth: '50' },
-          1: { cellWidth: 'auto' },
-          2: { cellWidth: 'auto' },
-          3: { cellWidth: '18' },
-          4: { cellWidth: '30' },
-          5: { cellWidth: '27' },
-          6: { cellWidth: '8' },
-          7: { cellWidth: '18' },
-          8: { cellWidth: '23' },
-          9: { cellWidth: '27' }
         }
       });
-  
-      // Establecer la fecha en todas las páginas del documento
-      const fechaX = doc.internal.pageSize.width - margin; // Ajusta la posición X de la fecha
-      const fechaY = doc.internal.pageSize.height - margin; // Ajusta la posición Y de la fecha
-      doc.setFont('arial', 'normal'); // Cambia el tipo de fuente a Arial sin negrita
-      doc.setFontSize(10);
-      for (let i = 1; i <= doc.getNumberOfPages(); i++) {
+
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
-        doc.text(`Fecha de creación: ${fecha}`, fechaX, fechaY, { align: 'right' });
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(31, 30, 30);
+        const pageNumberText = `Página ${i}`;
+        const pageSize = doc.internal.pageSize;
+        const pageWidth = pageSize.getWidth();
+        const pageHeight = pageSize.getHeight();
+        const footerY = pageHeight - 10;
+        doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY);
       }
-  
-      // Guardar el documento PDF
+
       doc.save('reporte_reservas.pdf');
     };
   }
