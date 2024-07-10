@@ -10,6 +10,9 @@
                     aria-haspopup="true" aria-expanded="false">
                     <i class="fa fa-filter"></i> Filtrar
                 </button>
+                <button class="btn btn-warning float-left mr-2" (click)="generarReportePDF()">
+                    <i class="fa fa-file-alt"></i> Reporte
+                </button> 
                 <div class="dropdown-menu" aria-labelledby="filtroDropdown">
                     <button class="dropdown-item" (click)="filtrarPlatos('')"
                         [class.active]="filtroPlatos === ''">Todos</button>
