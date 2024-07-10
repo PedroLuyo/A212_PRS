@@ -128,6 +128,7 @@ export class AuthService {
   }
 
 
+
 // Método para iniciar sesión con correo y contraseña
 async login({ email, password }: any) {
   try {
@@ -137,20 +138,12 @@ async login({ email, password }: any) {
     // Obtiene el UID del usuario autenticado
     const user = result.user;
 
-    // Verifica el rol del usuario en Firestore
+    // Verifica si el usuario existe en Firestore
     const userDoc = await this.db.collection('users').doc(user.uid).get().toPromise();
     if (userDoc && userDoc.exists) {
-      const userData = userDoc.data() as { role?: string };
-      
-      if (userData.role === 'gestor') {
-        // Si el rol es "gestor", permite el acceso y emite el evento
-        this.userLoggedIn.emit();
-        return result;
-      } else {
-        // Si el rol no es "gestor", cierra sesión y muestra un mensaje de error
-        await signOut(this.auth);
-        throw new Error('No tienes el rol adecuado. Regístrate o ingresa con una cuenta válida.');
-      }
+      // Si el usuario existe, permite el acceso y emite el evento
+      this.userLoggedIn.emit();
+      return result;
     } else {
       // Si no se encuentra el usuario en Firestore, cierra sesión y muestra un mensaje de error
       await signOut(this.auth);
