@@ -11,7 +11,7 @@ import { ReservaDetalleDto } from '../../../models/menu/reserva/reversarequest';
 export class ReservaDetalleService {
 
 
-  private baseUrl = 'http://localhost:8080/api/v1/reserva';
+  private baseUrl = 'https://8080-vallegrande-msmenuplate-a11ap7qojus.ws-us115.gitpod.io/api/v1/reserva';
 
   constructor(private http: HttpClient) { }
 

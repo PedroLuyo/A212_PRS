@@ -18,6 +18,7 @@ import { ProductosComponent } from './components/platocarta/productos/productos.
 import { CategoriaComponent } from './components/platocarta/categoria/categoria.component';
 import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
 import { DetallesComponent } from './components/detalles/detalles.component';
+import { CrearMenu } from './components/menu/crear-menu/crear-menu';
 
 
 const routes: Routes = [
@@ -37,7 +38,7 @@ const routes: Routes = [
   { path: 'comida', component: CrearComidaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor' ] }},
   { path: 'reserva', component: ReservaComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['comensal' ] } },
   { path: 'historial', component: HistorialComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] }  },
-  { path: 'menu', component: MenuComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
+  { path: 'menu', component: CrearMenu, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
 
 
   {path: 'productos' , component: ProductosComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },

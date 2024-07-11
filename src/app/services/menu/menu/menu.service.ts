@@ -10,7 +10,7 @@ import { map } from 'rxjs/operators';
   providedIn: 'root'
 })
 export class MenuService { 
-  private apiUrl = 'http://localhost:8080/api/v1/menu';
+  private apiUrl = 'https://8080-vallegrande-msmenuplate-a11ap7qojus.ws-us115.gitpod.io/api/v1/menu';
 
   constructor(private http: HttpClient) {}
 
