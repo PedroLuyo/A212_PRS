@@ -240,7 +240,7 @@ exportarAPDF(): void {
       doc.setFont('courier', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(31, 30, 30);
-      const pageNumberText = `Página ${i} / ${pageCount}`;
+      const pageNumberText = `Página ${i} de ${pageCount}`;
       const pageSize = doc.internal.pageSize;
       const pageWidth = pageSize.getWidth();
       const pageHeight = pageSize.getHeight();

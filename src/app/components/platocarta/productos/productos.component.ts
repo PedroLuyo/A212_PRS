@@ -4,8 +4,9 @@ import { FormControl, NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { CloudinaryService } from '../../../services/cloudinary/Cloudinary.service';
+import { AuthService } from '../../../services/auth/authService';
 
 import * as XLSX from 'xlsx';
 
@@ -38,7 +39,9 @@ export class ProductosComponent implements OnInit {
 
  
   constructor(private http: HttpClient,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
+    private authService: AuthService
+
   ) { }
 
   ngOnInit() {
@@ -142,52 +145,85 @@ export class ProductosComponent implements OnInit {
     this.getPlatos(); // Llamar a la función para obtener platos según el nuevo filtro seleccionado
   }
 
+
+  
+  
+  
   gettotalidad() {
-    let url = `${this.baseUrl}/obtener`;
-
-    this.http.get(url).subscribe(
-      (data: any) => {
-        this.totalidad = data.length; // Actualizar el total de platos
+    from(this.authService.getUserRUC()).subscribe({
+      next: (ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+  
+        this.http.get(url).pipe(
+          catchError((error: any) => {
+            console.error('Error al obtener platos:', error);
+            return throwError(error);
+          })
+        ).subscribe({
+          next: (data: any) => {
+            this.totalidad = data.length; // Actualizar el total de platos
+          },
+          error: (error: any) => {
+            console.error('Error al obtener platos:', error);
+          }
+        });
       },
-      (error) => {
-        console.error('Error al obtener platos:', error);
+      error: (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
       }
-    );
+    });
   }
-
+  
+  
   getPlatos() {
-    let url = `${this.baseUrl}/obtener`;
-    if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
-      url += `/estado/${this.filtroEstado}`;
-    }
-    this.http.get(url).pipe(
-      catchError(error => {
-        this.errorAlCargar = true;
-        return throwError(error);
-      })
-    ).subscribe(
-      (data: any) => {
-        // Ordenar los platos por ID de forma decreciente
-        this.platos = data.sort((a: any, b: any) => b.id - a.id);
-        this.totalPlatos = this.platos.length; // Actualizar el total de platos
-        this.platosFiltrados = this.platos; // Asignar platos filtrados al cargar
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+        if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
+          url += `/estado/${this.filtroEstado}`;
+        }
+        this.http.get(url).pipe(
+          catchError((error: any): Observable<never> => {
+            this.errorAlCargar = true;
+            return throwError(error);
+          })
+        ).subscribe({
+          next: (data: any) => {
+            // Ordenar los platos por ID de forma decreciente
+            this.platos = data.sort((a: any, b: any) => b.id - a.id);
+            this.totalPlatos = this.platos.length; // Actualizar el total de platos
+            this.platosFiltrados = this.platos; // Asignar platos filtrados al cargar
+          },
+          error: (error: any) => {
+            console.error('Error al obtener platos:', error);
+          }
+        });
       },
-      (error) => {
-        console.error('Error al obtener platos:', error);
+      (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
       }
     );
-}
-
-
-  guardarPlato() {
-    if (this.modoEdicion) {
-      this.actualizarPlato();
-    } else {
-      this.crearPlato();
-      this.uploadImageToCloudinary(); // Añadir llamada aquí si quieres subir la imagen al crear el plato
-
-    }
   }
+
+
+
+
+guardarPlato() {
+  from(this.authService.getUserRUC()).subscribe(
+    (ruc: string) => {
+      this.plato.ruc = ruc;
+      if (this.modoEdicion) {
+        this.actualizarPlato();
+      } else {
+        this.crearPlato();
+        this.uploadImageToCloudinary(); // Añadir llamada aquí si quieres subir la imagen al crear el plato
+      }
+    },
+    (error: any) => {
+      console.error('Error al obtener el RUC del usuario:', error);
+    }
+  );
+}
 
   crearPlato() {
     this.plato.estado = 'A'; // Nuevo plato siempre activo por defecto
@@ -382,7 +418,7 @@ exportarAPDF(): void {
       doc.setFont('courier', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(31, 30, 30);
-      const pageNumberText = `Página ${i}/${pageCount}`;
+      const pageNumberText = `Página ${i} de ${pageCount}`;
       const pageSize = doc.internal.pageSize;
       const pageWidth = pageSize.getWidth();
       const pageHeight = pageSize.getHeight();
