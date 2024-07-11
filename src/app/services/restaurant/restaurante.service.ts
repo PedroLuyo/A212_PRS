@@ -8,14 +8,14 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-upzzphkuubn.ws-us115.gitpod.io/api/restaurants/v1';
+  private apiUrl = 'https://8090-vallegrande-msrestauran-k3alf07vtnw.ws-us115.gitpod.io/api/restaurants/v1';
   private apiAngelo = 'http://localhost:8090/api/restaurants/v1';
-  
-  constructor(private http: HttpClient) {}
+
+  constructor(private http: HttpClient) { }
 
   private handleRequest<T>(request: Observable<T>): Observable<T> {
     return request.pipe(
-      catchError((error: any) => {
+      catchError((error: any) => {  
         console.error('Error en la primera API', error);
         //Swal.fire('Error', 'Hubo un problema al comunicarse con la primera API. Intentando con la segunda API.', 'warning');
         return throwError(error);
@@ -23,6 +23,7 @@ export class RestauranteService {
     );
   }
 
+  
   // Obtener todos los restaurantes
   obtenerTodos(): Observable<any[]> {
     return this.handleRequest(this.http.get<any[]>(`${this.apiUrl}/listar`))

@@ -262,6 +262,47 @@
     </section>
   </div>
 </section>
+
+<div class="container">
+  <div class="section-title">
+    <h2>Nuestros <span>Restaurantes</span></h2>
+    <p>Explora nuestra variedad de restaurantes disponibles</p>
+  </div>
+  <div class="row">
+    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 5, currentPage: p }">
+      <div class="card shadow-sm h-100">
+        <img class="card-img-top" [src]="restaurante.imagenRestaurante" alt="Imagen del Restaurante">
+        <div class="card-body d-flex flex-column">
+          <h5 class="card-title">{{ restaurante.nombre }}</h5>
+          <p class="card-text">{{ restaurante.tipoCocina }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Paginación -->
+  <nav *ngIf="totalPagesRestaurantes > 1">
+    <ul class="pagination justify-content-center mt-4">
+      <li class="page-item" [class.disabled]="currentRestaurantesPage === 1">
+        <a class="page-link" (click)="onRestaurantesPageChange(currentRestaurantesPage - 1)" aria-label="Previous">
+          <span aria-hidden="true">&laquo;</span>
+        </a>
+      </li>
+      <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesRestaurantes)"
+          [class.active]="page === currentRestaurantesPage">
+        <a class="page-link" (click)="onRestaurantesPageChange(page)">{{ page }}</a>
+      </li>
+      <li class="page-item" [class.disabled]="currentRestaurantesPage === totalPagesRestaurantes">
+        <a class="page-link" (click)="onRestaurantesPageChange(currentRestaurantesPage + 1)" aria-label="Next">
+          <span aria-hidden="true">&raquo;</span>
+        </a>
+      </li>
+    </ul>
+  </nav>
+</div>
+
+
+
+
 <!-- ======= Footer ======= -->
 <footer id="footer">
   <div class="container">
