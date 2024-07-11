@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { catchError, map, throwError } from 'rxjs';
+import { catchError, from, map, switchMap, throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { AuthService } from '../../../services/auth/authService';
 
 @Component({
   selector: 'app-presentacion',
@@ -24,7 +25,9 @@ export class PresentacionComponent implements OnInit {
   errorAlCargar = false;
   filtroEstado: string = 'A'; // Filtro inicial para presentaciones disponibles
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.getPresentaciones();
@@ -53,64 +56,101 @@ export class PresentacionComponent implements OnInit {
   }
 
   getPresentaciones() {
-    let url = `${this.baseUrl}/obtener/estado/${this.filtroEstado}`;
-    this.http.get(url).pipe(
-      map((data: any) => data.sort((a: any, b: any) => b.id - a.id)), // Ordenar las presentaciones por ID de forma decreciente
-      catchError(error => {
-        this.errorAlCargar = true;
-        return throwError(error);
+    from(this.authService.getUserRUC()).pipe(
+      switchMap((ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}/estado/${this.filtroEstado}`;
+        return this.http.get(url).pipe(
+          catchError((error: any) => {
+            console.error('Error al obtener presentaciones:', error);
+            this.errorAlCargar = true;
+            return throwError(error);
+          })
+        );
       })
-    ).subscribe(
-      (data: any) => {
-        this.presentaciones = data;
+    ).subscribe({
+      next: (data: any) => {
+        this.presentaciones = data.sort((a: any, b: any) => b.id - a.id); // Ordenar las presentaciones por ID de forma decreciente
         this.totalPresentaciones = this.presentaciones.length; // Actualizar el total de presentaciones
       },
-      (error) => {
+      error: (error: any) => {
         console.error('Error al obtener presentaciones:', error);
       }
-    );
+    });
   }
+  
 
   getTotalPresentaciones() {
-    let url = `${this.baseUrl}/obtener`;
-    this.http.get(url).subscribe(
-      (data: any) => {
+    from(this.authService.getUserRUC()).pipe(
+      switchMap((ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+        return this.http.get(url).pipe(
+          catchError((error: any) => {
+            console.error('Error al obtener presentaciones:', error);
+            return throwError(error);
+          })
+        );
+      })
+    ).subscribe({
+      next: (data: any) => {
+        // Optionally handle data here if needed
       },
-      (error) => {
+      error: (error: any) => {
         console.error('Error al obtener presentaciones:', error);
       }
-    );
+    });
   }
+  
 
   guardarPresentacion() {
-    if (this.modoEdicion) {
-      this.actualizarPresentacion();
-    } else {
-      this.crearPresentacion();
-    }
-  }
-
-  crearPresentacion() {
-    this.http.post(`${this.baseUrl}/crear`, this.presentacion).subscribe(
-      (response: any) => {
-        console.log('Presentación creada:', response);
-        Swal.fire('¡Éxito!', 'La presentación ha sido creada exitosamente.', 'success');
-        
-        // Agregar la nueva presentación al inicio de la lista existente
-        this.presentaciones.unshift(response);
-  
-        // Actualizar el total de presentaciones
-        this.totalPresentaciones++;
-  
-        // Resetear el formulario y modo de edición
-        this.resetPresentacionForm();
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        this.presentacion.ruc = ruc;
+        if (this.modoEdicion) {
+          this.actualizarPresentacion();
+        } else {
+          this.crearPresentacion();
+        }
       },
-      (error) => {
-        console.error('Error al crear la presentación:', error);
-        Swal.fire('¡Error!', 'No se pudo crear la presentación. Por favor, inténtelo de nuevo.', 'error');
+      (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
       }
     );
   }
+  
+  crearPresentacion() {
+    // Asegurar que el RUC se asigna correctamente desde el AuthService
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        this.presentacion.ruc = ruc; // Asignar el RUC obtenido del AuthService
+  
+        // Asumiendo que this.presentacion contiene todos los datos necesarios
+        this.http.post(`${this.baseUrl}/crear`, this.presentacion).subscribe(
+          (response: any) => {
+            console.log('Presentación creada:', response);
+            Swal.fire('¡Éxito!', 'La presentación ha sido creada exitosamente.', 'success');
+  
+            // Agregar la nueva presentación al inicio de la lista existente
+            this.presentaciones.unshift(response);
+  
+            // Actualizar el total de presentaciones
+            this.getTotalPresentaciones();
+  
+            // Resetear el formulario y modo de edición
+            this.resetPresentacionForm();
+          },
+          (error) => {
+            console.error('Error al crear la presentación:', error);
+            Swal.fire('¡Error!', 'No se pudo crear la presentación. Por favor, inténtelo de nuevo.', 'error');
+          }
+        );
+      },
+      (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
+      }
+    );
+  }
+  
+  
 
     editarPresentacion(presentacion: any) {
     this.presentacion = { ...presentacion }; // Copiar la presentación para editar
