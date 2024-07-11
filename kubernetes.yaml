@@ -65,7 +65,7 @@ spec:
   ports:
   - protocol: TCP
     port: 8086
-    targetPort: 8086 # El puerto externo sigue siendo 80
+    targetPort: 8086 
 
 ---
 apiVersion: apps/v1
