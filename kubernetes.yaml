@@ -30,7 +30,7 @@ spec:
   ports:
   - protocol: TCP
     port: 80  
-    targetPort: 4200 # El puerto externo sigue siendo 80
+    targetPort: 4200 
 
 ---
 apiVersion: apps/v1
@@ -98,8 +98,8 @@ spec:
     app: ms-letterplate
   ports:
   - protocol: TCP
-    port: 9095  # Puerto externo del servicio
-    targetPort: 9095  # Puerto del contenedor
+    port: 9095  
+    targetPort: 9095  
 ---
 apiVersion: apps/v1
 kind: Deployment
