@@ -1,93 +1,95 @@
 <div class="container mt-4">
-    <div class="row">
-      <!-- Columna del Formulario -->
-      <div class="col-md-3 formulario-card">
-        <h3>{{ modoEdicion ? 'Editar Categoría' : 'Agregar Categoría' }}</h3>
-        <form (ngSubmit)="guardarCategoria()" #categoriaForm="ngForm">
-          <div class="form-group">
-            <label for="nombre">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" [(ngModel)]="categoria.nombre" name="nombre" required>
-            <div *ngIf="categoriaForm.controls['nombre'].invalid && categoriaForm.controls['nombre'].touched" class="text-danger">Campo requerido</div>
+  <div class="row">
+    <!-- Columna del Formulario -->
+    <div class="col-md-3 formulario-card">
+      <h3>{{ modoEdicion ? 'Editar Categoría' : 'Agregar Categoría' }}</h3>
+      <form (ngSubmit)="guardarCategoria()" #categoriaForm="ngForm">
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" class="form-control" id="nombre" [(ngModel)]="categoria.nombre" name="nombre" required>
+          <div *ngIf="categoriaForm.controls['nombre'].invalid && categoriaForm.controls['nombre'].touched" class="text-danger">Campo requerido</div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar' }}</button>
+        <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion" (click)="cancelarEdicion()">Cancelar</button>
+      </form>
+    </div>
+
+    <!-- Columna del Listado -->
+    <div class="col-md-9 listado-card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="card-title mb-0">
+            Listado de Categorías - {{ filtroEstado === 'A' ? 'Disponibles' : 'Archivadas' }}
+          </h3>
+
+          <!-- Botones de exportar a Excel y PDF -->
+          <div class="d-flex">
+            <button (click)="exportarAExcel()" class="btn btn-success ml-3">
+              <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
+            </button>
+            <button (click)="exportarAPDF()" class="btn btn-danger ml-2">
+              <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
+            </button>
           </div>
-          
-          <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar' }}</button>
-          <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion" (click)="cancelarEdicion()">Cancelar</button>
-        </form>
+        </div>
       </div>
-  
-      <!-- Columna del Listado -->
-      <div class="col-md-9 listado-card">
-        <div class="card-header">
-          <div class="d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">
-              Listado de Categorías - {{ filtroEstado === 'A' ? 'Activas' : 'Inactivas' }}
-            </h3>
-  
-            <!-- Botones de exportar a Excel y PDF -->
-            <div class="d-flex">
-              <button (click)="exportarAExcel()" class="btn btn-success ml-3">
-                <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
-              </button>
-              <button (click)="exportarAPDF()" class="btn btn-danger ml-2">
-                <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
-              </button>
-            </div>
-          </div>
-        </div>
-  
-        <!-- Filtrado y búsqueda -->
-        <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 20px;">
-          <span class="badge badge-warning mr-3">Total de categorías: {{ totalCategorias }}</span>
-  
-          <span style="margin-right: 10px;">Filtrar por:</span>
-          <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()" class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
-            <option value="A">Activas</option>
-            <option value="I">Inactivas</option>
-          </select>
-  
-          <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;" (input)="buscarCategorias($event)">
-        </div>
-  
-        <div class="table-responsive" *ngIf="categorias.length && !errorAlCargar">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th style="width: 70%;">Nombre</th>
-                <th style="width: 20%;" class="text-center">Estado</th>
-                <th style="width: 10%;" class="text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let categoria of categorias | paginate: { itemsPerPage: 5, currentPage: page, totalItems: totalCategorias }">
-                <td>{{ categoria.nombre }}</td>
-                <td class="text-center">{{ categoria.estado }}</td>
-                <td class="text-center">
+
+      <!-- Filtrado y búsqueda -->
+      <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 20px;">
+        <span class="badge badge-warning mr-3">Total de categorías: {{ totalCategorias }}</span>
+
+        <span style="margin-right: 10px;">Filtrar por:</span>
+        <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()" class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
+          <option value="A">Disponibles</option>
+          <option value="I">Archivadas</option>
+        </select>
+
+        <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;" (input)="buscarCategorias($event)">
+      </div>
+
+      <div class="table-responsive" *ngIf="categorias.length && !errorAlCargar">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th style="width: 70%;">Nombre</th>
+              <th style="width: 10%;" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let categoria of categorias | paginate: { itemsPerPage: 5, currentPage: page, totalItems: totalCategorias }">
+              <td>{{ categoria.nombre }}</td>
+              <td class="text-center">
+                <div class="d-flex justify-content-between align-items-center">
                   <button class="btn btn-primary mb-1" (click)="editarCategoria(categoria)">Editar</button>
-                  <button class="btn btn-danger mb-1" (click)="desactivarCategoria(categoria)" *ngIf="categoria.estado === 'A'">Desactivar</button>
-                  <button class="btn btn-success mb-1" (click)="restaurarCategoria(categoria)" *ngIf="categoria.estado === 'I'">Restaurar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-  
-        <!-- Paginación con ngx-pagination -->
-        <pagination-controls *ngIf="totalCategorias > 5 && !errorAlCargar" (pageChange)="page = $event"></pagination-controls>
-  
-        <!-- Mensaje de error -->
-        <ng-container *ngIf="errorAlCargar">
-          <div class="alert alert-danger mt-3" role="alert">
-            Error al cargar las categorías. Intente nuevamente más tarde.
-          </div>
-        </ng-container>
-  
-        <!-- Mensaje de no hay categorías -->
-        <ng-container *ngIf="!categorias.length && !errorAlCargar">
-          <div class="alert alert-warning mt-3" role="alert">
-            No hay categorías para mostrar.
-          </div>
-        </ng-container>
+                  <div class="d-flex">
+                    <button class="btn btn-danger ml-2" (click)="desactivarCategoria(categoria)" *ngIf="categoria.estado === 'A'">Archivar</button>
+                    <button class="btn btn-success ml-2" (click)="restaurarCategoria(categoria)" *ngIf="categoria.estado === 'I'">Restaurar</button>
+                  </div>
+                </div>
+              </td>
+            </tr>
+            
+          </tbody>
+        </table>
       </div>
+
+      <!-- Paginación con ngx-pagination -->
+      <pagination-controls *ngIf="totalCategorias > 5 && !errorAlCargar" (pageChange)="page = $event"></pagination-controls>
+
+      <!-- Mensaje de error -->
+      <ng-container *ngIf="errorAlCargar">
+        <div class="alert alert-danger mt-3" role="alert">
+          Error al cargar las categorías. Intente nuevamente más tarde.
+        </div>
+      </ng-container>
+
+      <!-- Mensaje de no hay categorías -->
+      <ng-container *ngIf="!categorias.length && !errorAlCargar">
+        <div class="alert alert-warning mt-3" role="alert">
+          No hay categorías para mostrar.
+        </div>
+      </ng-container>
     </div>
   </div>
-  
+</div>

@@ -166,9 +166,93 @@ export class PresentacionComponent implements OnInit {
     XLSX.writeFile(workbook, 'presentaciones.xlsx');
   }
 
-  exportarAPDF() {
-   
-  }
+// Método para exportar a PDF
+// Método para exportar a PDF
+exportarAPDF(): void {
+  const doc = new jsPDF({
+    orientation: 'landscape'
+  });
+
+  const img = new Image();
+  img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+  img.onload = () => {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const logoWidth = pageWidth * 0.2;
+    const logoHeight = img.height * (logoWidth / img.width);
+    const logoX = (pageWidth - logoWidth) / 2;
+    doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+
+    const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+    const sloganX = pageWidth / 2;
+    const sloganY = logoHeight + 20;
+    doc.setTextColor(31, 30, 30);
+    doc.setFontSize(12);
+    doc.text(slogan, sloganX, sloganY, { align: 'center' });
+
+    const fecha = new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).replace(/ /g, '/').replace(/\//g, '-');
+
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(20);
+    const titulo = 'Reporte de Presentaciones';
+    const tituloY = sloganY + 20;
+    doc.text(titulo, 14, tituloY);
+
+    doc.setFontSize(12);
+    const fechaX = pageWidth - 14;
+    doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
+
+    const head = [['Tipo']];
+    const data = this.presentaciones.map(presentacion => [
+      presentacion.tipo,
+    ]);
+
+    (doc as any).autoTable({
+      head: head,
+      body: data,
+      startY: tituloY + 20,
+      styles: {
+        cellWidth: 'auto',
+        fontSize: 10,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1
+      },
+      headStyles: {
+        fillColor: [0, 0, 0],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        textColor: 0
+      },
+      alternateRowStyles: {
+        fillColor: [235, 235, 235]
+      }
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(31, 30, 30);
+      const pageNumberText = `Página ${i} / ${pageCount}`;
+      const pageSize = doc.internal.pageSize;
+      const pageWidth = pageSize.getWidth();
+      const pageHeight = pageSize.getHeight();
+      const footerX = pageWidth - 10;
+      const footerY = pageHeight - 10;
+      doc.text(pageNumberText, footerX, footerY, { align: 'right' });
+    }
+
+    doc.save('reporte_presentaciones.pdf');
+  };
+}
+
 
   resetPresentacionForm() {
     this.presentacion = {};
