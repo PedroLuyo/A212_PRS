@@ -1,226 +1,116 @@
-<div class="container mt-4">
-  <div class="row" id="titulo">
-    <div class="col text-center">
-      <h2>Administración de Restaurantes</h2>
-    </div>
-  </div>
+<div class="container">
+  <div class="row">
+    <!-- Columna del formulario -->
+    <div class="col-md-5">
+      <h2>{{ restauranteForm.value.id ? 'Editar' : 'Crear' }} Restaurante</h2>
 
-  <div class="row mt-4">
-    <div class="col-md-8 mx-auto">
-      <div class="card mb-4">
-        <div class="card-body">
-          <form [formGroup]="restauranteForm" *ngIf="!restauranteEditando">
-            <div class="form-group">
-              <label for="nombre">Nombre</label>
-              <input type="text" class="form-control" id="nombre" formControlName="nombre">
-            </div>
-            <div class="form-group">
-              <label for="direccion">Dirección</label>
-              <input type="text" class="form-control" id="direccion" formControlName="direccion">
-            </div>
-            <div class="form-group">
-              <label for="telefono">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" formControlName="telefono">
-            </div>
-            <div class="form-group">
-              <label for="tipoCocina">Tipo de Cocina</label>
-              <input type="text" class="form-control" id="tipoCocina" formControlName="tipoCocina">
-            </div>
-            <div class="form-group">
-              <label for="capacidadPersonas">Capacidad de Personas</label>
-              <input type="number" class="form-control" id="capacidadPersonas" formControlName="capacidadPersonas">
-            </div>
-            <div class="form-group">
-              <label for="horaApertura">Hora de Apertura</label>
-              <input type="time" class="form-control" id="horaApertura" formControlName="horaApertura">
-            </div>
-            <div class="form-group">
-              <label for="horaCierre">Hora de Cierre</label>
-              <input type="time" class="form-control" id="horaCierre" formControlName="horaCierre">
-            </div>
-            <div class="form-group">
-              <label for="estado">Estado</label>
-              <select class="form-control" id="estado" formControlName="estado">
-                <option value="true">Activo</option>
-                <option value="false">Inactivo</option>
-              </select>
-            </div>
-            <div class="form-group">
-              <label for="opcionImagen">Opción de Imagen</label>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="subir" value="subir" [(ngModel)]="opcionImagen" name="opcionImagen" (change)="cambiarOpcionImagen('subir')" checked>
-                <label class="form-check-label" for="subir">Subir Imagen</label>
-              </div>
-              <div class="form-check">
-                <input class="form-check-input" type="radio" id="url" value="url" [(ngModel)]="opcionImagen" name="opcionImagen" (change)="cambiarOpcionImagen('url')">
-                <label class="form-check-label" for="url">Pegar URL de Imagen</label>
-              </div>
-            </div>
-            <div class="form-group" *ngIf="opcionImagen === 'url'">
-              <label for="urlImagen">URL de Imagen</label>
-              <input type="text" class="form-control" id="urlImagen" formControlName="urlImagen">
-              <div *ngIf="imagenPreview">
-                <img [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-thumbnail mt-2" style="max-width: 200px;">
-              </div>
-            </div>
-            <div class="form-group" *ngIf="opcionImagen === 'subir'">
-              <label for="imagenRestaurante">Subir Imagen de Restaurante</label>
-              <input type="file" class="form-control-file" id="imagenRestaurante" formControlName="imagenRestaurante" (change)="onFileSelected($event)">
-              <div *ngIf="imagenPreview">
-                <img [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-thumbnail mt-2" style="max-width: 200px;">
-              </div>
-            </div>
-            <button type="button" class="btn btn-primary" (click)="crearRestaurante()">Crear Restaurante</button>
-            <button type="button" class="btn btn-success ml-2" (click)="exportCSVRestaurante()">Exportar CSV</button>
-            <button type="button" class="btn btn-danger ml-2" (click)="generarReportePDFRestaurantes()">Exportar
-              PDF</button>
-          </form>
-
-          <form [formGroup]="restauranteForm" *ngIf="restauranteEditando" class="mb-4">
-            <input type="hidden" formControlName="id">
-            <div class="form-group">
-              <label for="nombre">Nombre</label>
-              <input type="text" class="form-control" id="nombre" formControlName="nombre">
-            </div>
-            <div class="form-group">
-              <label for="direccion">Dirección</label>
-              <input type="text" class="form-control" id="direccion" formControlName="direccion">
-            </div>
-            <div class="form-group">
-              <label for="telefono">Teléfono</label>
-              <input type="text" class="form-control" id="telefono" formControlName="telefono">
-            </div>
-            <div class="form-group">
-              <label for="tipoCocina">Tipo de Cocina</label>
-              <input type="text" class="form-control" id="tipoCocina" formControlName="tipoCocina">
-            </div>
-            <div class="form-group">
-              <label for="capacidadPersonas">Capacidad de Personas</label>
-              <input type="number" class="form-control" id="capacidadPersonas" formControlName="capacidadPersonas">
-            </div>
-            <div class="form-group">
-              <label for="horaApertura">Hora de Apertura</label>
-              <input type="time" class="form-control" id="horaApertura" formControlName="horaApertura">
-            </div>
-            <div class="form-group">
-              <label for="horaCierre">Hora de Cierre</label>
-              <input type="time" class="form-control" id="horaCierre" formControlName="horaCierre">
-            </div>
-            <div class="form-group">
-              <label for="estado">Estado</label>
-              <select class="form-control" id="estado" formControlName="estado">
-                <option value="true">Activo</option>
-                <option value="false">Inactivo</option>
-              </select>
-            </div>
-            <button type="button" class="btn btn-primary" (click)="guardarCambios()">Guardar Cambios</button>
-            <button type="button" class="btn btn-danger ml-2" (click)="cancelarEdicion()">Cancelar</button>
-          </form>
+      <form [formGroup]="restauranteForm" (ngSubmit)="manejarRestauranteForm()">
+        <div class="form-group">
+          <label for="nombre">Nombre:</label>
+          <input type="text" class="form-control" id="nombre" formControlName="nombre">
         </div>
-      </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="direccion">Dirección:</label>
+            <input type="text" class="form-control" id="direccion" formControlName="direccion">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="telefono">Teléfono:</label>
+            <input type="text" class="form-control" id="telefono" formControlName="telefono">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="tipoCocina">Tipo de Cocina:</label>
+            <input type="text" class="form-control" id="tipoCocina" formControlName="tipoCocina">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="capacidadPersonas">Capacidad de Personas:</label>
+            <input type="text" class="form-control" id="capacidadPersonas" formControlName="capacidadPersonas">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-6">
+            <label for="horaApertura">Hora de Apertura:</label>
+            <input type="time" class="form-control" id="horaApertura" formControlName="horaApertura">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="horaCierre">Hora de Cierre:</label>
+            <input type="time" class="form-control" id="horaCierre" formControlName="horaCierre">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Imagen del Restaurante:</label>
+          <div class="form-row">
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="subirImagen" formControlName="opcionImagen" value="subir">
+                <label class="form-check-label" for="subirImagen">Subir Imagen</label>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" id="urlImagen" formControlName="opcionImagen" value="url">
+                <label class="form-check-label" for="urlImagen">URL de Imagen</label>
+              </div>
+            </div>
+          </div>
+          
+          <div class="mt-2">
+            <div *ngIf="restauranteForm.get('opcionImagen')?.value === 'subir'">
+              <input type="file" class="form-control-file" (change)="onFileSelected($event)">
+            </div>
+            
+            <div *ngIf="restauranteForm.get('opcionImagen')?.value === 'url'">
+              <input type="text" class="form-control" formControlName="urlImagen" placeholder="Ingrese la URL de la imagen">
+            </div>
+          </div>
+          
+          <img *ngIf="imagenPreview" [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-fluid mt-3">
+        </div>
+        
+        
+        <button type="submit" class="btn btn-primary">{{ restauranteForm.value.id ? 'Editar' : 'Crear' }} Restaurante</button>
+        <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">Cancelar</button>
+      </form>
     </div>
-<!-- Listado de restaurantes -->
-<div class="card mb-4">
-  <div class="card-header">
-    <h2>Lista de Restaurantes</h2>
-  </div>
-  <div class="card-body">
-    <div class="table-responsive">
-      <table class="table table-striped table-hover">
+
+    <!-- Columna de la tabla -->
+    <div class="col-md-7">
+      <h2>Listado de Restaurantes</h2>
+      <div *ngIf="restaurantes.length === 0" class="alert alert-info">No hay restaurantes registrados.</div>
+      
+      <table class="table table-striped">
         <thead>
           <tr>
-            <th>Nombre</th>
-            <th>Dirección</th>
-            <th>Teléfono</th>
-            <th>Tipo de Cocina</th>
-            <th>Capacidad</th>
-            <th>Horario</th>
-            <th>Estado</th>
-            <th>Imagen</th>
-            <th>Acciones</th>
+            <th scope="col">Imagen</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Dirección</th>
+            <th scope="col">Teléfono</th>
+            <th scope="col">Tipo de Cocina</th>
+            <th scope="col">Capacidad de Personas</th>
+            <th scope="col">Horario</th>
+            <th scope="col">Acciones</th>
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 5, currentPage: p }">
+          <tr *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 4, currentPage: page, totalItems: totalRestaurantes }">
+            <td><img [src]="restaurante.imagenRestaurante" alt="Imagen del restaurante" class="img-fluid"></td>
             <td>{{ restaurante.nombre }}</td>
             <td>{{ restaurante.direccion }}</td>
             <td>{{ restaurante.telefono }}</td>
             <td>{{ restaurante.tipoCocina }}</td>
             <td>{{ restaurante.capacidadPersonas }}</td>
             <td>{{ restaurante.horarioFuncionamiento }}</td>
-            <td>{{ restaurante.estado ? 'Activo' : 'Inactivo' }}</td>
             <td>
-              <img *ngIf="restaurante.imagenRestaurante" [src]="restaurante.imagenRestaurante"
-                alt="Imagen del Restaurante" class="img-thumbnail" style="max-width: 100px;">
-            </td>
-            <td>
-              <button class="btn btn-warning btn-sm" (click)="editarRestaurante(restaurante)">Editar</button>
-              <button class="btn btn-danger btn-sm" (click)="desactivarRestaurante(restaurante)"
-                *ngIf="restaurante.estado">Desactivar</button>
-              <button class="btn btn-success btn-sm" (click)="restaurarRestaurante(restaurante)"
-                *ngIf="!restaurante.estado">Restaurar</button>
-              <button class="btn btn-info btn-sm" (click)="verRestaurante(restaurante)">Ver Restaurante</button>
+              <button type="button" class="btn btn-primary btn-sm" (click)="verRestaurante(restaurante)">Editar</button>
+              <button type="button" class="btn btn-danger btn-sm ml-2" (click)="desactivarRestaurante(restaurante)" *ngIf="restaurante.estado">Desactivar</button>
+              <button type="button" class="btn btn-warning btn-sm ml-2" (click)="restaurarRestaurante(restaurante)" *ngIf="!restaurante.estado">Restaurar</button>
             </td>
           </tr>
         </tbody>
       </table>
-    </div>
-    <pagination-controls (pageChange)="p = $event"></pagination-controls>
-  </div>
-
-  
- <!-- Presentación del restaurante -->
- <div *ngIf="restauranteSeleccionado" class="card mb-4 text-center" style="background-color: #f8f9fa;">
-  <div class="card-header d-flex justify-content-center align-items-center"
-    style="background-color: #343a40; color: white;">
-    <h2 style="margin-bottom: 0;">{{ restauranteSeleccionado.nombre }} - Presentación</h2>
-  </div>
-  <div class="card-body">
-    <div class="row">
-      <div class="col-md-6 text-left">
-        <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
-          alt="Logo del Restaurante" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
-        <p><i class="fas fa-map-marker-alt"></i> {{ restauranteSeleccionado.direccion }}</p>
-        <p><i class="fas fa-phone"></i> Teléfono: {{ restauranteSeleccionado.telefono }}</p>
-        <p><i class="fas fa-users"></i> Capacidad: {{ restauranteSeleccionado.capacidadPersonas }} personas</p>
-        <p><i class="fas fa-star"></i> Calificación: {{ restauranteSeleccionado.calificacion }} / 5</p>
-        <p>
-          <i class="fas fa-clock"></i>
-          <span
-            [ngClass]="{'text-success': estaAbierto, 'text-danger': !estaAbierto || !restauranteSeleccionado.estadoActivo}">
-            {{ estaAbierto && restauranteSeleccionado.estadoActivo ? 'Abierto' : 'Cerrado' }} -
-            Horario de apertura: {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'apertura') }} -
-            Horario de cierre: {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}
-          </span>
-        </p>
-        <p><i class="fas fa-utensils"></i> Se especializa en: {{ restauranteSeleccionado.tipoCocina }}</p>
-        <p class="text-danger" *ngIf="!estaAbierto || !restauranteSeleccionado.estadoActivo">
-          {{ !restauranteSeleccionado.estadoActivo ? 'Restaurante inactivo' : 'Ahorita está cerrado, regresa mañana
-          por favor.' }}
-        </p>
-      </div>
-      <div class="row">
-        <div class="col-md-12 text-center">
-          <div class="d-flex justify-content-center mt-3">
-            <button type="button" class="btn btn-selector mx-2" (click)="selectOption('platos')">Platos a la
-              Carta</button>
-            <button type="button" class="btn btn-selector mx-2" (click)="selectOption('vista')">Menús</button>
-          </div>
-          <div class="row mt-5" >
-            <div class="col-md-12">
-                <ng-container *ngIf="selectedOption === 'platos'">
-                    <app-platocarta></app-platocarta>
-                </ng-container>
-                <ng-container *ngIf="selectedOption === 'vista'">
-                    <app-menu></app-menu>
-                </ng-container>
-            </div>
-        </div>
-        </div>
-      </div>
+      <pagination-controls (pageChange)="page = $event"></pagination-controls>
     </div>
   </div>
-</div> 
-
-
-
+</div>

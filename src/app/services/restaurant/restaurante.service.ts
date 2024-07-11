@@ -14,9 +14,11 @@ export class RestauranteService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
+  
+
   private handleRequest<T>(request: Observable<T>): Observable<T> {
     return request.pipe(
-      catchError((error: any) => {  
+      catchError((error: any) => {
         console.error('Error en la primera API', error);
         //Swal.fire('Error', 'Hubo un problema al comunicarse con la primera API. Intentando con la segunda API.', 'warning');
         return throwError(error);
@@ -32,8 +34,8 @@ export class RestauranteService {
 
     try {
       // Aquí agregas el RUC y docID antes de realizar la solicitud
-       restaurante.ruc = await this.authService.getUserRUC();
-       restaurante.docid = await this.authService.getUserUid();
+      restaurante.ruc = await this.authService.getUserRUC();
+      restaurante.docid = await this.authService.getUserUid();
       return restaurante;
     } catch (error) {
       console.error('Error al obtener RUC y docID', error);
@@ -46,7 +48,7 @@ export class RestauranteService {
   obtenerRestaurantePorId(id: number) {
     return this.http.get(`${this.apiUrl}/listar/${id}`);
   }
-  
+
   // Obtener todos los restaurantes
   obtenerTodos(): Observable<any[]> {
     return this.handleRequest(this.http.get<any[]>(`${this.apiUrl}/listar`))
