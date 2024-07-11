@@ -22,7 +22,7 @@
                 <ul class="list-group">
                   <li *ngFor="let plato of limitedSearchResults; let i = index"
                     class="list-group-item d-flex align-items-center">
-                    <img [src]="plato.imageUrl" alt="{{ plato.nombre }}" class="img-thumbnail search-result-img me-3">
+                    <img [src]="plato.image" alt="{{ plato.nombre }}" class="img-thumbnail search-result-img me-3">
                     <div>
                       <h5 class="mb-1">{{ plato.nombre }}</h5>
                       <p class="mb-1">S/ {{ plato.precio.toFixed(2) }}</p>
@@ -264,19 +264,19 @@
     </section>
   </div>
 </section>
-
 <div class="container">
   <div class="section-title">
     <h2>Nuestros <span>Restaurantes</span></h2>
     <p>Explora nuestra variedad de restaurantes disponibles</p>
   </div>
   <div class="row">
-    <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 5, currentPage: p }">
-      <div class="card shadow-sm h-100">
+    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 3, currentPage: p }">
+      <div class="card shadow-sm h-100 d-flex flex-column">
         <img class="card-img-top" [src]="restaurante.imagenRestaurante" alt="Imagen del Restaurante">
-        <div class="card-body d-flex flex-column">
+        <div class="card-body mt-auto">
           <h5 class="card-title">{{ restaurante.nombre }}</h5>
           <p class="card-text">{{ restaurante.tipoCocina }}</p>
+          <p class="card-text">Horario de apertura: {{ restaurante.horarioFuncionamiento }}</p>
         </div>
       </div>
     </div>

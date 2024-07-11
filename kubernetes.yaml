@@ -137,31 +137,31 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ms-menu
+  name: ms-menuplate
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ms-menu
+      app: ms-menuplate
   template:
     metadata:
       labels:
-        app: ms-menu
+        app: ms-menuplate
     spec:
       containers:
-      - name: ms-menu
-        image: naomicama/ms-menu:latest
+      - name: ms-menuplate
+        image: naomicama/ms-menuplate:latest
         ports:
         - containerPort: 8080
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-menu-service
+  name: ms-menuplate-service
 spec:
   type: LoadBalancer
   selector:
-    app: ms-menu
+    app: ms-menuplate
   ports:
   - protocol: TCP
     port: 8080
