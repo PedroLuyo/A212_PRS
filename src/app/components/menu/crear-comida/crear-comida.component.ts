@@ -339,7 +339,7 @@ export class CrearComidaComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'landscape' // or 'portrait'
     });
-  
+
     const img = new Image();
     img.src = 'assets/img/Logo Transparente Gastro Connect.png'; // Ruta local a la imagen en tu proyecto Angular
     img.onload = () => {
@@ -349,40 +349,40 @@ export class CrearComidaComponent implements OnInit {
       const logoHeight = img.height * (logoWidth / img.width);
       const logoX = (pageWidth - logoWidth) / 2;
       doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
-  
+
       // Agregar la frase debajo de la imagen
       doc.setFont('courier', 'normal');
       doc.setFontSize(14);
       const frase = 'Disfruta de la mejor gastronomía con Gastro Connect';
       const fraseY = logoHeight + 20;
       doc.text(frase, pageWidth / 2, fraseY, { align: 'center' });
-  
+
       const fecha = this.formatDate(new Date());
-  
+
       doc.setFont('courier', 'bold');
       doc.setFontSize(20);
       const titulo = 'Reporte de Comidas'; // Título ajustado
       const tituloY = fraseY + 20;
       doc.text(titulo, 14, tituloY);
-  
+
       doc.setFontSize(12);
       const fechaX = pageWidth - 14;
       doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
-  
-      const head = [['ID', 'Nombre', 'Categoría', 'Precio', 'Stock', 'Imagen', 'Menú', 'Estado']];
+
+      const head = [['Nombre', 'Categoría', 'Precio', 'Stock', 'Imagen', 'Menú']];
       const data = this.comidas.map((comida: Comida) => [
-        comida.comidaid.toString(),
         comida.nombrec,
         comida.categoria,
         comida.precio.toString(),
         comida.stock.toString(),
         comida.image,
-        this.obtenerNombreMenu(comida.menuid),
-        comida.estado
+        this.obtenerNombreMenu(comida.menuid)
       ]);
-  
-      let pageNumber = 1;
+
       const startY = tituloY + 10;
+
+      // Generar tabla con paginación
+      let pageNumber = 1;
       (doc as any).autoTable({
         head: head,
         body: data,
@@ -405,18 +405,21 @@ export class CrearComidaComponent implements OnInit {
         alternateRowStyles: {
           fillColor: [235, 235, 235]
         },
-        didDrawPage: (data: { settings: { margin: { left: number } } }) => {
-          const str = `Página ${pageNumber}`;
-          pageNumber++;
+        didDrawPage: () => {
+          // Dibujar número de página
+          const pageCurrentText = `Página ${pageNumber}`;
+          const pageTotalText = ` de ${doc.internal.pages.length - 1}`;
+          const text = pageCurrentText + pageTotalText;
           doc.setFontSize(10);
-          doc.text(str, pageWidth - data.settings.margin.left, pageHeight - 10, { align: 'right' });
+          doc.text(text, pageWidth - 14, pageHeight - 10, { align: 'right' });
+          pageNumber++;
         }
       });
-  
+
       doc.save('Reporte_Comidas.pdf'); // Nombre del archivo PDF ajustado
     };
   }
-  
+
   private formatDate(date: Date): string {
     const day = date.getDate().toString().padStart(2, '0');
     const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];

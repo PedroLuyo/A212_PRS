@@ -114,7 +114,7 @@ export class HistorialComponent implements OnInit {
       const fechaX = pageWidth - 14;
       doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
   
-      const head = [['ID', 'Nombre', 'Correo', 'Hora Reserva', 'Número de Personas']];
+      const head = [['N°', 'Nombre', 'Correo', 'Hora Reserva', 'Número de Personas']];
       const data = this.reservas.map(reserva => [
         reserva.id_reserva.toString(),
         reserva.nombre,
