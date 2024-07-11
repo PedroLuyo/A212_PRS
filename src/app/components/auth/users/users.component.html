@@ -1,4 +1,3 @@
-<!-- users.component.html -->
 <div class="mx-5 mt-5">
   <h3 class="text-center mb-">Listado de Usuarios</h3>
   
@@ -46,19 +45,19 @@
       </thead>
       <tbody>
         <tr *ngFor="let user of pagedUsers; index as i">
-          <td *ngIf="!user.editable">{{ user.dni }}</td>
+          <td *ngIf="!user.editable">{{ user.dni ? user.dni : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.dni" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.name }}</td>
+          <td *ngIf="!user.editable">{{ user.name ? user.name : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.name" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.role }}</td>
+          <td *ngIf="!user.editable">{{ user.role ? user.role : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.role" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.email }}</td>
+          <td *ngIf="!user.editable">{{ user.email ? user.email : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.email" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.direccion }}</td>
+          <td *ngIf="!user.editable">{{ user.direccion ? user.direccion : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.direccion" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.ruc }}</td>
+          <td *ngIf="!user.editable">{{ user.ruc ? user.ruc : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.ruc" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.estado }}</td>
+          <td *ngIf="!user.editable">{{ user.estado ? user.estado : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.estado" class="form-control"></td>
           <td>
             <button class="btn btn-primary btn-sm" *ngIf="!user.editable" (click)="editarUsuario(user)">Editar</button>
