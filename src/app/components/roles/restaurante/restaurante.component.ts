@@ -29,10 +29,8 @@ export class RestauranteComponent implements OnInit {
   mostrarPresentacionRestaurante: boolean = false;
   convertirHora: any;
   estaAbierto: boolean = false;
-  
+  userRuc: string = '';
 
-
-  
   constructor(
     private restauranteService: RestauranteService,
     private fb: FormBuilder,
@@ -53,12 +51,15 @@ export class RestauranteComponent implements OnInit {
       imagenRestaurante: [''],
       urlImagen: [''],
       docid: [''],
+      ruc: [''],
     });
   }
 
   async ngOnInit(): Promise<void> {
     const userUid = await this.authService.getUserUid();
     this.restauranteForm.get('docid')?.setValue(userUid);
+    const userRuc = await this.authService.getUserRUC(); // Obtener el RUC del usuario
+    this.restauranteForm.get('ruc')?.setValue(userRuc); // Asignar el RUC al formulario
     this.listarRestaurantes();
   }
 
