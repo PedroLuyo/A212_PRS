@@ -169,33 +169,7 @@
   </div>
 </div>
 
-<!-- Detalles del restaurante seleccionado -->
-<div *ngIf="restauranteSeleccionado" class="card mb-4">
-  <div class="card-header">
-    <h2>Detalles del Restaurante</h2>
-  </div>
-  <div class="card-body">
-    <div class="row">
-      <div class="col-md-8">
-        <p><strong>Nombre:</strong> {{ restauranteSeleccionado.nombre }}</p>
-        <p><strong>Dirección:</strong> {{ restauranteSeleccionado.direccion }}</p>
-        <p><strong>Teléfono:</strong> {{ restauranteSeleccionado.telefono }}</p>
-        <p><strong>Tipo de Cocina:</strong> {{ restauranteSeleccionado.tipoCocina }}</p>
-        <p><strong>Capacidad de Personas:</strong> {{ restauranteSeleccionado.capacidadPersonas }}</p>
-        <p><strong>Horario de Funcionamiento:</strong> {{ restauranteSeleccionado.horarioFuncionamiento }}</p>
-        <p><strong>Estado:</strong> {{ restauranteSeleccionado.estado ? 'Activo' : 'Inactivo' }}</p>
-        <!--<p><strong>ID del Gestor:</strong> {{ restauranteSeleccionado.docid }}</p>-->
-      </div>
-      <div class="col-md-4">
-        <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
-          alt="Imagen del Restaurante" class="img-fluid">
-      </div>
-    </div>
-    <div class="text-center mt-3">
-      <button class="btn btn-info" (click)="mostrarPresentacion()">Ver Presentación del Restaurante</button>
-    </div>
-  </div>
-</div>
+
 
 <!-- Presentación del restaurante -->
 <div *ngIf="restauranteSeleccionado" class="card mb-4 text-center" style="background-color: #f8f9fa;">
