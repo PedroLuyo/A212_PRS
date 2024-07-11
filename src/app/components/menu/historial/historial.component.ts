@@ -123,8 +123,9 @@ export class HistorialComponent implements OnInit {
         reserva.num_personas.toString()
       ]);
   
-      let pageNumber = 1;
       const startY = tituloY + 10;
+  
+      // Generar tabla sin paginación
       (doc as any).autoTable({
         head: head,
         body: data,
@@ -147,13 +148,22 @@ export class HistorialComponent implements OnInit {
         alternateRowStyles: {
           fillColor: [235, 235, 235]
         },
-        didDrawPage: (data: { settings: { margin: { left: number } } }) => {
-          const str = `Página ${pageNumber}`;
-          pageNumber++;
-          doc.setFontSize(10);
-          doc.text(str, pageWidth - data.settings.margin.left, pageHeight - 10, { align: 'right' });
-        }
+        // didDrawPage se usa para obtener la cantidad total de páginas
+        didDrawPage: () => {}
       });
+  
+      // Obtener el número total de páginas
+      const totalPages = doc.internal.pages.length - 1;
+  
+      // Actualizar cada página con el número de página y total de páginas
+      for (let i = 1; i <= totalPages; i++) {
+        doc.setPage(i);
+        const pageCurrentText = `Página ${i}`;
+        const pageTotalText = ` de ${totalPages}`;
+        const text = pageCurrentText + pageTotalText;
+        doc.setFontSize(10);
+        doc.text(text, pageWidth - 14, pageHeight - 10, { align: 'right' });
+      }
   
       doc.save('reporte_reservas.pdf'); // Nombre del archivo PDF ajustado
     };
