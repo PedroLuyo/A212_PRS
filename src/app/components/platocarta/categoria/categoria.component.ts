@@ -2,10 +2,11 @@ import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
-import { catchError, map, throwError } from 'rxjs';
+import { catchError, from, map, switchMap, throwError } from 'rxjs';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { AuthService } from '../../../services/auth/authService';
 
 declare var $: any;
 
@@ -26,7 +27,9 @@ export class CategoriaComponent  {
   errorAlCargar = false;
   filtroEstado: string = 'A'; // Filtro inicial para categorías activas
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient,
+    private authService: AuthService
+  ) { }
 
   ngOnInit() {
     this.getCategorias();
@@ -52,12 +55,16 @@ export class CategoriaComponent  {
   }
 
   getCategorias() {
-    let url = `${this.baseUrl}/obtener/estado/${this.filtroEstado}`;
-    this.http.get(url).pipe(
-      map((data: any) => data.sort((a: any, b: any) => b.id - a.id)), // Ordenar las categorías por ID de forma decreciente
-      catchError(error => {
-        this.errorAlCargar = true;
-        return throwError(error);
+    from(this.authService.getUserRUC()).pipe(
+      switchMap((ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}/estado/${this.filtroEstado}`;
+        return this.http.get(url).pipe(
+          map((data: any) => data.sort((a: any, b: any) => b.id - a.id)), // Ordenar las categorías por ID de forma decreciente
+          catchError(error => {
+            this.errorAlCargar = true;
+            return throwError(error);
+          })
+        );
       })
     ).subscribe(
       (data: any) => {
@@ -71,9 +78,19 @@ export class CategoriaComponent  {
   }
 
   getTotalCategorias() {
-    let url = `${this.baseUrl}/obtener`;
-    this.http.get(url).subscribe(
+    from(this.authService.getUserRUC()).pipe(
+      switchMap((ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+        return this.http.get(url).pipe(
+          catchError(error => {
+            console.error('Error al obtener categorías:', error);
+            return throwError(error);
+          })
+        );
+      })
+    ).subscribe(
       (data: any) => {
+        // Opcionalmente manejar los datos aquí si es necesario
       },
       (error) => {
         console.error('Error al obtener categorías:', error);
@@ -90,26 +107,37 @@ export class CategoriaComponent  {
   }
 
   crearCategoria() {
-    this.http.post(`${this.baseUrl}/crear`, this.categoria).subscribe(
-      (response: any) => {
-        console.log('Categoría creada:', response);
-        Swal.fire('¡Éxito!', 'La categoría ha sido creada exitosamente.', 'success');
-        
-        // Agregar la nueva categoría al inicio de la lista existente
-        this.categorias.unshift(response);
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        this.categoria.ruc = ruc; // Asignar el RUC obtenido del AuthService
   
-        // Actualizar el total de categorías
-        this.totalCategorias++;
+        // Asumiendo que this.categoria contiene todos los datos necesarios
+        this.http.post(`${this.baseUrl}/crear`, this.categoria).subscribe(
+          (response: any) => {
+            console.log('Categoría creada:', response);
+            Swal.fire('¡Éxito!', 'La categoría ha sido creada exitosamente.', 'success');
   
-        // Resetear el formulario y modo de edición
-        this.resetCategoriaForm();
+            // Agregar la nueva categoría al inicio de la lista existente
+            this.categorias.unshift(response);
+  
+            // Actualizar el total de categorías
+            this.getTotalCategorias();
+  
+            // Resetear el formulario y modo de edición
+            this.resetCategoriaForm();
+          },
+          (error) => {
+            console.error('Error al crear la categoría:', error);
+            Swal.fire('¡Error!', 'No se pudo crear la categoría. Por favor, inténtelo de nuevo.', 'error');
+          }
+        );
       },
-      (error) => {
-        console.error('Error al crear la categoría:', error);
-        Swal.fire('¡Error!', 'No se pudo crear la categoría. Por favor, inténtelo de nuevo.', 'error');
+      (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
       }
     );
   }
+  
 
   editarCategoria(categoria: any) {
     this.categoria = { ...categoria }; // Copiar la categoría para editar
@@ -238,7 +266,7 @@ exportarAPDF(): void {
       doc.setFont('courier', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(31, 30, 30);
-      const pageNumberText = `Página ${i} / ${pageCount}`;
+      const pageNumberText = `Página ${i} de ${pageCount}`;
       const pageSize = doc.internal.pageSize;
       const pageWidth = pageSize.getWidth();
       const pageHeight = pageSize.getHeight();

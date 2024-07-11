@@ -4,8 +4,9 @@ import { FormControl, NgForm } from '@angular/forms';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { CloudinaryService } from '../../../services/cloudinary/Cloudinary.service';
+import { AuthService } from '../../../services/auth/authService';
 
 import * as XLSX from 'xlsx';
 
@@ -36,9 +37,11 @@ export class ProductosComponent implements OnInit {
 
   selectedFile: File | undefined; // Variable para almacenar el archivo seleccionado
 
- 
+
   constructor(private http: HttpClient,
-    private cloudinaryService: CloudinaryService
+    private cloudinaryService: CloudinaryService,
+    private authService: AuthService
+
   ) { }
 
   ngOnInit() {
@@ -49,13 +52,13 @@ export class ProductosComponent implements OnInit {
 
   }
 
- 
+
   // Método para capturar el evento de selección de archivo
   onFileSelected(event: any) {
     this.selectedFile = event.target.files[0]; // Obtener el archivo seleccionado del evento
     this.uploadImageToCloudinary(); // Llamar al método para subir la imagen a Cloudinary
   }
-  
+
 
   // Método para subir la imagen a Cloudinary y actualizar el campo image del plato
   uploadImageToCloudinary() {
@@ -91,8 +94,8 @@ export class ProductosComponent implements OnInit {
       }
     );
   }
-  
-  
+
+
 
   buscarPlatos(event: Event) {
     const termino = (event.target as HTMLInputElement).value;
@@ -101,7 +104,7 @@ export class ProductosComponent implements OnInit {
       plato.nombre.toLowerCase().includes(termino.toLowerCase())
     );
   }
-  
+
 
 
 
@@ -116,23 +119,37 @@ export class ProductosComponent implements OnInit {
   }
 
   getPresentacionesActivas() {
-    this.http.get(this.baseUrlPresentacion + '/obtener/estado/A').subscribe(
-      (data: any) => {
-        this.presentaciones = data;
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        this.http.get(`${this.baseUrlPresentacion}/obtener/ruc/${ruc}`).subscribe(
+          (data: any) => {
+            this.presentaciones = data;
+          },
+          (error) => {
+            console.error('Error al obtener presentaciones por RUC:', error);
+          }
+        );
       },
       (error) => {
-        console.error('Error al obtener presentaciones:', error);
+        console.error('Error al obtener el RUC del usuario:', error);
       }
     );
   }
 
   getCategoriasActivas() {
-    this.http.get(this.baseUrlCategoria + '/obtener/estado/A').subscribe(
-      (data: any) => {
-        this.categorias = data;
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        this.http.get(`${this.baseUrlCategoria}/obtener/ruc/${ruc}`).subscribe(
+          (data: any) => {
+            this.categorias = data;
+          },
+          (error) => {
+            console.error('Error al obtener categorías por RUC:', error);
+          }
+        );
       },
       (error) => {
-        console.error('Error al obtener categorías:', error);
+        console.error('Error al obtener el RUC del usuario:', error);
       }
     );
   }
@@ -142,51 +159,84 @@ export class ProductosComponent implements OnInit {
     this.getPlatos(); // Llamar a la función para obtener platos según el nuevo filtro seleccionado
   }
 
-  gettotalidad() {
-    let url = `${this.baseUrl}/obtener`;
 
-    this.http.get(url).subscribe(
-      (data: any) => {
-        this.totalidad = data.length; // Actualizar el total de platos
+
+
+
+  gettotalidad() {
+    from(this.authService.getUserRUC()).subscribe({
+      next: (ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+
+        this.http.get(url).pipe(
+          catchError((error: any) => {
+            console.error('Error al obtener platos:', error);
+            return throwError(error);
+          })
+        ).subscribe({
+          next: (data: any) => {
+            this.totalidad = data.length; // Actualizar el total de platos
+          },
+          error: (error: any) => {
+            console.error('Error al obtener platos:', error);
+          }
+        });
       },
-      (error) => {
-        console.error('Error al obtener platos:', error);
+      error: (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
+      }
+    });
+  }
+
+
+  getPlatos() {
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+        if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
+          url += `/estado/${this.filtroEstado}`;
+        }
+        this.http.get(url).pipe(
+          catchError((error: any): Observable<never> => {
+            this.errorAlCargar = true;
+            return throwError(error);
+          })
+        ).subscribe({
+          next: (data: any) => {
+            // Ordenar los platos por ID de forma decreciente
+            this.platos = data.sort((a: any, b: any) => b.id - a.id);
+            this.totalPlatos = this.platos.length; // Actualizar el total de platos
+            this.platosFiltrados = this.platos; // Asignar platos filtrados al cargar
+          },
+          error: (error: any) => {
+            console.error('Error al obtener platos:', error);
+          }
+        });
+      },
+      (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
       }
     );
   }
 
-  getPlatos() {
-    let url = `${this.baseUrl}/obtener`;
-    if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
-      url += `/estado/${this.filtroEstado}`;
-    }
-    this.http.get(url).pipe(
-      catchError(error => {
-        this.errorAlCargar = true;
-        return throwError(error);
-      })
-    ).subscribe(
-      (data: any) => {
-        // Ordenar los platos por ID de forma decreciente
-        this.platos = data.sort((a: any, b: any) => b.id - a.id);
-        this.totalPlatos = this.platos.length; // Actualizar el total de platos
-        this.platosFiltrados = this.platos; // Asignar platos filtrados al cargar
-      },
-      (error) => {
-        console.error('Error al obtener platos:', error);
-      }
-    );
-}
+
 
 
   guardarPlato() {
-    if (this.modoEdicion) {
-      this.actualizarPlato();
-    } else {
-      this.crearPlato();
-      this.uploadImageToCloudinary(); // Añadir llamada aquí si quieres subir la imagen al crear el plato
-
-    }
+    from(this.authService.getUserRUC()).subscribe(
+      (ruc: string) => {
+        this.plato.ruc = ruc;
+        if (this.modoEdicion) {
+          this.actualizarPlato();
+        } else {
+          this.crearPlato();
+          this.uploadImageToCloudinary(); // Añadir llamada aquí si quieres subir la imagen al crear el plato
+        }
+      },
+      (error: any) => {
+        console.error('Error al obtener el RUC del usuario:', error);
+      }
+    );
   }
 
   crearPlato() {
@@ -223,7 +273,7 @@ export class ProductosComponent implements OnInit {
       }
     );
   }
-  
+
 
   restaurarplato(plato: any) {
     const nuevoEstado = plato.estado === 'A' ? 'I' : 'A';
@@ -268,7 +318,7 @@ export class ProductosComponent implements OnInit {
   cancelarEdicion() {
     this.resetPlatoForm(); // Método para limpiar el formulario y resetear el plato en modo de edición
   }
-  
+
 
 
   exportarAExcel(): void {
@@ -304,97 +354,97 @@ export class ProductosComponent implements OnInit {
     window.URL.revokeObjectURL(url); // Liberar el objeto URL creado
   }
 
-// Método para exportar a PDF
-exportarAPDF(): void {
-  const doc = new jsPDF({
-    orientation: 'landscape'
-  });
-
-  const img = new Image();
-  img.src = 'assets/img/Logo Transparente Gastro Connect.png';
-  img.onload = () => {
-    const pageWidth = doc.internal.pageSize.getWidth();
-    const logoWidth = pageWidth * 0.2;
-    const logoHeight = img.height * (logoWidth / img.width);
-    const logoX = (pageWidth - logoWidth) / 2;
-    doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
-
-    const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
-    const sloganX = pageWidth / 2;
-    const sloganY = logoHeight + 20;
-    doc.setTextColor(31, 30, 30);
-    doc.setFontSize(12);
-    doc.text(slogan, sloganX, sloganY, { align: 'center' });
-
-    const fecha = new Date().toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    }).replace(/ /g, '/').replace(/\//g, '-');
-
-    doc.setFont('courier', 'bold');
-    doc.setFontSize(20);
-    const titulo = 'Reporte de Productos';
-    const tituloY = sloganY + 20;
-    doc.text(titulo, 14, tituloY);
-
-    doc.setFontSize(12);
-    const fechaX = pageWidth - 14;
-    doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
-
-    const head = [['Nombre', 'Descripción', 'Precio', 'Categoría', 'Presentación', 'Stock']];
-    const data = this.platos.map(plato => [
-      plato.nombre,
-      plato.descripcion,
-      plato.precio,
-      this.getNombreCategoria(plato.id_categoria), // Implementa esta función según tu lógica
-      this.getTipoPresentacion(plato.id_presentacion), // Implementa esta función según tu lógica
-      plato.stock,
-    ]);
-
-    (doc as any).autoTable({
-      head: head,
-      body: data,
-      startY: tituloY + 20,
-      styles: {
-        cellWidth: 'auto',
-        fontSize: 10,
-        lineColor: [0, 0, 0],
-        lineWidth: 0.1
-      },
-      headStyles: {
-        fillColor: [0, 0, 0],
-        textColor: 255,
-        fontStyle: 'bold'
-      },
-      bodyStyles: {
-        fillColor: [255, 255, 255],
-        textColor: 0
-      },
-      alternateRowStyles: {
-        fillColor: [235, 235, 235]
-      }
+  // Método para exportar a PDF
+  exportarAPDF(): void {
+    const doc = new jsPDF({
+      orientation: 'landscape'
     });
 
-    const pageCount = doc.getNumberOfPages();
-    for (let i = 1; i <= pageCount; i++) {
-      doc.setPage(i);
-      doc.setFont('courier', 'normal');
-      doc.setFontSize(10);
+    const img = new Image();
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+    img.onload = () => {
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const logoWidth = pageWidth * 0.2;
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+
+      const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+      const sloganX = pageWidth / 2;
+      const sloganY = logoHeight + 20;
       doc.setTextColor(31, 30, 30);
-      const pageNumberText = `Página ${i}/${pageCount}`;
-      const pageSize = doc.internal.pageSize;
-      const pageWidth = pageSize.getWidth();
-      const pageHeight = pageSize.getHeight();
-      const footerY = pageHeight - 10;
-      doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY);
-    }
+      doc.setFontSize(12);
+      doc.text(slogan, sloganX, sloganY, { align: 'center' });
 
-    doc.save('reporte_productos.pdf');
-  };
-}
+      const fecha = new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).replace(/ /g, '/').replace(/\//g, '-');
 
-  
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(20);
+      const titulo = 'Reporte de Productos';
+      const tituloY = sloganY + 20;
+      doc.text(titulo, 14, tituloY);
+
+      doc.setFontSize(12);
+      const fechaX = pageWidth - 14;
+      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
+
+      const head = [['Nombre', 'Descripción', 'Precio', 'Categoría', 'Presentación', 'Stock']];
+      const data = this.platos.map(plato => [
+        plato.nombre,
+        plato.descripcion,
+        plato.precio,
+        this.getNombreCategoria(plato.id_categoria), // Implementa esta función según tu lógica
+        this.getTipoPresentacion(plato.id_presentacion), // Implementa esta función según tu lógica
+        plato.stock,
+      ]);
+
+      (doc as any).autoTable({
+        head: head,
+        body: data,
+        startY: tituloY + 20,
+        styles: {
+          cellWidth: 'auto',
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [0, 0, 0],
+          textColor: 255,
+          fontStyle: 'bold'
+        },
+        bodyStyles: {
+          fillColor: [255, 255, 255],
+          textColor: 0
+        },
+        alternateRowStyles: {
+          fillColor: [235, 235, 235]
+        }
+      });
+
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(31, 30, 30);
+        const pageNumberText = `Página ${i} de ${pageCount}`;
+        const pageSize = doc.internal.pageSize;
+        const pageWidth = pageSize.getWidth();
+        const pageHeight = pageSize.getHeight();
+        const footerY = pageHeight - 10;
+        doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY);
+      }
+
+      doc.save('reporte_productos.pdf');
+    };
+  }
+
+
 
 
 }
