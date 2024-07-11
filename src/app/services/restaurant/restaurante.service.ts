@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, throwError } from 'rxjs';
+import { from, Observable, throwError } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { AuthService } from '../auth/authService';
@@ -14,32 +14,22 @@ export class RestauranteService {
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 
-  
-
-  private handleRequest<T>(request: Observable<T>): Observable<T> {
+  private handleRequest(request: Observable<any>): Observable<any> {
     return request.pipe(
       catchError((error: any) => {
         console.error('Error en la primera API', error);
-        //Swal.fire('Error', 'Hubo un problema al comunicarse con la primera API. Intentando con la segunda API.', 'warning');
         return throwError(error);
       })
     );
   }
 
-  private async agregarRucYDocid(restaurante: any): Promise<any> {
-    // Suponiendo que obtienes el RUC y docID de alguna fuente, por ejemplo AuthService
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json'
-    });
-
+  private async agregarDocid(restaurante: any): Promise<any> {
     try {
-      // Aquí agregas el RUC y docID antes de realizar la solicitud
-      restaurante.ruc = await this.authService.getUserRUC();
       restaurante.docid = await this.authService.getUserUid();
       return restaurante;
     } catch (error) {
-      console.error('Error al obtener RUC y docID', error);
-      Swal.fire('Error', 'Hubo un problema al obtener el RUC y el docID.', 'error');
+      console.error('Error al obtener docID', error);
+      Swal.fire('Error', 'Hubo un problema al obtener el docID.', 'error');
       throw error;
     }
   }
@@ -48,9 +38,25 @@ export class RestauranteService {
   obtenerRestaurantePorId(id: number) {
     return this.http.get(`${this.apiUrl}/listar/${id}`);
   }
+  
+  
+  obtenerTodosPorGestor(): Observable<any[]> {
+    return from(this.authService.getUserUid()).pipe(
+      switchMap(docid => {
+        const url = `${this.apiUrl}/listar/docid/${docid}`;
+        return this.handleRequest(this.http.get<any[]>(url)).pipe(
+          catchError(async () => {
+            console.error('Error al obtener restaurantes con docid, intentando con otra API.');
+            const docid = await this.authService.getUserUid();
+            return this.handleRequest(this.http.get<any[]>(`${this.apiAngelo}/listar/docid/${docid}`));
+          })
+        );
+      })
+    );
+  }
 
-  // Obtener todos los restaurantes
-  obtenerTodos(): Observable<any[]> {
+   // Obtener todos los restaurantes
+   obtenerTodos(): Observable<any[]> {
     return this.handleRequest(this.http.get<any[]>(`${this.apiUrl}/listar`))
       .pipe(
         catchError(() => this.http.get<any[]>(`${this.apiAngelo}/listar`)
@@ -67,17 +73,17 @@ export class RestauranteService {
   // Crear un restaurante
   crearRestaurante(restaurante: any): Observable<any> {
     return new Observable<any>(observer => {
-      this.agregarRucYDocid(restaurante)
-        .then(restauranteConRucYDocid => {
+      this.agregarDocid(restaurante)
+        .then(restauranteConDocid  => {
           const headers = new HttpHeaders({
             'Content-Type': 'application/json'
           });
-          this.http.post<any>(`${this.apiUrl}/crear`, restauranteConRucYDocid, { headers })
+          this.http.post<any>(`${this.apiUrl}/crear`, restauranteConDocid , { headers })
             .pipe(
               catchError((error: any) => {
                 console.error('Error al crear restaurante en apiUrl', error);
                 // Intenta con la segunda API si falla la primera
-                return this.http.post<any>(`${this.apiAngelo}/crear`, restauranteConRucYDocid, { headers })
+                return this.http.post<any>(`${this.apiAngelo}/crear`, restauranteConDocid , { headers })
                   .pipe(
                     catchError((secondError: any) => {
                       console.error('Error al crear restaurante en apiAngelo', secondError);
@@ -100,14 +106,14 @@ export class RestauranteService {
   // Editar un restaurante
   editarRestaurante(idRestaurante: string, restauranteEditado: any): Observable<any> {
     return new Observable<any>(observer => {
-      this.agregarRucYDocid(restauranteEditado)
-        .then(restauranteEditadoConRucYDocid => {
-          this.http.put<any>(`${this.apiUrl}/editar/${idRestaurante}`, restauranteEditadoConRucYDocid)
+      this.agregarDocid(restauranteEditado)
+        .then(restauranteConDocid  => {
+          this.http.put<any>(`${this.apiUrl}/editar/${idRestaurante}`, restauranteConDocid)
             .pipe(
               catchError((error: any) => {
                 console.error('Error al editar restaurante en apiUrl', error);
                 // Intenta con la segunda API si falla la primera
-                return this.http.put<any>(`${this.apiAngelo}/editar/${idRestaurante}`, restauranteEditadoConRucYDocid)
+                return this.http.put<any>(`${this.apiAngelo}/editar/${idRestaurante}`, restauranteConDocid)
                   .pipe(
                     catchError((secondError: any) => {
                       console.error('Error al editar restaurante en apiAngelo', secondError);

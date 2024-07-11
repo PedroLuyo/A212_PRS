@@ -40,6 +40,10 @@
           </div>
         </div>
         <div class="form-group">
+          <label for="ruc">RUC:</label>
+          <input type="text" class="form-control" id="ruc" formControlName="ruc">
+        </div>
+        <div class="form-group">
           <label>Imagen del Restaurante:</label>
           <div class="form-row">
             <div class="col-md-6">
@@ -70,9 +74,15 @@
         </div>
         
         
-        <button type="submit" class="btn btn-primary">{{ restauranteForm.value.id ? 'Editar' : 'Crear' }} Restaurante</button>
-        <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">Cancelar</button>
+        <button type="submit" class="btn btn-primary" [disabled]="totalRestaurantes >= 3 && !restauranteForm.get('id')?.value">
+          {{ restauranteForm.get('id')?.value ? 'Editar' : 'Crear' }} Restaurante
+        </button>        <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">Cancelar</button>
       </form>
+      <div class="alert alert-info mt-3">
+        <p>Restaurantes creados: {{ totalRestaurantes }} / 3</p>
+        <p *ngIf="totalRestaurantes < 3">Puedes crear {{ 3 - totalRestaurantes }} restaurante(s) más.</p>
+        <p *ngIf="totalRestaurantes >= 3">Has alcanzado el límite de restaurantes. No puedes crear más.</p>
+      </div>
     </div>
 
     <!-- Columna de la tabla -->
@@ -90,6 +100,8 @@
             <th scope="col">Tipo de Cocina</th>
             <th scope="col">Capacidad de Personas</th>
             <th scope="col">Horario</th>
+            <th scope="col">RUC</th>
+
             <th scope="col">Acciones</th>
           </tr>
         </thead>
@@ -102,6 +114,8 @@
             <td>{{ restaurante.tipoCocina }}</td>
             <td>{{ restaurante.capacidadPersonas }}</td>
             <td>{{ restaurante.horarioFuncionamiento }}</td>
+            <td>{{ restaurante.ruc }}</td>
+
             <td>
               <button type="button" class="btn btn-primary btn-sm" (click)="verRestaurante(restaurante)">Editar</button>
               <button type="button" class="btn btn-danger btn-sm ml-2" (click)="desactivarRestaurante(restaurante)" *ngIf="restaurante.estado">Desactivar</button>

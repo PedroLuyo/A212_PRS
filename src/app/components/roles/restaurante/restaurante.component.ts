@@ -51,14 +51,14 @@ export class RestauranteComponent implements OnInit {
 
       opcionImagen: ['subir'], // Añade esto si no está ya
     });
+    this.totalRestaurantes = 0;
+
   }
 
   async ngOnInit(): Promise<void> {
     const userUid = await this.authService.getUserUid();
     this.restauranteForm.get('docid')?.setValue(userUid || ''); // Verifica que userUid no sea nulo
-    const userRuc = await this.authService.getUserRUC();
-    this.userRuc = userRuc || ''; // Verifica que userRuc no sea nulo
-    this.restauranteForm.get('ruc')?.setValue(userRuc || '');
+
 
     this.listarRestaurantes();
 
@@ -146,24 +146,39 @@ export class RestauranteComponent implements OnInit {
   }
   manejarRestauranteForm(): void {
     if (this.restauranteForm.valid) {
-      this.manejarImagenRestaurante().then(() => {
-        const restauranteData = this.restauranteForm.value; // Obtén los datos después de manejar la imagen
-        restauranteData.horarioFuncionamiento = `${restauranteData.horaApertura} - ${restauranteData.horaCierre}`;
-        
-        console.log('Datos del restaurante antes de enviar:', restauranteData); // Para depuración
-        
-        if (restauranteData.id) {
-          this.editarRestaurante(restauranteData);
+      // Si estamos editando un restaurante existente, permitimos continuar
+      if (this.restauranteForm.get('id')?.value) {
+        this.procesarFormulario();
+      } else {
+        // Si estamos creando un nuevo restaurante, verificamos el límite
+        if (this.totalRestaurantes >= 3) {
+          Swal.fire('Límite alcanzado', 'No se pueden crear más de 3 restaurantes.', 'warning');
         } else {
-          this.crearRestaurante(restauranteData);
+          this.procesarFormulario();
         }
-      }).catch((error) => {
-        console.error('Error al manejar la imagen:', error); // Para depuración
-        Swal.fire('Error', 'Hubo un problema al procesar la imagen. Por favor, inténtelo de nuevo.', 'error');
-      });
+      }
     } else {
       Swal.fire('Error', 'Por favor complete el formulario correctamente.', 'error');
     }
+  }
+  
+  // Método auxiliar para procesar el formulario
+  private procesarFormulario(): void {
+    this.manejarImagenRestaurante().then(() => {
+      const restauranteData = this.restauranteForm.value;
+      restauranteData.horarioFuncionamiento = `${restauranteData.horaApertura} - ${restauranteData.horaCierre}`;
+      
+      console.log('Datos del restaurante antes de enviar:', restauranteData);
+      
+      if (restauranteData.id) {
+        this.editarRestaurante(restauranteData);
+      } else {
+        this.crearRestaurante(restauranteData);
+      }
+    }).catch((error) => {
+      console.error('Error al manejar la imagen:', error);
+      Swal.fire('Error', 'Hubo un problema al procesar la imagen. Por favor, inténtelo de nuevo.', 'error');
+    });
   }
 
   crearRestaurante(nuevoRestaurante: any): void {
@@ -171,7 +186,7 @@ export class RestauranteComponent implements OnInit {
       (restauranteCreado: any) => {
         Swal.fire('Creado!', 'El restaurante ha sido creado exitosamente.', 'success');
         this.restauranteForm.reset();
-        this.listarRestaurantes();
+        this.listarRestaurantes(); // Esto actualizará el totalRestaurantes
       },
       (error: any) => {
         console.error('Error al crear restaurante', error);
@@ -196,9 +211,10 @@ export class RestauranteComponent implements OnInit {
   }
 
   listarRestaurantes(): void {
-    this.restauranteService.obtenerTodos().subscribe(
+    this.restauranteService.obtenerTodosPorGestor().subscribe(
       (data: any[]) => {
         this.restaurantes = data;
+        this.totalRestaurantes = data.length;
       },
       (error: any) => {
         console.error('Error al obtener restaurantes', error);
