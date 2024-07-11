@@ -1,57 +1,27 @@
-<!-- app.component.html 
+<!-- app.component.html -->
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <a class="navbar-brand">Restaurante</a>
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav">
-  
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/menu" routerLinkActive="active">Menu </a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/comida" routerLinkActive="active">Comida <span class="sr-only">(current)</span></a>
-        </li>-->
-
-<!-- Dropdown para Reservas
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" id="navbarDropdownMenuLink" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Reservas
-          </a>
-          <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
-            <a class="dropdown-item" routerLink="/reserva" routerLinkActive="active">Realizar Reserva</a>
-            <a class="dropdown-item" routerLink="/historial" routerLinkActive="active">Historial</a>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </nav> -->
-
-  <!-- app.component.html -->
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand">Restaurante</a>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
   <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="navbar-nav">
-
       <li class="nav-item active">
-        <a class="nav-link" routerLink="/menu">Menu </a>
+        <a class="nav-link" (click)="setView('menu')">Menu </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/comida">Comida <span class="sr-only">(current)</span></a>
+        <a class="nav-link" (click)="setView('comida')">Comida <span class="sr-only">(current)</span></a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/reserva">Reserva</a>
+        <a class="nav-link" (click)="setView('reserva')">Reserva</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" routerLink="/historial">Historial</a>
+        <a class="nav-link" (click)="setView('historial')">Historial</a>
       </li>
     </ul>
   </div>
 </nav>
 
-<!-- Agrega el siguiente código para mostrar el componente correspondiente -->
-<router-outlet></router-outlet>
+<app-historial *ngIf="currentView === 'historial'"></app-historial>
+<app-reserva *ngIf="currentView === 'reserva'"></app-reserva>
+<app-crearmenu *ngIf="currentView === 'menu'"></app-crearmenu>
+<app-comida *ngIf="currentView === 'comida'"></app-comida>

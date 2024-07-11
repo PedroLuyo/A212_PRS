@@ -6,5 +6,9 @@ import { Component } from '@angular/core';
   styleUrl: './menu.component.css'
 })
 export class MenuComponent {
+  currentView: string = 'menu';
 
+  setView(view: string): void {
+    this.currentView = view;
+  }
 }

@@ -7,7 +7,7 @@ import { ComidaVista } from '../../../models/menu/comida/comida-vista';
 })
 export class VistaMenuService {
   
-  private apiUrl = 'https://8080-vallegrande-msmenuplate-a11ap7qojus.ws-us115.gitpod.io/api/v1/menu/seleccion';
+  private apiUrl = 'http://localhost:8080/api/v1/menu/seleccion';
 
   constructor(private http: HttpClient) {}
 

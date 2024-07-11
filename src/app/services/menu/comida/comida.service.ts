@@ -11,7 +11,7 @@ import Swal from 'sweetalert2';
   providedIn: 'root'
 })
 export class ComidaService {
-  private apiUrl = 'https://8080-vallegrande-msmenuplate-a11ap7qojus.ws-us115.gitpod.io/api/v1/comida';
+  private apiUrl = 'http://localhost:8080/api/v1/comida';
 
   constructor(private http: HttpClient) {}
   
