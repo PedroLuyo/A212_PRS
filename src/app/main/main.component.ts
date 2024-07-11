@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { RestauranteMenuService } from '../services/restaurantmenu/restaurantmenu.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
+import { RestauranteService } from '../services/restaurant/restaurante.service';
+import Swal from 'sweetalert2';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -22,21 +24,34 @@ export class MainComponent implements OnInit {
   allPlatos: any[] = [];
   searchResults: any[] = [];
   showResultBox: boolean = false;
-  limitedSearchResults: any[] = []
+  limitedSearchResults: any[] = [];
   currentCartaPage: number = 1;
   currentMenuPage: number = 1;
+  currentRestaurantesPage: number = 1; // Agregado
   pageSize: number = 8;
   paginatedPlatosCarta: any[] = [];
   paginatedPlatosMenu: any[] = [];
   totalPagesCarta: number = 1;
   totalPagesMenu: number = 1;
   searchTerm: string = '';
+  restaurantes: any[] = [];
+  restauranteSeleccionado: any = null;
+  p: number = 1; // Página actual
+  itemsPerPage: number = 5;
+  totalPagesRestaurantes: number = 3;
 
-  constructor(private authService: AuthService, private restauranteMenuService: RestauranteMenuService) { }
+  constructor(
+    private authService: AuthService, 
+    private restauranteMenuService: RestauranteMenuService,
+    private restauranteService: RestauranteService,
+  ) { }
 
   async ngOnInit(): Promise<void> {
     this.updatePage();
     this.initCarousel();
+    this.listarRestaurantes();
+
+    this.totalPagesRestaurantes = Math.ceil(this.restaurantes.length / this.itemsPerPage);
 
     this.restauranteMenuService.getCartas().subscribe((platos: any[]) => {
       this.platoscarta = platos.filter((plato: { estado: string }) => plato.estado === 'A');
@@ -53,10 +68,30 @@ export class MainComponent implements OnInit {
     });
   }
 
+  onRestaurantesPageChange(page: number) {
+    this.currentRestaurantesPage = page;
+  }
+
+  verRestaurante(restaurante: any): void {
+    this.restauranteSeleccionado = restaurante;
+  }
+
   onCartaPageChange(page: number): void {
     if (page < 1 || page > this.totalPagesCarta) return;
     this.currentCartaPage = page;
     this.updatePaginatedPlatosCarta();
+  }
+
+  listarRestaurantes(): void {
+    this.restauranteService.obtenerTodos().subscribe(
+      (data: any[]) => {
+        this.restaurantes = data;
+      },
+      (error: any) => {
+        console.error('Error al obtener restaurantes', error);
+        Swal.fire('Error', 'Hubo un problema al obtener los restaurantes. Por favor, inténtelo de nuevo.', 'error');
+      }
+    );
   }
 
   onMenuPageChange(page: number): void {
@@ -124,7 +159,7 @@ export class MainComponent implements OnInit {
 
   async generarReportePDF(): Promise<void> {
     const doc = new jsPDF({
-      orientation: 'landscape', // también se puede usar 'portrait'
+      orientation: 'landscape',
       unit: "mm",
       format: "a4"
     });
@@ -134,7 +169,7 @@ export class MainComponent implements OnInit {
     img.onload = async () => {
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
-      const logoWidth = pageWidth * 0.2; // Ajustar el ancho del logo al 20% de la página
+      const logoWidth = pageWidth * 0.2;
       const logoHeight = img.height * (logoWidth / img.width);
       const logoX = (pageWidth - logoWidth) / 2;
       doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
@@ -144,15 +179,13 @@ export class MainComponent implements OnInit {
       doc.setFont('courier', 'bold');
       doc.setFontSize(20);
       const titulo = 'Reporte de Platos';
-      const tituloY = logoHeight + 20; // Espacio después del logo
-      doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
+      const tituloY = logoHeight + 20;
+      doc.text(titulo, 14, tituloY);
 
-      // Añadir fecha a la derecha del título
-      doc.setFontSize(12); // Tamaño de fuente para la fecha
-      const fechaX = pageWidth - 14; // Margen derecho
-      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
+      doc.setFontSize(12);
+      const fechaX = pageWidth - 14;
+      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
 
-      // Obtener los platos y preparar las filas para el reporte
       const platos = await this.restauranteMenuService.getPlatos().toPromise();
       const head = [['Nombre', 'Descripción', 'Precio']];
       const data = platos.filter((plato: { estado: string }) => plato.estado === 'A')
