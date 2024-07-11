@@ -425,6 +425,4 @@ export class CrearComidaComponent implements OnInit {
     return `${day}/${month}/${year}`;
   }
 
-
-
 }
