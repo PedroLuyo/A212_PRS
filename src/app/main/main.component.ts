@@ -4,7 +4,7 @@ import { RestauranteMenuService } from '../services/restaurantmenu/restaurantmen
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { RestauranteService } from '../services/restaurant/restaurante.service';
-import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 declare module 'jspdf' {
   interface jsPDF {
@@ -27,7 +27,7 @@ export class MainComponent implements OnInit {
   limitedSearchResults: any[] = [];
   currentCartaPage: number = 1;
   currentMenuPage: number = 1;
-  currentRestaurantesPage: number = 1; // Agregado
+  currentRestaurantesPage: number = 1;
   pageSize: number = 8;
   paginatedPlatosCarta: any[] = [];
   paginatedPlatosMenu: any[] = [];
@@ -36,22 +36,22 @@ export class MainComponent implements OnInit {
   searchTerm: string = '';
   restaurantes: any[] = [];
   restauranteSeleccionado: any = null;
-  p: number = 1; // Página actual
-  itemsPerPage: number = 5;
-  totalPagesRestaurantes: number = 3;
+  p: number = 1;
+  itemsPerPage: number = 3; // Ajustado a 3 restaurantes por página
+  totalPagesRestaurantes: number = 1;
 
   constructor(
     private authService: AuthService, 
     private restauranteMenuService: RestauranteMenuService,
     private restauranteService: RestauranteService,
+    private router: Router 
+
   ) { }
 
   async ngOnInit(): Promise<void> {
     this.updatePage();
     this.initCarousel();
     this.listarRestaurantes();
-
-    this.totalPagesRestaurantes = Math.ceil(this.restaurantes.length / this.itemsPerPage);
 
     this.restauranteMenuService.getCartas().subscribe((platos: any[]) => {
       this.platoscarta = platos.filter((plato: { estado: string }) => plato.estado === 'A');
@@ -67,7 +67,10 @@ export class MainComponent implements OnInit {
       this.allPlatos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
     });
   }
-
+  verRestauranteDetalle(restaurante: any): void {
+    // Navegar a la ruta de detalles del restaurante con el ID como parámetro
+    this.router.navigate(['/detalles', restaurante.id]);}
+    
   onRestaurantesPageChange(page: number) {
     this.currentRestaurantesPage = page;
   }
@@ -86,10 +89,10 @@ export class MainComponent implements OnInit {
     this.restauranteService.obtenerTodos().subscribe(
       (data: any[]) => {
         this.restaurantes = data;
+        this.totalPagesRestaurantes = Math.ceil(this.restaurantes.length / this.itemsPerPage); // Actualizado aquí
       },
       (error: any) => {
         console.error('Error al obtener restaurantes', error);
-        Swal.fire('Error', 'Hubo un problema al obtener los restaurantes. Por favor, inténtelo de nuevo.', 'error');
       }
     );
   }

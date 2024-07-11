@@ -4,8 +4,38 @@ body {
     height: 100vh;
 }
 
-#crearRestaurante {
+#contenidoRestaurante {
+    padding-top: 100px;
+}
+
+.container {
     padding: 20px;
+}
+
+.btn-selector {
+    background-color: var(--bordes);
+    color: #fff;
+    border-radius: 50px;
+    padding: 10px 25px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    transition: 0.3s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-selector:hover {
+    background-color: #0056b3;
+    color: #fff;
+}
+
+.mt-5 {
+    margin-top: 3rem;
+}
+
+.mt-3 {
+    margin-top: 1rem;
 }
 
 .card {
@@ -14,7 +44,6 @@ body {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: 20px auto;
     max-width: 900px;
-    /* Incrementa el ancho máximo para adaptarse a la tabla */
 }
 
 .card h2 {
@@ -33,9 +62,7 @@ body {
 .table th,
 .table td {
     text-align: center;
-    /* Centrar el texto en las celdas */
     vertical-align: middle;
-    /* Centrar verticalmente el contenido */
 }
 
 .table img {
@@ -94,21 +121,22 @@ body {
 }
 
 #titulo {
-margin-top: 90px;
+    margin-top: 90px;
 }
+
 body {
-    background-image: url('/src/assets/img/selector.png'); 
+    background-image: url('/src/assets/img/selector.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    background-attachment: fixed; 
+    background-attachment: fixed;
     margin: 0;
     padding: 0;
     height: 100vh;
 }
 
 .container {
-    margin-top: 80px; 
+    margin-top: 80px;
 }
 
 .text-center {
@@ -129,7 +157,7 @@ body {
 }
 
 .btn-selector:hover {
-    background-color: #0056b3; 
+    background-color: #0056b3;
     color: #fff;
 }
 
@@ -145,6 +173,6 @@ body {
     margin-top: 1rem;
 }
 
-#test{
+#test {
     padding-top: 100px;
 }

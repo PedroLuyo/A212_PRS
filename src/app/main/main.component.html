@@ -264,21 +264,30 @@
     </section>
   </div>
 </section>
+
+<!-- listado de restaurantes  -->
 <div class="container">
   <div class="section-title">
     <h2>Nuestros <span>Restaurantes</span></h2>
     <p>Explora nuestra variedad de restaurantes disponibles</p>
   </div>
   <div class="row">
-    <div class="col-lg-4 col-md-6 mb-4" *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 3, currentPage: p }">
+    <div class="col-lg-4 col-md-6 mb-4"
+      *ngFor="let restaurante of restaurantes | slice:(currentRestaurantesPage - 1) * itemsPerPage:currentRestaurantesPage * itemsPerPage">
       <div class="card shadow-sm h-100 d-flex flex-column">
         <img class="card-img-top" [src]="restaurante.imagenRestaurante" alt="Imagen del Restaurante">
         <div class="card-body mt-auto">
           <h5 class="card-title">{{ restaurante.nombre }}</h5>
           <p class="card-text">{{ restaurante.tipoCocina }}</p>
           <p class="card-text">Horario de apertura: {{ restaurante.horarioFuncionamiento }}</p>
+          <button class="btn btn-info btn-sm" (click)="verRestauranteDetalle(restaurante)">Ver Restaurante</button>
         </div>
       </div>
+    </div>
+  </div>
+  <div class="row" *ngIf="restaurantes.length === 0">
+    <div class="alert alert-warning" role="alert" style="text-align : center;">
+      No hay restaurantes por mostrar.
     </div>
   </div>
   <!-- Paginación -->
@@ -290,7 +299,7 @@
         </a>
       </li>
       <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesRestaurantes)"
-          [class.active]="page === currentRestaurantesPage">
+        [class.active]="page === currentRestaurantesPage">
         <a class="page-link" (click)="onRestaurantesPageChange(page)">{{ page }}</a>
       </li>
       <li class="page-item" [class.disabled]="currentRestaurantesPage === totalPagesRestaurantes">
@@ -301,6 +310,7 @@
     </ul>
   </nav>
 </div>
+
 
 
 

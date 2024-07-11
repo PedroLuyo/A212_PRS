@@ -430,5 +430,12 @@ export class RestauranteComponent implements OnInit {
       doc.save('reporte_restaurantes.pdf');
     };
   }
+  
+  selectedOption: string = '';
+
+  selectOption(option: string) {
+    this.selectedOption = option;
+  }
+
 
 }

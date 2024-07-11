@@ -39,6 +39,7 @@ import { ProductosComponent } from './components/platocarta/productos/productos.
 import { ReservasComponent } from './components/platocarta/reservas/reservas.component';
 import { CategoriaComponent } from './components/platocarta/categoria/categoria.component';
 import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
+import { DetallesComponent } from './components/detalles/detalles.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -70,6 +71,7 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
     ReservasComponent,
     CategoriaComponent,
     PresentacionComponent,
+    DetallesComponent,
   ],
   imports: [
     BrowserModule,

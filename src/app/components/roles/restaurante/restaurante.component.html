@@ -167,13 +167,12 @@
     </div>
     <pagination-controls (pageChange)="p = $event"></pagination-controls>
   </div>
-</div>
 
-
-
-<!-- Presentación del restaurante -->
-<div *ngIf="restauranteSeleccionado" class="card mb-4 text-center" style="background-color: #f8f9fa;">
-  <div class="card-header d-flex justify-content-center align-items-center" style="background-color: #343a40; color: white;">
+  
+ <!-- Presentación del restaurante -->
+ <div *ngIf="restauranteSeleccionado" class="card mb-4 text-center" style="background-color: #f8f9fa;">
+  <div class="card-header d-flex justify-content-center align-items-center"
+    style="background-color: #343a40; color: white;">
     <h2 style="margin-bottom: 0;">{{ restauranteSeleccionado.nombre }} - Presentación</h2>
   </div>
   <div class="card-body">
@@ -186,8 +185,9 @@
         <p><i class="fas fa-users"></i> Capacidad: {{ restauranteSeleccionado.capacidadPersonas }} personas</p>
         <p><i class="fas fa-star"></i> Calificación: {{ restauranteSeleccionado.calificacion }} / 5</p>
         <p>
-          <i class="fas fa-clock"></i> 
-          <span [ngClass]="{'text-success': estaAbierto, 'text-danger': !estaAbierto || !restauranteSeleccionado.estadoActivo}">
+          <i class="fas fa-clock"></i>
+          <span
+            [ngClass]="{'text-success': estaAbierto, 'text-danger': !estaAbierto || !restauranteSeleccionado.estadoActivo}">
             {{ estaAbierto && restauranteSeleccionado.estadoActivo ? 'Abierto' : 'Cerrado' }} -
             Horario de apertura: {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'apertura') }} -
             Horario de cierre: {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}
@@ -195,11 +195,32 @@
         </p>
         <p><i class="fas fa-utensils"></i> Se especializa en: {{ restauranteSeleccionado.tipoCocina }}</p>
         <p class="text-danger" *ngIf="!estaAbierto || !restauranteSeleccionado.estadoActivo">
-          {{ !restauranteSeleccionado.estadoActivo ? 'Restaurante inactivo' : 'Ahorita está cerrado, regresa mañana por favor.' }}
+          {{ !restauranteSeleccionado.estadoActivo ? 'Restaurante inactivo' : 'Ahorita está cerrado, regresa mañana
+          por favor.' }}
         </p>
       </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <div class="d-flex justify-content-center mt-3">
+            <button type="button" class="btn btn-selector mx-2" (click)="selectOption('platos')">Platos a la
+              Carta</button>
+            <button type="button" class="btn btn-selector mx-2" (click)="selectOption('vista')">Menús</button>
+          </div>
+          <div class="row mt-5" >
+            <div class="col-md-12">
+                <ng-container *ngIf="selectedOption === 'platos'">
+                    <app-platocarta></app-platocarta>
+                </ng-container>
+                <ng-container *ngIf="selectedOption === 'vista'">
+                    <app-menu></app-menu>
+                </ng-container>
+            </div>
+        </div>
+        </div>
+      </div>
     </div>
-
+  </div>
+</div> 
 
 
 

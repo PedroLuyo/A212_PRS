@@ -17,6 +17,7 @@ import { MenuComponent } from './components/menu/menu.component';
 import { ProductosComponent } from './components/platocarta/productos/productos.component';
 import { CategoriaComponent } from './components/platocarta/categoria/categoria.component';
 import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
+import { DetallesComponent } from './components/detalles/detalles.component';
 
 
 const routes: Routes = [
@@ -25,6 +26,8 @@ const routes: Routes = [
   { path: 'login', component: LoginComponent },
 
   { path: 'main', component: MainComponent },
+  { path: 'detalles/:id', component: DetallesComponent },
+
   { path: 'selector', component: SelectorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
   { path: 'restaurante', component: RestauranteComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor'] } },
   { path: 'gestor', component: GestorComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
