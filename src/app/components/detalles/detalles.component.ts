@@ -10,37 +10,25 @@ import { AuthService } from '../../services/auth/authService';
   styleUrls: ['./detalles.component.css']
 })
 export class DetallesComponent implements OnInit {
-  restauranteForm: FormGroup;
   restauranteSeleccionado: any = null;
   estaAbierto: boolean = false;
   selectedOption: string = '';
+  estadoRestaurante: string = '';
+
 
   constructor(
     private route: ActivatedRoute,
     private restauranteService: RestauranteService,
     private fb: FormBuilder,
-    private authService: AuthService
   ) {
-    this.restauranteForm = this.fb.group({
-      id: [''],
-      nombre: ['', Validators.required],
-      direccion: ['', Validators.required],
-      telefono: ['', Validators.required],
-      tipoCocina: [''],
-      capacidadPersonas: [''],
-      horaApertura: ['', Validators.required],
-      horaCierre: ['', Validators.required],
-      horarioFuncionamiento: [''],
-      estado: [true],
-      imagenRestaurante: [''],
-      urlImagen: [''],
-      docid: [''],
-    });
+ 
   }
 
   ngOnInit(): void {
     const restauranteId = +this.route.snapshot.params['id']; // Convertir a número
     this.obtenerRestaurante(restauranteId);
+    this.actualizarEstadoApertura();
+    setInterval(() => this.actualizarEstadoApertura(), 60000);
   }
 
   obtenerRestaurante(id: number): void {
@@ -48,6 +36,8 @@ export class DetallesComponent implements OnInit {
       (restaurante: any) => {
         this.restauranteSeleccionado = restaurante;
         this.verificarEstadoRestaurante();
+        this.actualizarEstadoApertura(); // Llamar aquí después de obtener el restaurante
+
       },
       (error: any) => {
         console.error('Error al obtener el restaurante', error);
@@ -65,8 +55,8 @@ export class DetallesComponent implements OnInit {
   }
 
   formatearHorario(horario: string, tipo: 'apertura' | 'cierre'): string {
-    const [apertura, cierre] = horario.split('-');
-    return tipo === 'apertura' ? apertura.trim() : cierre.trim();
+    const [horaApertura, horaCierre] = horario.split(' - ');
+    return tipo === 'apertura' ? horaApertura : horaCierre;
   }
 
   convertirAMPM(hora24: string): string {
@@ -86,6 +76,34 @@ export class DetallesComponent implements OnInit {
 
   ajustarMinutos(minutos: number): string {
     return minutos < 10 ? `0${minutos}` : `${minutos}`;
+  }
+
+  actualizarEstadoApertura() {
+    if (!this.restauranteSeleccionado || !this.restauranteSeleccionado.horarioFuncionamiento) {
+      console.log('Restaurante o horario no disponible');
+      return;
+    }
+  
+    const ahora = new Date();
+    const [horaApertura, horaCierre] = this.restauranteSeleccionado.horarioFuncionamiento.split(' - ');
+    
+    const [horaAperturaHH, horaAperturaMM] = horaApertura.split(':').map(Number);
+    const [horaCierreHH, horaCierreMM] = horaCierre.split(':').map(Number);
+    
+    const aperturaDate = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), horaAperturaHH, horaAperturaMM);
+    const cierreDate = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), horaCierreHH, horaCierreMM);
+    
+    // Si la hora de cierre es menor que la de apertura, asumimos que cierra al día siguiente
+    if (cierreDate <= aperturaDate) {
+      cierreDate.setDate(cierreDate.getDate() + 1);
+    }
+    
+    this.estaAbierto = ahora >= aperturaDate && ahora < cierreDate;
+  
+    console.log('Hora actual:', ahora);
+    console.log('Hora de apertura:', aperturaDate);
+    console.log('Hora de cierre:', cierreDate);
+    console.log('¿Está abierto?', this.estaAbierto);
   }
 
   estaDentroDelHorario(actual: string, apertura: string, cierre: string): boolean {

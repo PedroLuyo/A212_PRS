@@ -14,10 +14,15 @@
             <label for="direccion">Dirección:</label>
             <input type="text" class="form-control" id="direccion" formControlName="direccion">
           </div>
+          
           <div class="form-group col-md-6">
             <label for="telefono">Teléfono:</label>
-            <input type="text" class="form-control" id="telefono" formControlName="telefono">
+            <input type="text" class="form-control" id="telefono" formControlName="telefono" pattern="^\d{9}$" maxlength="9">
+            <div *ngIf="restauranteForm.get('telefono')?.errors?.['pattern'] && restauranteForm.get('telefono')?.touched" class="text-danger">
+              Debe haber exactamente 9 dígitos.
+            </div>
           </div>
+          
         </div>
         <div class="form-row">
           <div class="form-group col-md-6">
@@ -41,8 +46,13 @@
         </div>
         <div class="form-group">
           <label for="ruc">RUC:</label>
-          <input type="text" class="form-control" id="ruc" formControlName="ruc">
+          <input type="text" class="form-control" id="ruc" formControlName="ruc" pattern="^20\d{9}$" maxlength="11" required>
+          <div *ngIf="restauranteForm.get('ruc')?.hasError('pattern') && restauranteForm.get('ruc')?.touched" class="text-danger">
+            El RUC debe comenzar con '20' seguido de 9 dígitos.
+          </div>
         </div>
+        
+        
         <div class="form-group">
           <label>Imagen del Restaurante:</label>
           <div class="form-row">
@@ -73,10 +83,15 @@
           <img *ngIf="imagenPreview" [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-fluid mt-3">
         </div>
         
-        
+        <div>
+
         <button type="submit" class="btn btn-primary" [disabled]="totalRestaurantes >= 3 && !restauranteForm.get('id')?.value">
           {{ restauranteForm.get('id')?.value ? 'Editar' : 'Crear' }} Restaurante
-        </button>        <button type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">Cancelar</button>
+        </button>
+        
+        <button *ngIf="restauranteForm.get('id')?.value" type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">Cancelar</button>
+
+      </div>
       </form>
       <div class="alert alert-info mt-3">
         <p>Restaurantes creados: {{ totalRestaurantes }} / 3</p>
@@ -118,8 +133,8 @@
 
             <td>
               <button type="button" class="btn btn-primary btn-sm" (click)="verRestaurante(restaurante)">Editar</button>
-              <button type="button" class="btn btn-danger btn-sm ml-2" (click)="desactivarRestaurante(restaurante)" *ngIf="restaurante.estado">Desactivar</button>
-              <button type="button" class="btn btn-warning btn-sm ml-2" (click)="restaurarRestaurante(restaurante)" *ngIf="!restaurante.estado">Restaurar</button>
+              <!-- <button type="button" class="btn btn-danger btn-sm ml-2" (click)="desactivarRestaurante(restaurante)" *ngIf="restaurante.estado">Desactivar</button>
+              <button type="button" class="btn btn-warning btn-sm ml-2" (click)="restaurarRestaurante(restaurante)" *ngIf="!restaurante.estado">Restaurar</button> -->
             </td>
           </tr>
         </tbody>

@@ -1,51 +1,67 @@
-<!-- Presentación del restaurante -->
-<div *ngIf="restauranteSeleccionado" class="container-fluid px-0" id="contenidoRestaurante">
-  <div class="text-center py-4">
-    <h2 class="mb-0">{{ restauranteSeleccionado.nombre }} - Presentación</h2>
-  </div>
-  <div class="container mt-4 py-4 px-3">
-    <div class="row">
-      <div class="col-md-8 order-md-1">
-        <p><i class="fas fa-map-marker-alt"></i> {{ restauranteSeleccionado.direccion }}</p>
-        <p><i class="fas fa-phone"></i> Teléfono: {{ restauranteSeleccionado.telefono }}</p>
-        <p><i class="fas fa-users"></i> Capacidad: {{ restauranteSeleccionado.capacidadPersonas }} personas</p>
-        <p><i class="fas fa-star"></i> Calificación: {{ restauranteSeleccionado.calificacion }} / 5</p>
-        <p>
-          <i class="fas fa-clock"></i>
-          <span [ngClass]="{
-              'text-success': estaAbierto && restauranteSeleccionado.estadoActivo,
-              'text-danger': (!estaAbierto || !restauranteSeleccionado.estadoActivo)
-            }">
-            {{ estaAbierto && restauranteSeleccionado.estadoActivo ? 'Abierto' : 'Cerrado' }} -
-            Horario de apertura: {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'apertura') }} -
-            Horario de cierre: {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}
-          </span>
-        </p>
-        <p><i class="fas fa-utensils"></i> Se especializa en: {{ restauranteSeleccionado.tipoCocina }}</p>
-        <p class="text-danger" *ngIf="!estaAbierto || !restauranteSeleccionado.estadoActivo">
-          {{ !restauranteSeleccionado.estadoActivo ? 'Restaurante inactivo' : 'Ahorita está cerrado, regresa mañana por
-          favor.' }}
-        </p>
-        <div class="d-flex justify-content-center mt-3">
-          <button type="button" class="btn btn-selector mx-2" (click)="selectOption('platos')">Platos a la
-            Carta</button>
-          <button type="button" class="btn btn-selector mx-2" (click)="selectOption('vista')">Menús</button>
+  <div class="restaurant-page" *ngIf="restauranteSeleccionado" style="padding-top: 80px;">
+    <!-- Hero Section -->
+    <header class="hero" [ngStyle]="{'background-image': 'url(' + restauranteSeleccionado.imagenRestaurante + ')'}">
+      <div class="hero-content">
+        <h1>{{ restauranteSeleccionado.nombre }}</h1>
+        <p class="tagline">Especialistas en comida {{ restauranteSeleccionado.tipoCocina }}</p>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mt-5">
+      <div class="row">
+        <!-- About Section -->
+        <section class="col-md-8">
+          <h2 class="section-title">Sobre Nosotros</h2>
+          <p class="lead">Disfruta de una experiencia culinaria única en {{ restauranteSeleccionado.nombre }}, donde la
+            pasión por la comida {{ restauranteSeleccionado.tipoCocina }} se combina con un ambiente acogedor.</p>
+          <p>Nuestra capacidad para {{ restauranteSeleccionado.capacidadPersonas }} personas garantiza un espacio cómodo
+            para disfrutar de nuestros platos exquisitos.</p>
+        </section>
+
+        <!-- Info Section -->
+        <aside class="col-md-4">
+          <div class="info-card">
+            <h3>Información</h3>
+            <ul class="list-unstyled">
+              <li><i class="fas fa-map-marker-alt"></i> {{ restauranteSeleccionado.direccion }}</li>
+              <li><i class="fas fa-phone"></i> {{ restauranteSeleccionado.telefono }}</li>
+              <li><i class="fas fa-clock"></i> {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento,
+                'apertura') }} - {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}</li>
+              <li>
+                <span class="status-badge" [ngClass]="{'open': estaAbierto, 'closed': !estaAbierto}">
+                  {{ estaAbierto ? 'Abierto' : 'Cerrado' }}
+                </span>
+              </li>
+            </ul>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Menu Preview Section -->
+      <section class="menu-preview mt-5">
+        <h2 class="section-title">Nuestro Menú</h2>
+        <div class="row">
+          <div class="col-md-6">
+            <div class="menu-card">
+              <h3>Platos a la Carta</h3>
+              <p>Descubre nuestra selección de platos preparados con los mejores ingredientes.</p>
+              <button class="btn btn-primary">Ver Carta</button>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <div class="menu-card">
+              <h3>Menú del Día</h3>
+              <p>Disfruta de nuestras opciones diarias a un precio especial.</p>
+              <button class="btn btn-primary">Ver Menú</button>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="col-md-4 order-md-2">
-        <img *ngIf="restauranteSeleccionado.imagenRestaurante" [src]="restauranteSeleccionado.imagenRestaurante"
-          alt="Logo del Restaurante" class="img-fluid rounded-circle mb-3" style="max-width: 150px;">
-      </div>
-    </div>
-    <div class="row mt-5">
-      <div class="col-md-12">
-        <ng-container *ngIf="selectedOption === 'platos'">
-          <app-platocarta></app-platocarta>
-        </ng-container>
-        <ng-container *ngIf="selectedOption === 'vista'">
-          <app-menu></app-menu>
-        </ng-container>
-      </div>
-    </div>
+      </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-3 bg-light text-center">
+      <p>© 2024 {{ restauranteSeleccionado.nombre }} | RUC: {{ restauranteSeleccionado.ruc }}</p>
+    </footer>
   </div>
-</div>

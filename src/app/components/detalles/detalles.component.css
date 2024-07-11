@@ -1,178 +1,89 @@
-body {
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-}
-
-#contenidoRestaurante {
-    padding-top: 100px;
-}
-
-.container {
-    padding: 20px;
-}
-
-.btn-selector {
-    background-color: var(--bordes);
-    color: #fff;
-    border-radius: 50px;
-    padding: 10px 25px;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-selector:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-.mt-5 {
-    margin-top: 3rem;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-.card {
-    background: rgba(255, 255, 255, 0.8);
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    margin: 20px auto;
-    max-width: 900px;
-}
-
-.card h2 {
-    font-size: 24px;
-    font-weight: bold;
-}
-
-.table-responsive {
-    overflow-x: auto;
-}
-
-.table {
-    margin-bottom: 0;
-}
-
-.table th,
-.table td {
-    text-align: center;
-    vertical-align: middle;
-}
-
-.table img {
-    max-width: 80px;
-    border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.btn-selector {
-    background-color: var(--bordes);
-    color: #fff;
-    border-radius: 50px;
-    padding: 10px 25px;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-selector:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-.d-flex .btn {
-    margin: 0 10px;
-}
-
-.mt-5 {
-    margin-top: 3rem;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-.input-group-append button {
-    cursor: pointer;
-}
-
-@media (max-width: 768px) {
-    .card {
-        max-width: 100%;
-        margin: 10px;
-    }
-
-    .table-responsive {
-        -webkit-overflow-scrolling: touch;
-    }
-
-    .btn {
-        margin: 5px 0;
-    }
-}
-
-#titulo {
-    margin-top: 90px;
-}
-
-body {
-    background-image: url('/src/assets/img/selector.png');
+.restaurant-page {
+    font-family: 'Arial', sans-serif;
+  }
+  
+  .hero {
+    height: 60vh;
     background-size: cover;
     background-position: center;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-}
-
-.container {
-    margin-top: 80px;
-}
-
-.text-center {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
     text-align: center;
-}
+  }
+  
+  .hero-content {
+    background-color: rgba(0, 0, 0, 0.5);
+    padding: 2rem;
+  }
+  
+  .hero h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .tagline {
+    font-size: 1.2rem;
+  }
+  
+  .section-title {
+    border-bottom: 2px solid #f8f9fa;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .info-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+  
+  .info-card ul li {
+    margin-bottom: 0.5rem;
+  }
+  
+  .status-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+  
+  .status-badge.open {
+    background-color: #28a745;
+    color: white;
+  }
+  
+  .status-badge.closed {
+    background-color: #dc3545;
+    color: white;
+  }
+  
+  .menu-card {
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 1rem;
+    height: 100%;
+  }
+  
+  .menu-card h3 {
+    color: #007bff;
+  }
 
-.btn-selector {
-    background-color: var(--bordes);
-    color: #fff;
-    border-radius: 50px;
-    padding: 10px 25px;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 1px;
-    transition: 0.3s;
-    position: relative;
-    overflow: hidden;
-}
-
-.btn-selector:hover {
-    background-color: #0056b3;
-    color: #fff;
-}
-
-.d-flex .btn {
-    margin: 0 10px;
-}
-
-.mt-5 {
-    margin-top: 3rem;
-}
-
-.mt-3 {
-    margin-top: 1rem;
-}
-
-#test {
-    padding-top: 100px;
-}
+  .status-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-weight: bold;
+  }
+  
+  .open { background-color: #4CAF50; color: white; }
+  .closed { background-color: #F44336; color: white; }
+  .about-to-open { background-color: #FFC107; color: black; }
+  .recently-opened { background-color: #8BC34A; color: white; }
+  .about-to-close { background-color: #FF9800; color: white; }
+  .recently-closed { background-color: #FF5722; color: white; }
+  
+  .status-detail {
+    margin-left: 10px;
+    font-style: italic;
+  }

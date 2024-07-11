@@ -254,8 +254,38 @@ export class RestauranteComponent implements OnInit {
   }
 
   verRestaurante(restaurante: any): void {
+    // Primero, copiamos todos los datos del restaurante al formulario
     this.restauranteForm.patchValue(restaurante);
+    
+    // Luego, manejamos específicamente el horarioFuncionamiento
+    if (restaurante.horarioFuncionamiento) {
+      // Asumimos que el formato es "HH:MM - HH:MM"
+      const [horaApertura, horaCierre] = restaurante.horarioFuncionamiento.split(' - ');
+      
+      // Actualizamos los campos específicos
+      this.restauranteForm.patchValue({
+        horaApertura: horaApertura,
+        horaCierre: horaCierre
+      });
+    }
+  
+    // Aseguramos que el ID y el estado se establezcan correctamente
     this.restauranteForm.get('id')?.setValue(restaurante.id);
     this.restauranteForm.get('estado')?.setValue(restaurante.estado);
+  
+    // Si hay una imagen, actualizamos la vista previa
+    if (restaurante.imagenRestaurante) {
+      this.imagenPreview = restaurante.imagenRestaurante;
+      this.restauranteForm.patchValue({
+        opcionImagen: 'url',
+        urlImagen: restaurante.imagenRestaurante
+      });
+    } else {
+      this.imagenPreview = null;
+      this.restauranteForm.patchValue({
+        opcionImagen: 'subir',
+        urlImagen: ''
+      });
+    }
   }
 }
