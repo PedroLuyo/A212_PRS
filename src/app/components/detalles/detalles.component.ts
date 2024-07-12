@@ -117,4 +117,10 @@ export class DetallesComponent implements OnInit {
 
     return timeActual >= timeApertura && timeActual <= timeCierre;
   }
+
+
+
+
+
+  
 }
