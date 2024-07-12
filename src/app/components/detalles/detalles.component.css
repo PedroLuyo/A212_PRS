@@ -1,73 +1,92 @@
 .restaurant-page {
-    font-family: 'Arial', sans-serif;
-  }
-  
-  .hero {
-    height: 60vh;
-    background-size: cover;
-    background-position: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-align: center;
-  }
-  
-  .hero-content {
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 2rem;
-  }
-  
-  .hero h1 {
-    font-size: 3rem;
-    margin-bottom: 0.5rem;
-  }
-  
-  .tagline {
-    font-size: 1.2rem;
-  }
-  
-  .section-title {
-    border-bottom: 2px solid #f8f9fa;
-    padding-bottom: 0.5rem;
-    margin-bottom: 1rem;
-  }
-  
-  .info-card {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-  }
-  
-  .info-card ul li {
-    margin-bottom: 0.5rem;
-  }
-  
-  .status-badge {
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-weight: bold;
-  }
-  
-  .status-badge.open {
-    background-color: #28a745;
-    color: white;
-  }
-  
-  .status-badge.closed {
-    background-color: #dc3545;
-    color: white;
-  }
-  
-  .menu-card {
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    padding: 1rem;
-    height: 100%;
-  }
-  
-  .menu-card h3 {
-    color: #007bff;
-  }
+  font-family: 'Arial', sans-serif;
+}
 
-  
+.hero {
+  height: 60vh;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  text-align: center;
+}
+
+.hero-content {
+  background-color: rgba(0, 0, 0, 0.5);
+  padding: 2rem;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+.tagline {
+  font-size: 1.2rem;
+}
+
+.section-title {
+  border-bottom: 2px solid #f8f9fa;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+.info-card ul li {
+  margin-bottom: 0.5rem;
+}
+
+.status-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.status-badge.open {
+  background-color: #28a745;
+  color: white;
+}
+
+.status-badge.closed {
+  background-color: #dc3545;
+  color: white;
+}
+
+.menu-card {
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  padding: 1rem;
+  height: 100%;
+}
+
+.menu-card h3 {
+  color: var(--bordes);
+}
+
+.btn {
+  background-color: var(--bordes);
+  color: #fff;
+}
+
+
+.pagination .page-link {
+  color: var(--bordes);
+}
+
+.pagination .page-link:hover {
+  background-color: var(--bordes);
+  color: #fff;
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--bordes);
+  border-color: var(--bordes);
+  color: #fff;
+}

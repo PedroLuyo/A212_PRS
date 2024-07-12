@@ -77,6 +77,12 @@ export class DetallesComponent implements OnInit {
     this.totalPagesCarta = Math.ceil(this.platoscarta.length / this.pageSize);
   }
 
+  onMenuPageChange(page: number): void {
+    if (page < 1 || page > this.totalPagesMenu) return;
+    this.currentMenuPage = page;
+    this.updatePaginatedPlatosMenu();
+  }
+
   updatePaginatedPlatosMenu(): void {
     const start = (this.currentMenuPage - 1) * this.pageSize;
     const end = start + this.pageSize;
@@ -155,12 +161,6 @@ export class DetallesComponent implements OnInit {
 
     return timeActual >= timeApertura && timeActual <= timeCierre;
   }
-
-
-
-
-
-  
 
   getPrecioTachado(precio: number): number {
     return precio + Math.floor(Math.random() * 3) + 2;
