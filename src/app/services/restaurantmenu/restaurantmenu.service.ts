@@ -9,8 +9,8 @@ import { catchError } from 'rxjs/operators';
 export class RestauranteMenuService {
 
   private apiUrl = 'https://8086-vallegrande-msrestauran-zp5gu5cznrm.ws-us115.gitpod.io/api/v1/products';
-  private apiUrlAngelo = 'http://localhost:8086/api/v1/products';
-  
+  private apiUrlAngelo = 'http://ms-menurestaurant-service:8086/api/v1/products'; // Para pruebas en cloud 
+//private apiUrlAngelo = 'http://localhost:8086/api/v1/products'; // Para pruebas locales
   constructor(private http: HttpClient) { }
 
   getPlatos(): Observable<any> {
