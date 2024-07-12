@@ -288,4 +288,8 @@ async login({ email, password }: any) {
     // Realiza la actualización solo con las propiedades provistas en userData
     return this.usersCollection.doc(id).update(userData);
   }
+
+  updateUserGestor(uid: string, data: Partial<Users>): Promise<void> {
+    return this.db.collection('users').doc(uid).update(data);
+  }
 }
