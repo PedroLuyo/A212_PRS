@@ -11,7 +11,6 @@ import { AuthService } from '../auth/authService';
 export class RestauranteService {
   private apiUrl = 'http://localhost:8090/api/v1/restaurants';
   private apiAngelo = 'http://localhost:8090/v1/api/restaurants';
-  private apiAngelo = 'http://ms-restaurant-service:8090/v1/api/restaurants';
 
   constructor(private http: HttpClient, private authService: AuthService) { }
 

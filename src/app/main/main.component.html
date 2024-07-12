@@ -74,6 +74,19 @@
                   <span class="input-group-text"><i class="bi bi-search"></i></span>
                 </div>
               </div>
+
+              <div id="search-results" *ngIf="showResultBox" class="mt-2 scrollable-results">
+                <ul class="list-group">
+                  <li *ngFor="let plato of searchResults" class="list-group-item d-flex align-items-center">
+                    <img [src]="plato.image" alt="{{ plato.nombre }}" class="img-thumbnail search-result-img me-3">
+                    <div>
+                      <h5 class="mb-1">{{ plato.nombre }}</h5>
+                      <p class="mb-1">S/ {{ plato.precio.toFixed(2) }}</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
             </div>
           </div>
         </div>

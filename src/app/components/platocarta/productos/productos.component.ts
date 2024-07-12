@@ -69,7 +69,7 @@ export class ProductosComponent implements OnInit {
 
     const formData = new FormData();
     formData.append('file', this.selectedFile);
-    formData.append('upload_preset', 'cloudinary-product');
+    formData.append('upload_preset', 'cloudinary-letterplates');
 
     this.cloudinaryService.uploadImg(formData).pipe(
       catchError(error => {
