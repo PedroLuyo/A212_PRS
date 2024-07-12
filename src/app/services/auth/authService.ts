@@ -19,6 +19,7 @@ import {
 import { EventEmitter } from '@angular/core';
 import { AngularFireAuth } from '@angular/fire/compat/auth';
 import { Router } from '@angular/router';
+import { query, where, getDocs, collection } from '@angular/fire/firestore';
 
 @Injectable({
   providedIn: 'root',
@@ -291,5 +292,12 @@ async login({ email, password }: any) {
 
   updateUserGestor(uid: string, data: Partial<Users>): Promise<void> {
     return this.db.collection('users').doc(uid).update(data);
+  }
+
+  async isDniUnique(dni: string): Promise<boolean> {
+    const usersRef = collection(this.db.firestore, 'users');
+    const q = query(usersRef, where('dni', '==', dni));
+    const querySnapshot = await getDocs(q);
+    return querySnapshot.empty;
   }
 }

@@ -1,39 +1,42 @@
-  <div class="container">
-  <div class="container-fluid">
-    <div class="row">
-      <div class="col-lg-6 info-section">
-        <h1 class="mb-4">Conviértete en Gestor</h1>
-        <p class="lead mb-4">Como gestor, tendrás acceso a herramientas exclusivas para:</p>
-        <ul class="feature-list">
-          <li><i class="fas fa-utensils"></i> Administrar restaurantes</li>
-          <li><i class="fas fa-chart-line"></i> Analizar el rendimiento</li>
-          <li><i class="fas fa-users"></i> Mejorar la experiencia de los comensales</li>
-          <li><i class="fas fa-star"></i> Destacar en el mercado gastronómico</li>
-        </ul>
+<div class="container">
+  <div class="row">
+    <div class="col-lg-6 info-section">
+      <h1 class="mb-4">Conviértete en Gestor</h1>
+      <p class="lead mb-4">Como gestor, tendrás acceso a herramientas exclusivas para:</p>
+      <ul class="feature-list">
+        <li><i class="fas fa-utensils"></i> Administrar restaurantes</li>
+        <li><i class="fas fa-chart-line"></i> Analizar el rendimiento</li>
+        <li><i class="fas fa-users"></i> Mejorar la experiencia de los comensales</li>
+        <li><i class="fas fa-star"></i> Destacar en el mercado gastronómico</li>
+      </ul>
+    </div>
+    <div class="col-lg-6 form-section">
+      <div class="form-container" *ngIf="!isGestor">
+        <h2 class="text-center mb-4">Actualiza tu perfil</h2>
+        <form [formGroup]="gestorForm" (ngSubmit)="actualizarAGestor()">
+          <div class="mb-4">
+            <label for="dni" class="form-label">DNI</label>
+            <div class="input-group">
+              <span class="input-group-text">
+                <i class="fas fa-id-card"></i>
+              </span>
+              <input type="text" id="dni" formControlName="dni" class="form-control" placeholder="Ingresa tu DNI">
+            </div>
+            <div *ngIf="gestorForm.get('dni')?.invalid && gestorForm.get('dni')?.touched" class="text-danger mt-2">
+              <small>El DNI es requerido y debe tener 8 dígitos numéricos.</small>
+            </div>
+          </div>
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary btn-lg" [disabled]="gestorForm.invalid">
+              <i class="fas fa-user-plus me-2"></i> Actualizar a Gestor
+            </button>
+          </div>
+        </form>
       </div>
-      <div class="col-lg-6 form-section">
-        <div class="form-container">
-          <h2 class="text-center mb-4">Actualiza tu perfil</h2>
-          <form [formGroup]="gestorForm" (ngSubmit)="actualizarAGestor()">
-            <div class="mb-4">
-              <label for="dni" class="form-label">DNI</label>
-              <div class="input-group">
-                <span class="input-group-text">
-                  <i class="fas fa-id-card"></i>
-                </span>
-                <input type="text" id="dni" formControlName="dni" class="form-control" placeholder="Ingresa tu DNI">
-              </div>
-              <div *ngIf="gestorForm.get('dni')?.invalid && gestorForm.get('dni')?.touched" class="text-danger mt-2">
-                <small>El DNI es requerido y debe tener 8 dígitos numéricos.</small>
-              </div>
-            </div>
-            <div class="d-grid">
-              <button type="submit" class="btn btn-primary btn-lg" [disabled]="gestorForm.invalid">
-                <i class="fas fa-user-plus me-2"></i> Actualizar a Gestor
-              </button>
-            </div>
-          </form>
-        </div>
+      <div class="text-center" *ngIf="isGestor">
+        <h2 class="mb-4">¡Ya eres Gestor!</h2>
+        <p class="lead">Tienes acceso a todas las funcionalidades de gestor.</p>
+        <i class="fas fa-check-circle fa-5x text-success"></i>
       </div>
     </div>
   </div>

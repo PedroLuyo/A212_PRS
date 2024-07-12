@@ -9,7 +9,7 @@ import { AuthService } from '../auth/authService';
   providedIn: 'root'
 })
 export class RestauranteService {
-  private apiUrl = 'https://8090-vallegrande-msrestauran-2u2bg9btctn.ws-us115.gitpod.io/api/v1/restaurants';
+  private apiUrl = 'http://localhost:8090/api/v1/restaurants';
   private apiAngelo = 'http://localhost:8090/v1/api/restaurants';
 
   constructor(private http: HttpClient, private authService: AuthService) { }

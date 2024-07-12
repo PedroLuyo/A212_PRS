@@ -64,9 +64,26 @@ export class SelectorComponent implements OnInit {
       const { email, password } = this.loginForm.value;
       try {
         await this.authService.login({ email, password });
-        Swal.fire('Inicio de sesión exitoso!', 'Bienvenido!', 'success');
-        this.closeLoginModal();
-        this.router.navigate(['/dashboard']); // Redirige al dashboard o página correspondiente
+        
+        // Verificar el rol del usuario después de iniciar sesión
+        const userRole = await this.authService.getUserRole();
+        
+        if (userRole === 'gestor') {
+          Swal.fire('Inicio de sesión exitoso!', 'Bienvenido, Gestor!', 'success');
+          this.closeLoginModal();
+          this.router.navigate(['/restaurante']); // Redirige al componente de restaurante
+        } else {
+          Swal.fire({
+            title: 'Información',
+            text: 'No tienes permisos de gestor. Si deseas convertirte en gestor, por favor, actualiza tu perfil.',
+            icon: 'info',
+            confirmButtonText: 'Entendido'
+          });
+          this.closeLoginModal();
+          // Aquí puedes decidir si quieres redirigir al usuario a alguna página específica
+          // Por ejemplo, podrías redirigirlo a una página para actualizar su perfil
+          // this.router.navigate(['/actualizar-perfil']);
+        }
       } catch (error) {
         Swal.fire('Error de inicio de sesión', (error as Error).message, 'error');
       }

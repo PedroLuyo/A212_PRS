@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class RestauranteMenuService {
 
-  private apiUrl = 'https://8086-vallegrande-msrestauran-rnlzsrt2wpb.ws-us115.gitpod.io/api/v1/products';
+  private apiUrl = 'http://localhost:8086/api/v1/products';
   private apiUrlAngelo = 'http://ms-menurestaurant-service:8086/api/v1/products';
   
   constructor(private http: HttpClient) { }
