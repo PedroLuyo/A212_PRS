@@ -300,4 +300,19 @@ async login({ email, password }: any) {
     const querySnapshot = await getDocs(q);
     return querySnapshot.empty;
   }
+
+  getUserNameByUid(uid: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      this.db.collection('users').doc(uid).get().subscribe((doc) => {
+        if (doc.exists) {
+          const userData = doc.data() as { name?: string };
+          resolve(userData.name || 'Desconocido');
+        } else {
+          resolve('Desconocido');
+        }
+      }, reject);
+    });
+  }
+  
+
 }

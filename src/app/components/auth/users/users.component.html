@@ -1,93 +1,187 @@
-<div class="mx-5 mt-5" style="padding: 3em;">
-  <h3 class="text-center mb-">Listado de Usuarios</h3>
-  
-  <div class="d-flex justify-content-between mb-3">
-    <div>
-      <button class="btn btn-success btn-sm ml-2" (click)="exportCSV()">
-        <i class="fas fa-download mr-1"></i> Descargar CSV
-      </button>
-      <button class="btn btn-danger btn-sm ml-2" (click)="generarReportePDF()">
-        <i class="fas fa-download mr-1"></i> Descargar PDF
-      </button>
+<div class="dashboard">
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h3>Admin Panel</h3>
     </div>
-    <form [formGroup]="searchForm" (ngSubmit)="filterUsers()" class="d-flex align-items-center">
-      <button type="submit" class="btn btn-primary btn-sm mr-2">Filtrar</button>
-      <div class="form-group mb-0 d-flex align-items-center">
-        <input type="text" class="form-control ml-2" placeholder="Buscar por nombre" formControlName="nombre">
-        <select class="form-control ml-2" id="rol" formControlName="rol">
-          <option value="">Todos</option>
-          <option value="admin">Admin</option>
-          <option value="gestor">Gestor</option>
-          <option value="comensal">Comensal</option>
-        </select>
-        <select class="form-control ml-2" id="estado" formControlName="estado">
-          <option value="">Todos</option>
-          <option value="A">Activo</option>
-          <option value="I">Inactivo</option>
-        </select>
-      </div>
-    </form>
-  </div>
-
-  <div class="table-responsive">
-    <table class="table table-hover">
-      <thead class="thead-dark">
-        <tr>
-          <th>DNI</th>
-          <th>Nombre</th>
-          <th>Rol</th>
-          <th>Correo</th>
-          <!-- <th>Dirección</th> -->
-          <!-- <th>RUC</th> -->
-          <th>Estado</th>
-          <th class="text-center">  ACCIONES  </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let user of pagedUsers; index as i">
-          <td *ngIf="!user.editable">{{ user.dni ? user.dni : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.dni" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.name ? user.name : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.name" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.role ? user.role : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.role" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.email ? user.email : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.email" class="form-control"></td>
-          <!-- <td *ngIf="!user.editable">{{ user.direccion ? user.direccion : '-No necesario-' }}</td> -->
-          <!-- <td *ngIf="user.editable"><input [(ngModel)]="user.direccion" class="form-control"></td> -->
-          <!-- <td *ngIf="!user.editable">{{ user.ruc ? user.ruc : '-No necesario-' }}</td> -->
-          <!-- <td *ngIf="user.editable"><input [(ngModel)]="user.ruc" class="form-control"></td> -->
-          <td *ngIf="!user.editable">{{ user.estado ? user.estado : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.estado" class="form-control"></td>
-          <td>
-            <button class="btn btn-primary btn-sm" *ngIf="!user.editable" (click)="editarUsuario(user)">Editar</button>
-            <button class="btn btn-success btn-sm" *ngIf="user.editable" (click)="confirmarEdicion(user)">Confirmar</button>
-            <button class="btn btn-danger btn-sm" (click)="eliminarOrestaurarUsuario(user)">
-              {{ user.estado === 'A' ? 'Eliminar' : 'Restaurar' }}
-            </button>
-            <button class="btn btn-secondary btn-sm" *ngIf="user.editable" (click)="cancelarEdicion(user)">Cancelar</button>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <!-- Paginación -->
-  <nav *ngIf="totalPages > 1">
-    <ul class="pagination justify-content-center mt-4">
-      <li class="page-item" [class.disabled]="currentPage === 1">
-        <a class="page-link" (click)="onPageChange(currentPage - 1)" aria-label="Previous">
-          <span aria-hidden="true">&laquo;</span>
+    <ul class="list-unstyled components">
+      <li [class.active]="currentView === 'usuarios'">
+        <a (click)="toggleView('usuarios')">
+          <i class="fas fa-users"></i> Usuarios
         </a>
       </li>
-      <li class="page-item" *ngFor="let page of getPaginationArray()" [class.active]="page === currentPage">
-        <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
-      </li>
-      <li class="page-item" [class.disabled]="currentPage === totalPages">
-        <a class="page-link" (click)="onPageChange(currentPage + 1)" aria-label="Next">
-          <span aria-hidden="true">&raquo;</span>
+      <li [class.active]="currentView === 'restaurantes'">
+        <a (click)="toggleView('restaurantes')">
+          <i class="fas fa-utensils"></i> Restaurantes
         </a>
       </li>
     </ul>
   </nav>
+
+  <div class="main-content">
+    <div class="container-fluid">
+      <div *ngIf="currentView === 'usuarios'">
+        <h2 class="mb-4">Gestión de Usuarios</h2>
+        
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <div>
+                <button class="btn btn-outline-success mr-2" (click)="exportCSV()">
+                  <i class="fas fa-file-csv"></i> CSV
+                </button>
+                <button class="btn btn-outline-danger" (click)="generarReportePDF()">
+                  <i class="fas fa-file-pdf"></i> PDF
+                </button>
+              </div>
+              <form [formGroup]="searchForm" (ngSubmit)="filterUsers()" class="d-flex">
+                <input type="text" class="form-control mr-2" placeholder="Nombre" formControlName="nombre">
+                <select class="form-control mr-2" formControlName="rol">
+                  <option value="">Rol</option>
+                  <option value="admin">Admin</option>
+                  <option value="gestor">Gestor</option>
+                  <option value="comensal">Comensal</option>
+                </select>
+                <select class="form-control mr-2" formControlName="estado">
+                  <option value="">Estado</option>
+                  <option value="A">Activo</option>
+                  <option value="I">Inactivo</option>
+                </select>
+                <button type="submit" class="btn btn-primary">Filtrar</button>
+              </form>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>DNI</th>
+                    <th>Nombre</th>
+                    <th>Rol</th>
+                    <th>Correo</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let user of pagedUsers">
+                    <td>
+                      <span *ngIf="!user.editable">{{ user.dni || '-' }}</span>
+                      <input *ngIf="user.editable" [(ngModel)]="user.dni" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                      <span *ngIf="!user.editable">{{ user.name || '-' }}</span>
+                      <input *ngIf="user.editable" [(ngModel)]="user.name" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                      <span *ngIf="!user.editable">{{ user.role || '-' }}</span>
+                      <input *ngIf="user.editable" [(ngModel)]="user.role" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                      <span *ngIf="!user.editable">{{ user.email || '-' }}</span>
+                      <input *ngIf="user.editable" [(ngModel)]="user.email" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                      <span *ngIf="!user.editable">{{ user.estado || '-' }}</span>
+                      <input *ngIf="user.editable" [(ngModel)]="user.estado" class="form-control form-control-sm">
+                    </td>
+                    <td>
+                      <button *ngIf="!user.editable" class="btn btn-sm btn-outline-primary mr-1" (click)="editarUsuario(user)">
+                        <i class="fas fa-edit"></i>
+                      </button>
+                      <button *ngIf="user.editable" class="btn btn-sm btn-outline-success mr-1" (click)="confirmarEdicion(user)">
+                        <i class="fas fa-check"></i>
+                      </button>
+                      <button class="btn btn-sm btn-outline-danger mr-1" (click)="eliminarOrestaurarUsuario(user)">
+                        <i [class]="user.estado === 'A' ? 'fas fa-trash' : 'fas fa-undo'"></i>
+                      </button>
+                      <button *ngIf="user.editable" class="btn btn-sm btn-outline-secondary" (click)="cancelarEdicion(user)">
+                        <i class="fas fa-times"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <nav *ngIf="totalPages > 1">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="currentPage === 1">
+                  <a class="page-link" (click)="onPageChange(currentPage - 1)">&laquo;</a>
+                </li>
+                <li class="page-item" *ngFor="let page of getPaginationArray()" [class.active]="page === currentPage">
+                  <a class="page-link" (click)="onPageChange(page)">{{ page }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPage === totalPages">
+                  <a class="page-link" (click)="onPageChange(currentPage + 1)">&raquo;</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="currentView === 'restaurantes'">
+        <h2 class="mb-4">Gestión de Restaurantes</h2>
+        
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-3">
+              <button class="btn btn-outline-primary" (click)="generarPDFRestaurantes()">
+                <i class="fas fa-file-pdf"></i> Generar PDF
+              </button>
+              <form [formGroup]="searchFormRestaurantes" (ngSubmit)="filterRestaurantes()" class="d-flex">
+                <input type="text" class="form-control mr-2" placeholder="Nombre" formControlName="nombre">
+                <input type="text" class="form-control mr-2" placeholder="Dirección" formControlName="direccion">
+                <input type="text" class="form-control mr-2" placeholder="Tipo de Cocina" formControlName="tipoCocina">
+                <button type="submit" class="btn btn-primary">Buscar</button>
+              </form>
+            </div>
+
+            <div class="table-responsive">
+              <table class="table table-hover">
+                <thead>
+                  <tr>
+                    <th>Nombre</th>
+                    <th>Dirección</th>
+                    <th>Teléfono</th>
+                    <th>Tipo de Cocina</th>
+                    <th>Capacidad</th>
+                    <th>Horario</th>
+                    <th>RUC</th>
+                    <th>Creador</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let restaurante of pagedRestaurantes">
+                    <td>{{ restaurante.nombre }}</td>
+                    <td>{{ restaurante.direccion }}</td>
+                    <td>{{ restaurante.telefono }}</td>
+                    <td>{{ restaurante.tipoCocina }}</td>
+                    <td>{{ restaurante.capacidadPersonas }}</td>
+                    <td>{{ restaurante.horarioFuncionamiento }}</td>
+                    <td>{{ restaurante.ruc }}</td>
+                    <td>{{ restaurante.creadorNombre }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <nav *ngIf="totalPagesRestaurantes > 1">
+              <ul class="pagination justify-content-center">
+                <li class="page-item" [class.disabled]="currentPageRestaurantes === 1">
+                  <a class="page-link" (click)="onPageChangeRestaurantes(currentPageRestaurantes - 1)">&laquo;</a>
+                </li>
+                <li class="page-item" *ngFor="let page of getPaginationArrayRestaurantes()" [class.active]="page === currentPageRestaurantes">
+                  <a class="page-link" (click)="onPageChangeRestaurantes(page)">{{ page }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="currentPageRestaurantes === totalPagesRestaurantes">
+                  <a class="page-link" (click)="onPageChangeRestaurantes(currentPageRestaurantes + 1)">&raquo;</a>
+                </li>
+              </ul>
+            </nav>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>

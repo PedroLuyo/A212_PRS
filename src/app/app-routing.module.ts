@@ -23,7 +23,7 @@ import { CrearMenu } from './components/menu/crear-menu/crear-menu';
 
 const routes: Routes = [
   { path: '', redirectTo: 'main', pathMatch: 'full' },
-  { path: 'users', component: UsersComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
+  { path: 'monitorear', component: UsersComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
   { path: 'login', component: LoginComponent },
 
   { path: 'main', component: MainComponent },

@@ -5,6 +5,7 @@ import { Users } from '../../../models/users/users.model';
 import { FormGroup, FormControl } from '@angular/forms';
 import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
+import { RestauranteService } from '../../../services/restaurant/restaurante.service';
 
 @Component({
   selector: 'app-users',
@@ -19,18 +20,40 @@ export class UsersComponent implements OnInit {
   pageSize = 10;
   totalPages = 0;
   searchForm: FormGroup;
+  restaurantes: any[] = [];
+  filteredRestaurantes: any[] = [];
+  pagedRestaurantes: any[] = [];
+  currentPageRestaurantes = 1;
+  pageSizeRestaurantes = 10;
+  totalPagesRestaurantes = 0;
+  searchFormRestaurantes: FormGroup;
+  currentView: 'usuarios' | 'restaurantes' = 'usuarios';
 
-  constructor(private authService: AuthService) {
+  toggleView(view: 'usuarios' | 'restaurantes') {
+    this.currentView = view;
+  }
+
+  constructor(private authService: AuthService, private restauranteService: RestauranteService
+  ) {
     this.searchForm = new FormGroup({
       nombre: new FormControl(''),
       rol: new FormControl(''),
       estado: new FormControl(''),
     });
+    this.searchFormRestaurantes = new FormGroup({
+      nombre: new FormControl(''),
+      direccion: new FormControl(''),
+      tipoCocina: new FormControl(''),
+    });
   }
 
   ngOnInit(): void {
     this.retrieveUsers();
+    this.obtenerRestaurantes();
+
   }
+
+
 
   retrieveUsers(): void {
     this.authService.getAll().snapshotChanges().subscribe(
@@ -55,7 +78,7 @@ export class UsersComponent implements OnInit {
     user.editable = true;
   }
 
-  
+
   cancelarEdicion(user: Users): void {
     user.editable = false;
   }
@@ -167,7 +190,7 @@ export class UsersComponent implements OnInit {
       csvData += `${user.dni},${user.name},${user.role},${user.email},${user.estado}\n`;
 
     });
-    
+
 
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -185,7 +208,7 @@ export class UsersComponent implements OnInit {
     const doc = new jsPDF({
       orientation: 'landscape' // también se puede usar 'portrait'
     });
-  
+
     const img = new Image();
     img.src = 'assets/img/Logo Transparente Gastro Connect.png';
     img.onload = () => {
@@ -195,7 +218,7 @@ export class UsersComponent implements OnInit {
       const logoHeight = img.height * (logoWidth / img.width);
       const logoX = (pageWidth - logoWidth) / 2;
       doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
-  
+
       // Agregar texto debajo del logo
       const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
       const sloganX = pageWidth / 2; // Centrar el eslogan
@@ -203,25 +226,25 @@ export class UsersComponent implements OnInit {
       doc.setTextColor(31, 30, 30); // Color del texto #1F1E1E
       doc.setFontSize(12); // Tamaño de fuente para el eslogan
       doc.text(slogan, sloganX, sloganY, { align: 'center' }); // Alineación centrada
-  
+
       const fecha = new Date().toLocaleDateString('en-GB', {
         day: '2-digit',
         month: 'short',
         year: 'numeric'
       }).replace(/ /g, '/').replace(/\//g, '-');
-  
+
       doc.setFont('courier', 'bold');
       doc.setFontSize(20);
       const titulo = 'Reporte de Usuarios';
       const tituloY = sloganY + 10; // Espacio después del eslogan
       doc.text(titulo, 14, tituloY); // Ajuste de la posición del título
-  
+
       // Añadir fecha a la derecha del título
       doc.setFontSize(12); // Tamaño de fuente para la fecha
       const fechaX = pageWidth - 14; // Margen derecho
-  
+
       doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
-  
+
       const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
       const data = this.filteredUsers.map((user: Users) => [
         user.dni ? user.dni : 'null',
@@ -232,7 +255,7 @@ export class UsersComponent implements OnInit {
         // user.ruc ? user.ruc : 'null',
         user.estado ? user.estado : 'null'
       ]);
-  
+
       (doc as any).autoTable({
         head: head,
         body: data,
@@ -256,7 +279,7 @@ export class UsersComponent implements OnInit {
           fillColor: [235, 235, 235]
         }
       });
-  
+
       const pageCount = doc.getNumberOfPages();
       for (let i = 1; i <= pageCount; i++) {
         doc.setPage(i);
@@ -274,11 +297,11 @@ export class UsersComponent implements OnInit {
         // Añadir el número de página
         doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY); // Alineado a la derecha
       }
-  
+
       doc.save('reporte_usuarios.pdf');
     };
   }
-  
+
 
 
   onPageChange(page: number): void {
@@ -293,6 +316,142 @@ export class UsersComponent implements OnInit {
 
   getPaginationArray(): number[] {
     return Array(this.totalPages).fill(0).map((x, i) => i + 1);
+  }
+
+
+  obtenerRestaurantes(): void {
+    this.restauranteService.obtenerTodos().subscribe(
+      async (data) => {
+        this.restaurantes = await Promise.all(data.map(async (restaurante) => {
+          const creadorNombre = await this.authService.getUserNameByUid(restaurante.docid);
+          return { ...restaurante, creadorNombre };
+        }));
+        this.filteredRestaurantes = [...this.restaurantes];
+        this.totalPagesRestaurantes = Math.ceil(this.filteredRestaurantes.length / this.pageSizeRestaurantes);
+        this.paginateRestaurantes();
+        console.log('Restaurantes cargados:', this.restaurantes);
+      },
+      (error) => {
+        console.error('Error al cargar restaurantes:', error);
+      }
+    );
+  }
+  filterRestaurantes(): void {
+    const { nombre, direccion, tipoCocina } = this.searchFormRestaurantes.value;
+
+    this.filteredRestaurantes = this.restaurantes.filter((restaurante) =>
+      (!nombre || restaurante.nombre.toLowerCase().includes(nombre.toLowerCase())) &&
+      (!direccion || restaurante.direccion.toLowerCase().includes(direccion.toLowerCase())) &&
+      (!tipoCocina || restaurante.tipoCocina.toLowerCase() === tipoCocina.toLowerCase())
+    );
+
+    this.totalPagesRestaurantes = Math.ceil(this.filteredRestaurantes.length / this.pageSizeRestaurantes);
+    this.currentPageRestaurantes = 1;
+    this.paginateRestaurantes();
+  }
+
+  onPageChangeRestaurantes(page: number): void {
+    this.currentPageRestaurantes = page;
+    this.paginateRestaurantes();
+  }
+
+  paginateRestaurantes(): void {
+    const startIndex = (this.currentPageRestaurantes - 1) * this.pageSizeRestaurantes;
+    this.pagedRestaurantes = this.filteredRestaurantes.slice(startIndex, startIndex + this.pageSizeRestaurantes);
+  }
+
+  getPaginationArrayRestaurantes(): number[] {
+    return Array(this.totalPagesRestaurantes).fill(0).map((x, i) => i + 1);
+  }
+
+  generarPDFRestaurantes(): void {
+    const doc = new jsPDF({
+      orientation: 'landscape'
+    });
+  
+    const img = new Image();
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+    img.onload = () => {
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const logoWidth = pageWidth * 0.2;
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+  
+      const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+      const sloganX = pageWidth / 2;
+      const sloganY = logoHeight + 10;
+      doc.setTextColor(31, 30, 30);
+      doc.setFontSize(12);
+      doc.text(slogan, sloganX, sloganY, { align: 'center' });
+  
+      const fecha = new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).replace(/ /g, '/').replace(/\//g, '-');
+  
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(20);
+      const titulo = 'Reporte de Restaurantes';
+      const tituloY = sloganY + 10;
+      doc.text(titulo, 14, tituloY);
+  
+      doc.setFontSize(12);
+      const fechaX = pageWidth - 14;
+      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
+  
+      const head = [['Nombre', 'Dirección', 'Teléfono', 'Tipo de Cocina', 'Capacidad', 'Horario', 'Ruc', 'Creador']];
+      const data = this.restaurantes.map((restaurante) => [
+        restaurante.nombre,
+        restaurante.direccion,
+        restaurante.telefono,
+        restaurante.tipoCocina,
+        restaurante.capacidadPersonas,
+        restaurante.horarioFuncionamiento,
+        restaurante.ruc,
+        restaurante.creadorNombre
+
+      ]);
+  
+      (doc as any).autoTable({
+        head: head,
+        body: data,
+        startY: tituloY + 10,
+        styles: {
+          cellWidth: 'auto',
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [0, 0, 0],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold'
+        },
+        bodyStyles: {
+          textColor: [0, 0, 0]
+        },
+        alternateRowStyles: {
+          fillColor: [235, 235, 235]
+        }
+      });
+  
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(31, 30, 30);
+        const pageNumberText = `Página ${i} / ${pageCount}`;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const footerY = pageHeight - 10;
+        doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY, { align: 'right' });
+      }
+  
+      doc.save('reporte_restaurantes.pdf');
+    };
   }
 
 }
