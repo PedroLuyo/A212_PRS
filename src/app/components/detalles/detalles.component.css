@@ -70,20 +70,4 @@
     color: #007bff;
   }
 
-  .status-badge {
-    padding: 5px 10px;
-    border-radius: 15px;
-    font-weight: bold;
-  }
   
-  .open { background-color: #4CAF50; color: white; }
-  .closed { background-color: #F44336; color: white; }
-  .about-to-open { background-color: #FFC107; color: black; }
-  .recently-opened { background-color: #8BC34A; color: white; }
-  .about-to-close { background-color: #FF9800; color: white; }
-  .recently-closed { background-color: #FF5722; color: white; }
-  
-  .status-detail {
-    margin-left: 10px;
-    font-style: italic;
-  }

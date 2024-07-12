@@ -21,7 +21,7 @@ export class DetallesComponent implements OnInit {
     private restauranteService: RestauranteService,
     private fb: FormBuilder,
   ) {
- 
+
   }
 
   ngOnInit(): void {
@@ -83,23 +83,23 @@ export class DetallesComponent implements OnInit {
       console.log('Restaurante o horario no disponible');
       return;
     }
-  
+
     const ahora = new Date();
     const [horaApertura, horaCierre] = this.restauranteSeleccionado.horarioFuncionamiento.split(' - ');
-    
+
     const [horaAperturaHH, horaAperturaMM] = horaApertura.split(':').map(Number);
     const [horaCierreHH, horaCierreMM] = horaCierre.split(':').map(Number);
-    
+
     const aperturaDate = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), horaAperturaHH, horaAperturaMM);
     const cierreDate = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), horaCierreHH, horaCierreMM);
-    
+
     // Si la hora de cierre es menor que la de apertura, asumimos que cierra al día siguiente
     if (cierreDate <= aperturaDate) {
       cierreDate.setDate(cierreDate.getDate() + 1);
     }
-    
+
     this.estaAbierto = ahora >= aperturaDate && ahora < cierreDate;
-  
+
     console.log('Hora actual:', ahora);
     console.log('Hora de apertura:', aperturaDate);
     console.log('Hora de cierre:', cierreDate);
