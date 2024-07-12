@@ -34,13 +34,13 @@ export class GestorComponent implements OnInit {
 
   crearGestor(): void {
     const nuevoGestor: Users = {
-      direccion: this.gestorForm.get('direccion')?.value,
+      // direccion: this.gestorForm.get('direccion')?.value,
       dni: this.gestorForm.get('dni')?.value,
       email: this.gestorForm.get('email')?.value,
       password: this.gestorForm.get('password')?.value,
       name: this.gestorForm.get('name')?.value,
       role: this.gestorForm.get('role')?.value,
-      ruc: this.gestorForm.get('ruc')?.value,
+      // ruc: this.gestorForm.get('ruc')?.value,
       estado: this.gestorForm.get('estado')?.value,
     };
 

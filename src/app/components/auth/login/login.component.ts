@@ -77,10 +77,10 @@ async onSubmit() {
         name: name,
         role: 'c',
         password: '',
-        direccion: 'direccion',
+        // direccion: 'direccion',
         dni: 'dni',
         estado: 'estado',
-        ruc: 'ruc'
+        // ruc: 'ruc'
       })
       .then(() => {
         this.toastr.success('Usuario registrado', 'Usuario registrado con éxito en Firestore');

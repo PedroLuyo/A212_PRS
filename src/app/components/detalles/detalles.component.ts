@@ -156,6 +156,12 @@ export class DetallesComponent implements OnInit {
     return timeActual >= timeApertura && timeActual <= timeCierre;
   }
 
+
+
+
+
+  
+
   getPrecioTachado(precio: number): number {
     return precio + Math.floor(Math.random() * 3) + 2;
   }

@@ -5,6 +5,11 @@ import { RestauranteService } from '../../../services/restaurant/restaurante.ser
 import jsPDF from 'jspdf';
 import { AuthService } from '../../../services/auth/authService';
 import { CloudinaryService } from '../../../services/cloudinary/Cloudinary.service';
+import { map, Observable } from 'rxjs';
+
+declare var $: any;
+
+
 
 @Component({
   selector: 'app-restaurante',
@@ -96,7 +101,7 @@ export class RestauranteComponent implements OnInit {
 
       const formData = new FormData();
       formData.append('file', this.selectedFile);
-      formData.append('upload_preset', 'cloudinary-product');
+      formData.append('upload_preset', 'cloudinary-restaurants');
 
       this.cloudinaryService.uploadImg(formData).subscribe(
         (response: any) => {
@@ -144,18 +149,46 @@ export class RestauranteComponent implements OnInit {
       }
     });
   }
+
   manejarRestauranteForm(): void {
     if (this.restauranteForm.valid) {
+      const ruc = this.restauranteForm.get('ruc')?.value;
+  
       // Si estamos editando un restaurante existente, permitimos continuar
       if (this.restauranteForm.get('id')?.value) {
         this.procesarFormulario();
       } else {
-        // Si estamos creando un nuevo restaurante, verificamos el límite
-        if (this.totalRestaurantes >= 3) {
-          Swal.fire('Límite alcanzado', 'No se pueden crear más de 3 restaurantes.', 'warning');
-        } else {
-          this.procesarFormulario();
-        }
+        // Verificamos si el RUC ya existe
+        this.restauranteService.verificarRucExistente(ruc).subscribe(
+          (existe: boolean) => {
+            if (existe) {
+              Swal.fire('Error', 'El RUC ingresado ya está en uso por otro restaurante.', 'error');
+            } else {
+              // Si estamos creando un nuevo restaurante, verificamos el límite
+              if (this.totalRestaurantes >= 3) {
+                Swal.fire('Límite alcanzado', 'No se pueden crear más de 3 restaurantes.', 'warning');
+              } else {
+                // Mostrar el SweetAlert de confirmación
+                Swal.fire({
+                  title: 'Confirmación',
+                  text: '¿Estás seguro de que deseas crear este restaurante? El RUC no se podrá editar más adelante.',
+                  icon: 'warning',
+                  showCancelButton: true,
+                  confirmButtonText: 'Sí, crear',
+                  cancelButtonText: 'No, cancelar'
+                }).then((result) => {
+                  if (result.isConfirmed) {
+                    this.procesarFormulario();
+                  }
+                });
+              }
+            }
+          },
+          (error) => {
+            console.error('Error al verificar RUC', error);
+            Swal.fire('Error', 'Hubo un problema al verificar el RUC. Por favor, inténtelo de nuevo.', 'error');
+          }
+        );
       }
     } else {
       Swal.fire('Error', 'Por favor complete el formulario correctamente.', 'error');
@@ -194,6 +227,11 @@ export class RestauranteComponent implements OnInit {
       }
     );
   }
+
+
+
+
+  
 
   editarRestaurante(restauranteActualizado: any): void {
     const idRestaurante = restauranteActualizado.id;
@@ -288,4 +326,115 @@ export class RestauranteComponent implements OnInit {
       });
     }
   }
+
+
+  exportarCSV(): void {
+    let csvData = 'Nombre,Dirección,Teléfono,Tipo de Cocina,Capacidad,Horario,Ruc\n';
+    
+    this.restaurantes.forEach(restaurante => {
+      csvData += `${restaurante.nombre},${restaurante.direccion},${restaurante.telefono},${restaurante.tipoCocina},${restaurante.capacidadPersonas},${restaurante.horarioFuncionamiento},${restaurante.ruc}\n`;
+    });
+  
+    const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', 'reporte_restaurantes.csv');
+    link.style.visibility = 'hidden';
+  
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+  
+
+  exportarPDF(): void {
+    const doc = new jsPDF({
+      orientation: 'landscape'
+    });
+  
+    const img = new Image();
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+    img.onload = () => {
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const logoWidth = pageWidth * 0.2;
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+  
+      const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+      const sloganX = pageWidth / 2;
+      const sloganY = logoHeight + 10;
+      doc.setTextColor(31, 30, 30);
+      doc.setFontSize(12);
+      doc.text(slogan, sloganX, sloganY, { align: 'center' });
+  
+      const fecha = new Date().toLocaleDateString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric'
+      }).replace(/ /g, '/').replace(/\//g, '-');
+  
+      doc.setFont('courier', 'bold');
+      doc.setFontSize(20);
+      const titulo = 'Reporte de Restaurantes';
+      const tituloY = sloganY + 10;
+      doc.text(titulo, 14, tituloY);
+  
+      doc.setFontSize(12);
+      const fechaX = pageWidth - 14;
+      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
+  
+      const head = [['Nombre', 'Dirección', 'Teléfono', 'Tipo de Cocina', 'Capacidad', 'Horario', 'Ruc']];
+      const data = this.restaurantes.map((restaurante) => [
+        restaurante.nombre,
+        restaurante.direccion,
+        restaurante.telefono,
+        restaurante.tipoCocina,
+        restaurante.capacidadPersonas,
+        restaurante.horarioFuncionamiento,
+        restaurante.ruc
+      ]);
+  
+      (doc as any).autoTable({
+        head: head,
+        body: data,
+        startY: tituloY + 10,
+        styles: {
+          cellWidth: 'auto',
+          fontSize: 10,
+          lineColor: [0, 0, 0],
+          lineWidth: 0.1
+        },
+        headStyles: {
+          fillColor: [0, 0, 0],
+          textColor: [255, 255, 255],
+          fontStyle: 'bold'
+        },
+        bodyStyles: {
+          textColor: [0, 0, 0]
+        },
+        alternateRowStyles: {
+          fillColor: [235, 235, 235]
+        }
+      });
+  
+      const pageCount = doc.getNumberOfPages();
+      for (let i = 1; i <= pageCount; i++) {
+        doc.setPage(i);
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(31, 30, 30);
+        const pageNumberText = `Página ${i} / ${pageCount}`;
+        const pageWidth = doc.internal.pageSize.getWidth();
+        const pageHeight = doc.internal.pageSize.getHeight();
+        const footerY = pageHeight - 10;
+        doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY, { align: 'right' });
+      }
+  
+      doc.save('reporte_restaurantes.pdf');
+    };
+  }
+  
+  
 }

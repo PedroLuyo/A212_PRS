@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { from, Observable, throwError } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { catchError, map, switchMap } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 import { AuthService } from '../auth/authService';
 
@@ -163,5 +163,16 @@ export class RestauranteService {
           )
         )
       );
+  }
+
+  verificarRucExistente(ruc: string): Observable<boolean> {
+    return this.obtenerTodos().pipe(
+      map(restaurantes => {
+        console.log('Restaurantes obtenidos:', restaurantes);
+        const existe = restaurantes.some(r => r.ruc.toString() === ruc);
+        console.log(`RUC ${ruc} existe: ${existe}`);
+        return existe;
+      })
+    );
   }
 }

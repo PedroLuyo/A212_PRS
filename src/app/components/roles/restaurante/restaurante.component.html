@@ -14,15 +14,18 @@
             <label for="direccion">Dirección:</label>
             <input type="text" class="form-control" id="direccion" formControlName="direccion">
           </div>
-          
+
           <div class="form-group col-md-6">
             <label for="telefono">Teléfono:</label>
-            <input type="text" class="form-control" id="telefono" formControlName="telefono" pattern="^\d{9}$" maxlength="9">
-            <div *ngIf="restauranteForm.get('telefono')?.errors?.['pattern'] && restauranteForm.get('telefono')?.touched" class="text-danger">
+            <input type="text" class="form-control" id="telefono" formControlName="telefono" pattern="^\d{9}$"
+              maxlength="9">
+            <div
+              *ngIf="restauranteForm.get('telefono')?.errors?.['pattern'] && restauranteForm.get('telefono')?.touched"
+              class="text-danger">
               Debe haber exactamente 9 dígitos.
             </div>
           </div>
-          
+
         </div>
         <div class="form-row">
           <div class="form-group col-md-6">
@@ -46,19 +49,22 @@
         </div>
         <div class="form-group">
           <label for="ruc">RUC:</label>
-          <input type="text" class="form-control" id="ruc" formControlName="ruc" pattern="^20\d{9}$" maxlength="11" required>
-          <div *ngIf="restauranteForm.get('ruc')?.hasError('pattern') && restauranteForm.get('ruc')?.touched" class="text-danger">
+          <input type="text" class="form-control" id="ruc" formControlName="ruc" pattern="^20\d{9}$" maxlength="11"
+            required [readonly]="restauranteForm.get('id')?.value">
+          <div *ngIf="restauranteForm.get('ruc')?.hasError('pattern') && restauranteForm.get('ruc')?.touched"
+            class="text-danger">
             El RUC debe comenzar con '20' seguido de 9 dígitos.
           </div>
         </div>
-        
-        
+
+
         <div class="form-group">
           <label>Imagen del Restaurante:</label>
           <div class="form-row">
             <div class="col-md-6">
               <div class="form-check">
-                <input class="form-check-input" type="radio" id="subirImagen" formControlName="opcionImagen" value="subir">
+                <input class="form-check-input" type="radio" id="subirImagen" formControlName="opcionImagen"
+                  value="subir">
                 <label class="form-check-label" for="subirImagen">Subir Imagen</label>
               </div>
             </div>
@@ -69,29 +75,32 @@
               </div>
             </div>
           </div>
-          
+
           <div class="mt-2">
             <div *ngIf="restauranteForm.get('opcionImagen')?.value === 'subir'">
               <input type="file" class="form-control-file" (change)="onFileSelected($event)">
             </div>
-            
+
             <div *ngIf="restauranteForm.get('opcionImagen')?.value === 'url'">
-              <input type="text" class="form-control" formControlName="urlImagen" placeholder="Ingrese la URL de la imagen">
+              <input type="text" class="form-control" formControlName="urlImagen"
+                placeholder="Ingrese la URL de la imagen">
             </div>
           </div>
-          
+
           <img *ngIf="imagenPreview" [src]="imagenPreview" alt="Vista Previa de la Imagen" class="img-fluid mt-3">
         </div>
-        
+
         <div>
 
-        <button type="submit" class="btn btn-primary" [disabled]="totalRestaurantes >= 3 && !restauranteForm.get('id')?.value">
-          {{ restauranteForm.get('id')?.value ? 'Editar' : 'Crear' }} Restaurante
-        </button>
-        
-        <button *ngIf="restauranteForm.get('id')?.value" type="button" class="btn btn-secondary ml-2" (click)="cancelarEdicion()">Cancelar</button>
+          <button type="submit" class="btn btn-primary"
+            [disabled]="totalRestaurantes >= 3 && !restauranteForm.get('id')?.value">
+            {{ restauranteForm.get('id')?.value ? 'Editar' : 'Crear' }} Restaurante
+          </button>
 
-      </div>
+          <button *ngIf="restauranteForm.get('id')?.value" type="button" class="btn btn-secondary ml-2"
+            (click)="cancelarEdicion()">Cancelar</button>
+
+        </div>
       </form>
       <div class="alert alert-info mt-3">
         <p>Restaurantes creados: {{ totalRestaurantes }} / 3</p>
@@ -100,11 +109,17 @@
       </div>
     </div>
 
+
+
+
+
     <!-- Columna de la tabla -->
     <div class="col-md-7">
       <h2>Listado de Restaurantes</h2>
-      <div *ngIf="restaurantes.length === 0" class="alert alert-info">No hay restaurantes registrados.</div>
       
+      <div *ngIf="restaurantes.length === 0" class="alert alert-info">No hay restaurantes registrados.</div>
+      <!-- Botones para exportar -->
+
       <table class="table table-striped">
         <thead>
           <tr>
@@ -121,7 +136,8 @@
           </tr>
         </thead>
         <tbody>
-          <tr *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 4, currentPage: page, totalItems: totalRestaurantes }">
+          <tr
+            *ngFor="let restaurante of restaurantes | paginate: { itemsPerPage: 4, currentPage: page, totalItems: totalRestaurantes }">
             <td><img [src]="restaurante.imagenRestaurante" alt="Imagen del restaurante" class="img-fluid"></td>
             <td>{{ restaurante.nombre }}</td>
             <td>{{ restaurante.direccion }}</td>
@@ -140,6 +156,9 @@
         </tbody>
       </table>
       <pagination-controls (pageChange)="page = $event"></pagination-controls>
+      <button class="btn btn-primary mr-2" (click)="exportarCSV()">Exportar a CSV</button>
+      <button class="btn btn-danger" (click)="exportarPDF()">Exportar a PDF</button>
     </div>
+    
   </div>
 </div>

@@ -53,10 +53,10 @@
           <td *ngIf="user.editable"><input [(ngModel)]="user.role" class="form-control"></td>
           <td *ngIf="!user.editable">{{ user.email ? user.email : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.email" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.direccion ? user.direccion : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.direccion" class="form-control"></td>
-          <td *ngIf="!user.editable">{{ user.ruc ? user.ruc : '-No necesario-' }}</td>
-          <td *ngIf="user.editable"><input [(ngModel)]="user.ruc" class="form-control"></td>
+          <!-- <td *ngIf="!user.editable">{{ user.direccion ? user.direccion : '-No necesario-' }}</td> -->
+          <!-- <td *ngIf="user.editable"><input [(ngModel)]="user.direccion" class="form-control"></td> -->
+          <!-- <td *ngIf="!user.editable">{{ user.ruc ? user.ruc : '-No necesario-' }}</td> -->
+          <!-- <td *ngIf="user.editable"><input [(ngModel)]="user.ruc" class="form-control"></td> -->
           <td *ngIf="!user.editable">{{ user.estado ? user.estado : '-No necesario-' }}</td>
           <td *ngIf="user.editable"><input [(ngModel)]="user.estado" class="form-control"></td>
           <td>

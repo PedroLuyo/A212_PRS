@@ -66,8 +66,8 @@ export class UsersComponent implements OnInit {
       name: user.name,
       role: user.role,
       email: user.email,
-      direccion: user.direccion,
-      ruc: user.ruc,
+      // direccion: user.direccion,
+      // ruc: user.ruc,
       estado: user.estado,
     };
 
@@ -163,8 +163,11 @@ export class UsersComponent implements OnInit {
   exportCSV(): void {
     let csvData = 'DNI,Nombre,Rol,Correo,Dirección,RUC,Estado\n';
     this.filteredUsers.forEach(user => {
-      csvData += `${user.dni},${user.name},${user.role},${user.email},${user.direccion},${user.ruc},${user.estado}\n`;
+      // csvData += `${user.dni},${user.name},${user.role},${user.email},${user.direccion},${user.ruc},${user.estado}\n`;
+      csvData += `${user.dni},${user.name},${user.role},${user.email},${user.estado}\n`;
+
     });
+    
 
     const blob = new Blob([csvData], { type: 'text/csv' });
     const url = window.URL.createObjectURL(blob);
@@ -225,8 +228,8 @@ export class UsersComponent implements OnInit {
         user.name ? user.name : 'null',
         user.role ? user.role : 'null',
         user.email ? user.email : 'null',
-        user.direccion ? user.direccion : 'null',
-        user.ruc ? user.ruc : 'null',
+        // user.direccion ? user.direccion : 'null',
+        // user.ruc ? user.ruc : 'null',
         user.estado ? user.estado : 'null'
       ]);
   
