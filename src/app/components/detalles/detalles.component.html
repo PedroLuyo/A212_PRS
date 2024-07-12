@@ -1,67 +1,128 @@
-  <div class="restaurant-page" *ngIf="restauranteSeleccionado" style="padding-top: 80px;">
-    <!-- Hero Section -->
-    <header class="hero" [ngStyle]="{'background-image': 'url(' + restauranteSeleccionado.imagenRestaurante + ')'}">
-      <div class="hero-content">
-        <h1>{{ restauranteSeleccionado.nombre }}</h1>
-        <p class="tagline">Especialistas en comida {{ restauranteSeleccionado.tipoCocina }}</p>
-      </div>
-    </header>
+<div class="restaurant-page" *ngIf="restauranteSeleccionado" style="padding-top: 80px;">
+  <!-- Hero Section -->
+  <header class="hero" [ngStyle]="{'background-image': 'url(' + restauranteSeleccionado.imagenRestaurante + ')'}">
+    <div class="hero-content">
+      <h1>{{ restauranteSeleccionado.nombre }}</h1>
+      <p class="tagline">Especialistas en comida {{ restauranteSeleccionado.tipoCocina }}</p>
+    </div>
+  </header>
 
-    <!-- Main Content -->
-    <main class="container mt-5">
-      <div class="row">
-        <!-- About Section -->
-        <section class="col-md-8">
-          <h2 class="section-title">Sobre Nosotros</h2>
-          <p class="lead">Disfruta de una experiencia culinaria única en {{ restauranteSeleccionado.nombre }}, donde la
-            pasión por la comida {{ restauranteSeleccionado.tipoCocina }} se combina con un ambiente acogedor.</p>
-          <p>Nuestra capacidad para {{ restauranteSeleccionado.capacidadPersonas }} personas garantiza un espacio cómodo
-            para disfrutar de nuestros platos exquisitos.</p>
+  <!-- Main Content -->
+  <main class="container mt-5">
+    <div class="row">
+      <!-- About Section -->
+      <section class="col-md-8">
+        <h2 class="section-title">Sobre Nosotros</h2>
+        <p class="lead">Disfruta de una experiencia culinaria única en {{ restauranteSeleccionado.nombre }}, donde la
+          pasión por la comida {{ restauranteSeleccionado.tipoCocina }} se combina con un ambiente acogedor.</p>
+        <p>Nuestra capacidad para {{ restauranteSeleccionado.capacidadPersonas }} personas garantiza un espacio cómodo
+          para disfrutar de nuestros platos exquisitos.</p>
+      </section>
+
+      <!-- Info Section -->
+      <aside class="col-md-4">
+        <div class="info-card">
+          <h3>Información</h3>
+          <ul class="list-unstyled">
+            <li><i class="fas fa-map-marker-alt"></i> {{ restauranteSeleccionado.direccion }}</li>
+            <li><i class="fas fa-phone"></i> {{ restauranteSeleccionado.telefono }}</li>
+            <li><i class="fas fa-clock"></i> {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'apertura') }} - {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}</li>
+            <li>
+              <span class="status-badge" [ngClass]="{'open': estaAbierto, 'closed': !estaAbierto}">
+                {{ estaAbierto ? 'Abierto' : 'Cerrado' }}
+              </span>
+            </li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Platos Section -->
+    <section id="grid-de-platos" class="grid-de-platos">
+      <div class="container">
+        <div class="section-title">
+          <h2>Nuestros <span>Platos</span></h2>
+          <p>Explora nuestra variedad de platos disponibles</p>
+        </div>
+        <section id="platos-carta" class="platos-carta">
+          <div class="container">
+            <div class="section-title">
+              <h2>Platos <span>Carta</span></h2>
+              <p>Explora nuestra variedad de platos de carta disponibles</p>
+            </div>
+            <div class="row">
+              <div class="col-lg-3 col-md-4 col-sm-6 mb-4" *ngFor="let platocarta of paginatedPlatosCarta">
+                <div class="card shadow-sm h-100">
+                  <img class="card-img-top" [src]="platocarta.image" alt="Imagen de plato">
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ platocarta.nombre }}</h5>
+                    <p class="card-text">{{ platocarta.descripcion }}</p>
+                    <span class="badge card-text"> {{ platocarta.restauranteDetalle.nombre }}</span>
+                    <div class="mt-auto">
+                      <div class="d-flex justify-content-between align-items-center mb-2">
+                        <div style="color: #ffb03b; font-weight: 600;">S/ {{ platocarta.precio.toFixed(2) }}</div>
+                        <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(platocarta.precio).toFixed(2) }}</div>
+                        <span *ngIf="platocarta.stock >= 1" class="badge" style="background-color: green;">• Disponible</span>
+                        <span *ngIf="platocarta.stock < 1" class="badge" style="background-color: red;">• No disponible</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- Mensaje cuando no hay platos -->
+            <div class="row" *ngIf="platoscarta.length === 0">
+              <div class="alert alert-warning" role="alert">
+                No hay platos a la carta por mostrar.
+              </div>
+            </div>
+            <!-- Paginación -->
+            <nav *ngIf="totalPagesCarta > 1">
+              <ul class="pagination justify-content-center mt-4">
+                <li class="page-item" [class.disabled]="currentCartaPage === 1">
+                  <a class="page-link" (click)="onCartaPageChange(currentCartaPage - 1)" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                  </a>
+                </li>
+                <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesCarta)" [class.active]="page === currentCartaPage">
+                  <a class="page-link" (click)="onCartaPageChange(page)">{{ page }}</a>
+                </li>
+                <li class="page-item" [class.disabled]="currentCartaPage === totalPagesCarta">
+                  <a class="page-link" (click)="onCartaPageChange(currentCartaPage + 1)" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </div>
         </section>
-
-        <!-- Info Section -->
-        <aside class="col-md-4">
-          <div class="info-card">
-            <h3>Información</h3>
-            <ul class="list-unstyled">
-              <li><i class="fas fa-map-marker-alt"></i> {{ restauranteSeleccionado.direccion }}</li>
-              <li><i class="fas fa-phone"></i> {{ restauranteSeleccionado.telefono }}</li>
-              <li><i class="fas fa-clock"></i> {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento,
-                'apertura') }} - {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}</li>
-              <li>
-                <span class="status-badge" [ngClass]="{'open': estaAbierto, 'closed': !estaAbierto}">
-                  {{ estaAbierto ? 'Abierto' : 'Cerrado' }}
-                </span>
-              </li>
-            </ul>
-          </div>
-        </aside>
       </div>
+    </section>
 
-      <!-- Menu Preview Section -->
-      <section class="menu-preview mt-5">
-        <h2 class="section-title">Nuestro Menú</h2>
-        <div class="row">
-          <div class="col-md-6">
-            <div class="menu-card">
-              <h3>Platos a la Carta</h3>
-              <p>Descubre nuestra selección de platos preparados con los mejores ingredientes.</p>
-              <button class="btn btn-primary">Ver Carta</button>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <div class="menu-card">
-              <h3>Menú del Día</h3>
-              <p>Disfruta de nuestras opciones diarias a un precio especial.</p>
-              <button class="btn btn-primary">Ver Menú</button>
-            </div>
+    <!-- Menu Preview Section -->
+    <section class="menu-preview mt-5">
+      <h2 class="section-title">Nuestro Menú</h2>
+      <div class="row">
+        <div class="col-md-6">
+          <div class="menu-card">
+            <h3>Platos a la Carta</h3>
+            <p>Descubre nuestra selección de platos preparados con los mejores ingredientes.</p>
+            <button class="btn btn-primary">Ver Carta</button>
           </div>
         </div>
-      </section>
-    </main>
+        <div class="col-md-6">
+          <div class="menu-card">
+            <h3>Menú del Día</h3>
+            <p>Disfruta de nuestras opciones diarias a un precio especial.</p>
+            <button class="btn btn-primary">Ver Menú</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
 
-    <!-- Footer -->
-    <footer class="mt-5 py-3 bg-light text-center">
-      <p>© 2024 {{ restauranteSeleccionado.nombre }} | RUC: {{ restauranteSeleccionado.ruc }}</p>
-    </footer>
-  </div>
+  <!-- Footer -->
+  <footer class="mt-5 py-3 bg-light text-center">
+    <p>© 2024 {{ restauranteSeleccionado.nombre }} | RUC: {{ restauranteSeleccionado.ruc }}</p>
+  </footer>
+</div>
