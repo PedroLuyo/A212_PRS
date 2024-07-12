@@ -8,16 +8,16 @@ import { catchError } from 'rxjs/operators';
 })
 export class RestauranteMenuService {
 
-  private apiUrl = 'https://8086-vallegrande-msrestauran-xgqjk2c0rif.ws-us115.gitpod.io/api/v1/products';
-  private apiUrlAngelo = 'http://ms-menurestaurant-service:8086/api/v1/products';
-  
+  private apiUrl = 'https://8086-vallegrande-msrestauran-zp5gu5cznrm.ws-us115.gitpod.io/api/v1/products';
+  private apiUrlAngelo = 'http://ms-menurestaurant-service:8086/api/v1/products'; // Para pruebas en cloud 
+//private apiUrlAngelo = 'http://localhost:8086/api/v1/products'; // Para pruebas locales
   constructor(private http: HttpClient) { }
 
   getPlatos(): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/obtener`).pipe(
       catchError((error: HttpErrorResponse) => {
         console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo.`);
-        return this.http.get<any>(`${this.apiUrlAngelo}/obtener`);
+        return this.http.get<any>(`${this.apiUrlAngelo}obtener`);
       })
     );  
   }
@@ -36,26 +36,6 @@ export class RestauranteMenuService {
       catchError((error: HttpErrorResponse) => {
         console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo.`);
         return this.http.get<any>(`${this.apiUrlAngelo}/obtener/cartas`);
-      })
-    );  
-  }
-
-  // Nueva función para obtener cartas por RUC
-  obtenerCartasPorRuc(ruc: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/obtener/cartas/${ruc}`).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo.`);
-        return this.http.get<any>(`${this.apiUrlAngelo}/obtener/cartas/${ruc}`);
-      })
-    );  
-  }
-
-  // Nueva función para obtener menús por RUC
-  obtenerMenusPorRuc(ruc: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/obtener/menus/${ruc}`).pipe(
-      catchError((error: HttpErrorResponse) => {
-        console.error(`Error al conectar con la API primaria: ${error.message}. Intentando con la API de Angelo.`);
-        return this.http.get<any>(`${this.apiUrlAngelo}/obtener/menus/${ruc}`);
       })
     );  
   }
