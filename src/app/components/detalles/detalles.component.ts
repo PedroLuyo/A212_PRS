@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { RestauranteService } from '../../services/restaurant/restaurante.service';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { AuthService } from '../../services/auth/authService';
+import { FormBuilder } from '@angular/forms';
+import { RestauranteMenuService } from '../../services/restaurantmenu/restaurantmenu.service';
 
 @Component({
   selector: 'app-detalles',
@@ -14,18 +14,25 @@ export class DetallesComponent implements OnInit {
   estaAbierto: boolean = false;
   selectedOption: string = '';
   estadoRestaurante: string = '';
-
+  totalPagesCarta: number = 1;
+  totalPagesMenu: number = 1;
+  paginatedPlatosCarta: any[] = [];
+  paginatedPlatosMenu: any[] = [];
+  platoscarta: any[] = [];
+  platosmenu: any[] = [];
+  currentCartaPage: number = 1;
+  currentMenuPage: number = 1;
+  pageSize: number = 8;
 
   constructor(
     private route: ActivatedRoute,
     private restauranteService: RestauranteService,
+    private restauranteMenuService: RestauranteMenuService,
     private fb: FormBuilder,
-  ) {
-
-  }
+  ) {}
 
   ngOnInit(): void {
-    const restauranteId = +this.route.snapshot.params['id']; // Convertir a número
+    const restauranteId = +this.route.snapshot.params['id']; 
     this.obtenerRestaurante(restauranteId);
     this.actualizarEstadoApertura();
     setInterval(() => this.actualizarEstadoApertura(), 60000);
@@ -36,13 +43,45 @@ export class DetallesComponent implements OnInit {
       (restaurante: any) => {
         this.restauranteSeleccionado = restaurante;
         this.verificarEstadoRestaurante();
-        this.actualizarEstadoApertura(); // Llamar aquí después de obtener el restaurante
-
+        this.actualizarEstadoApertura();
+        this.cargarCartasMenus(restaurante.ruc); // Cargar cartas y menús después de obtener el restaurante
       },
       (error: any) => {
         console.error('Error al obtener el restaurante', error);
       }
     );
+  }
+
+  cargarCartasMenus(ruc: number): void {
+    this.restauranteMenuService.obtenerCartasPorRuc(ruc).subscribe((platos: any[]) => {
+      this.platoscarta = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+      this.updatePaginatedPlatosCarta();
+    });
+
+    this.restauranteMenuService.obtenerMenusPorRuc(ruc).subscribe((platos: any[]) => {
+      this.platosmenu = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+      this.updatePaginatedPlatosMenu();
+    });
+  }
+
+  onCartaPageChange(page: number): void {
+    if (page < 1 || page > this.totalPagesCarta) return;
+    this.currentCartaPage = page;
+    this.updatePaginatedPlatosCarta();
+  }
+
+  updatePaginatedPlatosCarta(): void {
+    const start = (this.currentCartaPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedPlatosCarta = this.platoscarta.slice(start, end);
+    this.totalPagesCarta = Math.ceil(this.platoscarta.length / this.pageSize);
+  }
+
+  updatePaginatedPlatosMenu(): void {
+    const start = (this.currentMenuPage - 1) * this.pageSize;
+    const end = start + this.pageSize;
+    this.paginatedPlatosMenu = this.platosmenu.slice(start, end);
+    this.totalPagesMenu = Math.ceil(this.platosmenu.length / this.pageSize);
   }
 
   verificarEstadoRestaurante(): void {
@@ -93,7 +132,6 @@ export class DetallesComponent implements OnInit {
     const aperturaDate = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), horaAperturaHH, horaAperturaMM);
     const cierreDate = new Date(ahora.getFullYear(), ahora.getMonth(), ahora.getDate(), horaCierreHH, horaCierreMM);
 
-    // Si la hora de cierre es menor que la de apertura, asumimos que cierra al día siguiente
     if (cierreDate <= aperturaDate) {
       cierreDate.setDate(cierreDate.getDate() + 1);
     }
@@ -123,4 +161,12 @@ export class DetallesComponent implements OnInit {
 
 
   
+
+  getPrecioTachado(precio: number): number {
+    return precio + Math.floor(Math.random() * 3) + 2;
+  }
+
+  getPaginationArray(totalPages: number): number[] {
+    return Array.from({ length: totalPages }, (_, i) => i + 1);
+  }
 }
