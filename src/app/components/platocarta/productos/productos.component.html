@@ -37,7 +37,7 @@
                     <div class="form-group col-md-6">
                         <label for="stock">Stock:</label>
                         <input type="number" class="form-control" id="stock" [(ngModel)]="plato.stock" name="stock"
-                            required min="1">
+                            required min="0">
                         <div *ngIf="platoForm.controls['stock'].invalid && platoForm.controls['stock'].touched"
                             class="text-danger">Campo requerido</div>
                     </div>
@@ -65,16 +65,19 @@
                     </div>
                 </div>
 
+
                 <div class="form-group">
                     <label for="imagen">Imagen:</label>
-                    <input type="file" class="form-control-file" id="image" (change)="onFileSelected($event)" accept="image/*">
+                    <input type="file" class="form-control-file" id="image" (change)="onFileSelected($event)"
+                        accept="image/*">
                 </div>
-                
-                
-                
-                
-                <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar' }}</button>
-                <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion"
+
+
+
+
+                <button type="submit" class="btn btn-primary" [disabled]="!restauranteSeleccionado">
+                    {{ modoEdicion ? 'Guardar' : 'Agregar' }}
+                </button> <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion"
                     (click)="cancelarEdicion()">Cancelar</button>
             </form>
         </div>
@@ -105,12 +108,25 @@
             <div class="d-flex justify-content-between align-items-center mb-3">
                 <span class="badge badge-warning mr-3">Cantidad total de productos: {{ totalidad }}</span>
 
+
+                <span style="margin-right: 10px;">Restaurante:</span>
+                <select class="form-control" id="restaurante" [(ngModel)]="selectedRestauranteRuc"
+                    (change)="cambiarFiltroRestaurante()" class="form-control filtro-select"
+                    style="width: 150px; margin-right: 10px;">
+                    <option value="">Seleccione un restaurante</option>
+                    <option *ngFor="let restaurante of restaurantes" [value]="restaurante.ruc">
+                        {{restaurante.nombre}}
+                    </option>
+                </select>
+
                 <span style="margin-right: 10px;">Filtrar por:</span>
                 <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()"
                     class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
                     <option value="A">Disponibles</option>
                     <option value="I">Archivados</option>
                 </select>
+
+
 
                 <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;"
                     (input)="buscarPlatos($event)">

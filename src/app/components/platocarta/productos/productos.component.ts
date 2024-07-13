@@ -9,6 +9,7 @@ import { CloudinaryService } from '../../../services/cloudinary/Cloudinary.servi
 import { AuthService } from '../../../services/auth/authService';
 
 import * as XLSX from 'xlsx';
+import { RestauranteService } from '../../../services/restaurant/restaurante.service';
 
 @Component({
   selector: 'app-productos',
@@ -18,37 +19,40 @@ import * as XLSX from 'xlsx';
 export class ProductosComponent implements OnInit {
   private readonly baseUrl = 'http://localhost:9095/api/v1';
 
-
   platos: any[] = [];
   plato: any = {};
   modoEdicion = false;
-  filtroEstado: string = 'A'; // Inicialmente filtramos los platos disponibles
+  filtroEstado: string = 'A';
 
   presentaciones: any[] = [];
   categorias: any[] = [];
 
   totalPlatos: number = 0;
-  page: number = 1; // Página actual inicializada en 1
+  page: number = 1;
 
   totalidad: number = 0;
-  platosFiltrados: any[] = []; // Nueva lista para almacenar platos filtrados
+  platosFiltrados: any[] = [];
   errorAlCargar = false;
 
-  selectedFile: File | undefined; // Variable para almacenar el archivo seleccionado
+  selectedFile: File | undefined;
+
+  restaurantes: any[] = [];
+  selectedRestauranteRuc: string = '';
+  restauranteSeleccionado: boolean = false;
 
 
   constructor(private http: HttpClient,
     private cloudinaryService: CloudinaryService,
-    private authService: AuthService
+    private authService: AuthService,
+    private restauranteService: RestauranteService
 
   ) { }
 
-  ngOnInit() {
-    this.getPlatos();
+  async ngOnInit() {
+    await this.getRestaurantesDelUsuario(); // Espera a que se obtengan los restaurantes
     this.getCategoriasActivas();
     this.getPresentacionesActivas();
-    this.gettotalidad(); // Llamar aquí para asegurarse de obtener el total inicial
-
+    this.gettotalidad();
   }
 
 
@@ -118,37 +122,23 @@ export class ProductosComponent implements OnInit {
   }
 
   getPresentacionesActivas() {
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        this.http.get(`${this.baseUrl}/presentacion/obtener/ruc/${ruc}`).subscribe(
-          (data: any) => {
-            this.presentaciones = data;
-          },
-          (error) => {
-            console.error('Error al obtener presentaciones por RUC:', error);
-          }
-        );
+    this.http.get(`${this.baseUrl}/presentacion/obtener/ruc/${this.selectedRestauranteRuc}`).subscribe(
+      (data: any) => {
+        this.presentaciones = data;
       },
       (error) => {
-        console.error('Error al obtener el RUC del usuario:', error);
+        console.error('Error al obtener presentaciones:', error);
       }
     );
   }
 
   getCategoriasActivas() {
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        this.http.get(`${this.baseUrl}/categoria/obtener/ruc/${ruc}`).subscribe(
-          (data: any) => {
-            this.categorias = data;
-          },
-          (error) => {
-            console.error('Error al obtener categorías por RUC:', error);
-          }
-        );
+    this.http.get(`${this.baseUrl}/categoria/obtener/ruc/${this.selectedRestauranteRuc}`).subscribe(
+      (data: any) => {
+        this.categorias = data;
       },
       (error) => {
-        console.error('Error al obtener el RUC del usuario:', error);
+        console.error('Error al obtener categorías:', error);
       }
     );
   }
@@ -178,65 +168,94 @@ export class ProductosComponent implements OnInit {
     });
   }
 
+  aplicarFiltros() {
+    this.platosFiltrados = this.platos.filter(plato => {
+      const cumpleFiltroEstado = this.filtroEstado === 'todos' || plato.estado === this.filtroEstado;
+      return cumpleFiltroEstado;
+    });
+    this.totalPlatos = this.platosFiltrados.length;
+  }
+  
   cambiarFiltroEstado() {
-    this.page = 1; // Reiniciar página al cambiar filtro
-    this.getPlatos(); // Llamar a la función para obtener platos según el nuevo filtro seleccionado
+    this.page = 1;
+    this.aplicarFiltros();
+  }
+  
+  cambiarFiltroRestaurante() {
+    this.page = 1;
+    if (this.selectedRestauranteRuc) {
+      this.restauranteSeleccionado = true;
+      this.getPlatos();
+      this.getPresentacionesActivas();
+      this.getCategoriasActivas();
+    } else {
+      this.restauranteSeleccionado = false;
+      this.platos = [];
+      this.platosFiltrados = [];
+      this.totalPlatos = 0;
+      this.presentaciones = [];
+      this.categorias = [];
+    }
   }
 
+  
 
 
+  getRestaurantesDelUsuario() {
+    this.authService.getUserUid().then(uid => {
+      this.restauranteService.obtenerTodosPorGestor().subscribe(
+        restaurantes => {
+          this.restaurantes = restaurantes;
+          // No seleccionamos ningún restaurante por defecto
+        },
+        error => {
+          console.error('Error al obtener restaurantes:', error);
+          this.errorAlCargar = true;
+        }
+      );
+    });
+  }
 
 
  
 
 
   getPlatos() {
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        let url = `${this.baseUrl}/plato-carta/obtener/ruc/${ruc}`;
-        if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
-          url += `/estado/${this.filtroEstado}`;
-        }
-        this.http.get(url).pipe(
-          catchError((error: any): Observable<never> => {
-            this.errorAlCargar = true;
-            return throwError(error);
-          })
-        ).subscribe({
-          next: (data: any) => {
-            this.platos = data.sort((a: any, b: any) => b.id - a.id);
-            this.totalPlatos = this.platos.length;
-            this.platosFiltrados = this.platos;
-          },
-          error: (error: any) => {
-            console.error('Error al obtener platos:', error);
-          }
-        });
-      },
-      (error: any) => {
-        console.error('Error al obtener el RUC del usuario:', error);
+    if (!this.selectedRestauranteRuc) {
+      console.error('No hay restaurante seleccionado');
+      return;
+    }
+
+    this.authService.getUserUid().then(uid => {
+      let url = `${this.baseUrl}/plato-carta/obtener/uid/${uid}`;
+      if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
+        url += `/estado/${this.filtroEstado}`;
       }
-    );
+      this.http.get(url).subscribe({
+        next: (data: any) => {
+          this.platos = data.filter((plato: any) => plato.ruc === this.selectedRestauranteRuc);
+          this.totalPlatos = this.platos.length;
+          this.platosFiltrados = this.platos;
+          this.errorAlCargar = false;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener platos:', error);
+          this.errorAlCargar = true;
+        }
+      });
+    });
   }
 
-
-
-
   guardarPlato() {
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        this.plato.ruc = ruc;
-        if (this.modoEdicion) {
-          this.actualizarPlato();
-        } else {
-          this.crearPlato();
-          this.uploadImageToCloudinary(); // Añadir llamada aquí si quieres subir la imagen al crear el plato
-        }
-      },
-      (error: any) => {
-        console.error('Error al obtener el RUC del usuario:', error);
+    this.authService.getUserUid().then(uid => {
+      this.plato.uid = uid;
+      this.plato.ruc = this.selectedRestauranteRuc;
+      if (this.modoEdicion) {
+        this.actualizarPlato();
+      } else {
+        this.crearPlato();
       }
-    );
+    });
   }
 
   crearPlato() {

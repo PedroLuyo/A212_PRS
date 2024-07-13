@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { AuthService } from '../../../services/auth/authService';
+import { RestauranteService } from '../../../services/restaurant/restaurante.service';
 
 declare var $: any;
 
@@ -16,176 +17,179 @@ declare var $: any;
   styleUrl: './categoria.component.css'
 })
 export class CategoriaComponent  {
-  private readonly baseUrl = 'http://localhost:9095/api/v1/categoria';
 
-  categorias: any[] = [];
-  categoria: any = {};
-  modoEdicion = false;
-
-  totalCategorias: number = 0;
-  page: number = 1; // Página actual inicializada en 1
-  errorAlCargar = false;
-  filtroEstado: string = 'A'; // Filtro inicial para categorías activas
-
-  constructor(private http: HttpClient,
-    private authService: AuthService
-  ) { }
-
-  ngOnInit() {
-    this.getCategorias();
-    this.getTotalCategorias(); // Llamar aquí para asegurarse de obtener el total inicial
-  }
-
-  buscarCategorias(event: Event) {
-    const termino = (event.target as HTMLInputElement).value.trim().toLowerCase();
+    private readonly baseUrl = 'http://localhost:9095/api/v1/categoria';
   
-    if (termino === '') {
-      this.getCategorias(); // Obtener todas las categorías nuevamente
-    } else {
-      // Filtrar categorías según el término de búsqueda
-      this.categorias = this.categorias.filter(categoria =>
+    categorias: any[] = [];
+    categoriasFiltradas: any[] = [];
+    categoria: any = {};
+    modoEdicion = false;
+  
+    totalCategorias: number = 0;
+    page: number = 1;
+    errorAlCargar = false;
+    filtroEstado: string = 'A';
+  
+    restaurantes: any[] = [];
+    selectedRestauranteRuc: string = '';
+    restauranteSeleccionado: boolean = false;
+  
+    constructor(
+      private http: HttpClient,
+      private authService: AuthService,
+      private restauranteService: RestauranteService
+    ) { }
+  
+    async ngOnInit() {
+      await this.getRestaurantesDelUsuario();
+      // No llamamos a getCategorias() aquí, ya que esperaremos a que se seleccione un restaurante
+    }
+  
+    getRestaurantesDelUsuario() {
+      return new Promise<void>((resolve, reject) => {
+        this.authService.getUserUid().then(uid => {
+          this.restauranteService.obtenerTodosPorGestor().subscribe(
+            restaurantes => {
+              this.restaurantes = restaurantes;
+              resolve();
+            },
+            error => {
+              console.error('Error al obtener restaurantes:', error);
+              this.errorAlCargar = true;
+              reject(error);
+            }
+          );
+        });
+      });
+    }
+  
+    cambiarFiltroRestaurante() {
+      this.page = 1;
+      if (this.selectedRestauranteRuc) {
+        this.restauranteSeleccionado = true;
+        this.getCategorias();
+      } else {
+        this.restauranteSeleccionado = false;
+        this.categorias = [];
+        this.categoriasFiltradas = [];
+        this.totalCategorias = 0;
+      }
+    }
+  
+    buscarCategorias(event: Event) {
+      const termino = (event.target as HTMLInputElement).value.toLowerCase();
+      this.categoriasFiltradas = this.categorias.filter(categoria =>
         categoria.nombre.toLowerCase().includes(termino)
       );
-      this.totalCategorias = this.categorias.length; // Actualizar el total de categorías
+      this.totalCategorias = this.categoriasFiltradas.length;
     }
-  }
-
-  cambiarFiltroEstado() {
-    this.getCategorias(); // Llamar a la función para obtener categorías según el nuevo filtro seleccionado
-  }
-
-  getCategorias() {
-    from(this.authService.getUserRUC()).pipe(
-      switchMap((ruc: string) => {
-        let url = `${this.baseUrl}/obtener/ruc/${ruc}/estado/${this.filtroEstado}`;
-        return this.http.get(url).pipe(
-          map((data: any) => data.sort((a: any, b: any) => b.id - a.id)), // Ordenar las categorías por ID de forma decreciente
-          catchError(error => {
-            this.errorAlCargar = true;
-            return throwError(error);
-          })
-        );
-      })
-    ).subscribe(
-      (data: any) => {
-        this.categorias = data;
-        this.totalCategorias = this.categorias.length; // Actualizar el total de categorías
-      },
-      (error) => {
-        console.error('Error al obtener categorías:', error);
-      }
-    );
-  }
-
-  getTotalCategorias() {
-    from(this.authService.getUserRUC()).pipe(
-      switchMap((ruc: string) => {
-        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
-        return this.http.get(url).pipe(
-          catchError(error => {
-            console.error('Error al obtener categorías:', error);
-            return throwError(error);
-          })
-        );
-      })
-    ).subscribe(
-      (data: any) => {
-        // Opcionalmente manejar los datos aquí si es necesario
-      },
-      (error) => {
-        console.error('Error al obtener categorías:', error);
-      }
-    );
-  }
-
-  guardarCategoria() {
-    if (this.modoEdicion) {
-      this.actualizarCategoria();
-    } else {
-      this.crearCategoria();
+  
+    cambiarFiltroEstado() {
+      this.page = 1;
+      this.getCategorias();
     }
-  }
-
-  crearCategoria() {
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        this.categoria.ruc = ruc; // Asignar el RUC obtenido del AuthService
   
-        // Asumiendo que this.categoria contiene todos los datos necesarios
-        this.http.post(`${this.baseUrl}/crear`, this.categoria).subscribe(
-          (response: any) => {
-            console.log('Categoría creada:', response);
-            Swal.fire('¡Éxito!', 'La categoría ha sido creada exitosamente.', 'success');
+    getCategorias() {
+      if (!this.selectedRestauranteRuc) {
+        console.error('No hay restaurante seleccionado');
+        return;
+      }
   
-            // Agregar la nueva categoría al inicio de la lista existente
-            this.categorias.unshift(response);
-  
-            // Actualizar el total de categorías
-            this.getTotalCategorias();
-  
-            // Resetear el formulario y modo de edición
-            this.resetCategoriaForm();
+      this.authService.getUserUid().then(uid => {
+        let url = `${this.baseUrl}/obtener/uid/${uid}`;
+        if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
+          url += `/estado/${this.filtroEstado}`;
+        }
+        this.http.get(url).subscribe({
+          next: (data: any) => {
+            this.categorias = data.filter((categoria: any) => categoria.ruc === this.selectedRestauranteRuc);
+            this.categoriasFiltradas = this.categorias;
+            this.totalCategorias = this.categorias.length;
+            this.errorAlCargar = false;
           },
-          (error) => {
-            console.error('Error al crear la categoría:', error);
-            Swal.fire('¡Error!', 'No se pudo crear la categoría. Por favor, inténtelo de nuevo.', 'error');
+          error: (error: any) => {
+            console.error('Error al obtener categorías:', error);
+            this.errorAlCargar = true;
           }
-        );
-      },
-      (error: any) => {
-        console.error('Error al obtener el RUC del usuario:', error);
-      }
-    );
-  }
+        });
+      });
+    }
   
-
-  editarCategoria(categoria: any) {
-    this.categoria = { ...categoria }; // Copiar la categoría para editar
-    this.modoEdicion = true; // Activar el modo de edición
-  }
-
-  actualizarCategoria() {
-    this.http.put(`${this.baseUrl}/editar/${this.categoria.id}`, this.categoria).subscribe(
-      (response) => {
-        console.log('Categoría actualizada:', response);
-        Swal.fire('¡Éxito!', 'La categoría ha sido actualizada exitosamente.', 'success');
-        this.getCategorias();
-        this.resetCategoriaForm();
-      },
-      (error) => {
-        console.error('Error al actualizar la categoría:', error);
-        Swal.fire('¡Error!', 'No se pudo actualizar la categoría. Por favor, inténtelo de nuevo.', 'error');
-      }
-    );
-  }
-
-  desactivarCategoria(categoria: any) {
-    this.http.patch(`${this.baseUrl}/desactivar/${categoria.id}`, null, { responseType: 'text' }).subscribe(
-      (response) => {
-        console.log('Categoría desactivada:', response);
-        Swal.fire('¡Éxito!', 'La categoría ha sido desactivada exitosamente.', 'success');
-        this.getCategorias(); // Volver a cargar las categorías después de desactivar
-      },
-      (error) => {
-        console.error('Error al desactivar la categoría:', error);
-        Swal.fire('¡Error!', 'No se pudo desactivar la categoría. Por favor, inténtelo de nuevo.', 'error');
-      }
-    );
-  }
-
-  restaurarCategoria(categoria: any) {
-    this.http.patch(`${this.baseUrl}/restaurar/${categoria.id}`, null, { responseType: 'text' }).subscribe(
-      (response) => {
-        console.log('Categoría restaurada:', response);
-        Swal.fire('¡Éxito!', 'La categoría ha sido restaurada exitosamente.', 'success');
-        this.getCategorias(); // Volver a cargar las categorías después de restaurar
-      },
-      (error) => {
-        console.error('Error al restaurar la categoría:', error);
-        Swal.fire('¡Error!', 'No se pudo restaurar la categoría. Por favor, inténtelo de nuevo.', 'error');
-      }
-    );
-  }
+    guardarCategoria() {
+      this.authService.getUserUid().then(uid => {
+        this.categoria.uid = uid;
+        this.categoria.ruc = this.selectedRestauranteRuc;
+        if (this.modoEdicion) {
+          this.actualizarCategoria();
+        } else {
+          this.crearCategoria();
+        }
+      });
+    }
+  
+    crearCategoria() {
+      this.categoria.estado = 'A';
+      this.http.post(`${this.baseUrl}/crear`, this.categoria).subscribe(
+        (response: any) => {
+          console.log('Categoría creada:', response);
+          Swal.fire('¡Éxito!', 'La categoría ha sido creada exitosamente.', 'success');
+          this.getCategorias();
+          this.resetCategoriaForm();
+        },
+        (error) => {
+          console.error('Error al crear la categoría:', error);
+          Swal.fire('¡Error!', 'No se pudo crear la categoría. Por favor, inténtelo de nuevo.', 'error');
+        }
+      );
+    }
+  
+    editarCategoria(categoria: any) {
+      this.categoria = { ...categoria };
+      this.modoEdicion = true;
+    }
+  
+    actualizarCategoria() {
+      this.http.put(`${this.baseUrl}/editar/${this.categoria.id}`, this.categoria).subscribe(
+        (response) => {
+          console.log('Categoría actualizada:', response);
+          Swal.fire('¡Éxito!', 'La categoría ha sido actualizada exitosamente.', 'success');
+          this.getCategorias();
+          this.resetCategoriaForm();
+        },
+        (error) => {
+          console.error('Error al actualizar la categoría:', error);
+          Swal.fire('¡Error!', 'No se pudo actualizar la categoría. Por favor, inténtelo de nuevo.', 'error');
+        }
+      );
+    }
+  
+    desactivarCategoria(categoria: any) {
+      this.http.patch(`${this.baseUrl}/desactivar/${categoria.id}`, null, { responseType: 'text' }).subscribe(
+        (response) => {
+          console.log('Categoría desactivada:', response);
+          Swal.fire('¡Éxito!', 'La categoría ha sido desactivada exitosamente.', 'success');
+          this.getCategorias();
+        },
+        (error) => {
+          console.error('Error al desactivar la categoría:', error);
+          Swal.fire('¡Error!', 'No se pudo desactivar la categoría. Por favor, inténtelo de nuevo.', 'error');
+        }
+      );
+    }
+  
+    restaurarCategoria(categoria: any) {
+      this.http.patch(`${this.baseUrl}/restaurar/${categoria.id}`, null, { responseType: 'text' }).subscribe(
+        (response) => {
+          console.log('Categoría restaurada:', response);
+          Swal.fire('¡Éxito!', 'La categoría ha sido restaurada exitosamente.', 'success');
+          this.getCategorias();
+        },
+        (error) => {
+          console.error('Error al restaurar la categoría:', error);
+          Swal.fire('¡Error!', 'No se pudo restaurar la categoría. Por favor, inténtelo de nuevo.', 'error');
+        }
+      );
+    }
 
   exportarAExcel() {
     const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.categorias);

@@ -1,96 +1,107 @@
 <div class="container mt-4">
-    <div class="row">
-      <!-- Columna del Formulario -->
-      <div class="col-md-3 formulario-card">
-        <h3>{{ modoEdicion ? 'Editar Presentación' : 'Agregar Presentación' }}</h3>
-        <form (ngSubmit)="guardarPresentacion()" #presentacionForm="ngForm">
-          <div class="form-group">
-            <label for="tipo">Tipo:</label>
-            <input type="text" class="form-control" id="tipo" [(ngModel)]="presentacion.tipo" name="tipo" required>
-            <div *ngIf="presentacionForm.controls['tipo'].invalid && presentacionForm.controls['tipo'].touched"
-              class="text-danger">Campo requerido</div>
+  <div class="row">
+    <!-- Columna del Formulario -->
+    <div class="col-md-3 formulario-card">
+      <h3>{{ modoEdicion ? 'Editar Presentación' : 'Agregar Presentación' }}</h3>
+      <form (ngSubmit)="guardarPresentacion()" #presentacionForm="ngForm">
+        <div class="form-group">
+          <label for="tipo">Tipo:</label>
+          <input type="text" class="form-control" id="tipo" [(ngModel)]="presentacion.tipo" name="tipo" required>
+          <div *ngIf="presentacionForm.controls['tipo'].invalid && presentacionForm.controls['tipo'].touched"
+            class="text-danger">Campo requerido</div>
+        </div>
+        
+        <button type="submit" class="btn btn-primary" [disabled]="!restauranteSeleccionado || presentacionForm.invalid">
+          {{ modoEdicion ? 'Guardar' : 'Agregar' }}
+        </button>
+        <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion" (click)="cancelarEdicion()">Cancelar</button>
+      </form>
+    </div>
+
+    <!-- Columna del Listado -->
+    <div class="col-md-9 listado-card">
+      <div class="card-header">
+        <div class="d-flex justify-content-between align-items-center">
+          <h3 class="card-title mb-0">
+            Listado de Presentaciones - {{ filtroEstado === 'A' ? 'Disponibles' : 'Archivadas' }}
+          </h3>
+
+          <!-- Botones de exportar a Excel y PDF -->
+          <div class="d-flex">
+            <button (click)="exportarAExcel()" class="btn btn-success ml-3">
+              <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
+            </button>
+            <button (click)="exportarAPDF()" class="btn btn-danger ml-2">
+              <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
+            </button>
           </div>
-          
-          <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar' }}</button>
-          <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion" (click)="cancelarEdicion()">Cancelar</button>
-        </form>
+        </div>
       </div>
-  
-      <!-- Columna del Listado -->
-      <div class="col-md-9 listado-card">
-        <div class="card-header">
-          <div class="d-flex justify-content-between align-items-center">
-            <h3 class="card-title mb-0">
-              Listado de Presentaciones - {{ filtroEstado === 'A' ? 'Disponibles' : 'Archivadas' }}
-            </h3>
-  
-            <!-- Botones de exportar a Excel y PDF -->
-            <div class="d-flex">
-              <button (click)="exportarAExcel()" class="btn btn-success ml-3">
-                <i class="bi bi-file-earmark-excel-fill mr-1"></i> Exportar a Excel
-              </button>
-              <button (click)="exportarAPDF()" class="btn btn-danger ml-2">
-                <i class="bi bi-file-earmark-pdf-fill mr-1"></i> Exportar a PDF
-              </button>
-            </div>
-          </div>
-        </div>
-        <!-- Filtrado y búsqueda -->
-        <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 20px;">
-          <span class="badge badge-warning mr-3">Total de presentaciones: {{ totalPresentaciones }}</span>
-  
-          <span style="margin-right: 10px;">Filtrar por:</span>
-          <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()"
-            class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
-            <option value="A">Disponibles</option>
-            <option value="I">Archivadas</option>
-          </select>
-  
-          <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;"
-            (input)="buscarPresentaciones($event)">
-        </div>
-  
-        <div class="table-responsive" *ngIf="presentaciones.length && !errorAlCargar">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th style="width: 20%;">Tipo</th>
-                <th style="width: 30%;" class="text-center">Acciones</th>
-              </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let presentacion of presentaciones | paginate: { itemsPerPage: 4, currentPage: page, totalItems: totalPresentaciones }">
-                    <td>{{ presentacion.tipo }}</td>
-                <td class="text-center">
-                  <button class="btn btn-primary mb-1" (click)="editarPresentacion(presentacion)">Editar</button>
-                  <button class="btn btn-danger mb-1" (click)="desactivarPresentacion(presentacion)"
-                    *ngIf="filtroEstado === 'A'">Archivar</button>
-                  <button class="btn btn-success mb-1" (click)="restaurarPresentacion(presentacion)"
-                    *ngIf="filtroEstado === 'I'">Restaurar</button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-  
-        <!-- Paginación -->
-        <pagination-controls *ngIf="totalPresentaciones > 4 && !errorAlCargar" (pageChange)="page = $event"></pagination-controls>
-  
-        <!-- Mensaje de error -->
-        <ng-container *ngIf="errorAlCargar">
-          <div class="alert alert-warning" role="alert" style="padding-top: 5px; margin-top: 30px;">
-            Error al cargar las presentaciones. Intente nuevamente más tarde.
-          </div>
-        </ng-container>
-  
-        <!-- Mensaje de no hay presentaciones -->
-        <ng-container *ngIf="!presentaciones.length && !errorAlCargar">
-          <div class="alert alert-warning" role="alert" style="padding-top: 5px; margin-top: 30px;">
-            No hay presentaciones por mostrar.
-          </div>
-        </ng-container>
-  
+      <!-- Filtrado y búsqueda -->
+      <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 20px;">
+        <span class="badge badge-warning mr-3">Total de presentaciones: {{ totalPresentaciones }}</span>
+
+        <span style="margin-right: 10px;">Restaurante:</span>
+        <select class="form-control" id="restaurante" [(ngModel)]="selectedRestauranteRuc"
+          (change)="cambiarFiltroRestaurante()" class="form-control filtro-select"
+          style="width: 150px; margin-right: 10px;">
+          <option value="">Seleccione un restaurante</option>
+          <option *ngFor="let restaurante of restaurantes" [value]="restaurante.ruc">
+            {{restaurante.nombre}}
+          </option>
+        </select>
+
+        <span style="margin-right: 10px;">Filtrar por:</span>
+        <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()"
+          class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
+          <option value="A">Disponibles</option>
+          <option value="I">Archivadas</option>
+        </select>
+
+        <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;"
+          (input)="buscarPresentaciones($event)">
       </div>
+
+      <div class="table-responsive" *ngIf="presentacionesFiltradas.length && !errorAlCargar">
+        <table class="table table-striped">
+          <thead>
+            <tr>
+              <th style="width: 20%;">Tipo</th>
+              <th style="width: 30%;" class="text-center">Acciones</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let presentacion of presentacionesFiltradas | paginate: { itemsPerPage: 4, currentPage: page, totalItems: totalPresentaciones }">
+              <td>{{ presentacion.tipo }}</td>
+              <td class="text-center">
+                <button class="btn btn-primary mb-1" (click)="editarPresentacion(presentacion)">Editar</button>
+                <button class="btn btn-danger mb-1" (click)="desactivarPresentacion(presentacion)"
+                  *ngIf="filtroEstado === 'A'">Archivar</button>
+                <button class="btn btn-success mb-1" (click)="restaurarPresentacion(presentacion)"
+                  *ngIf="filtroEstado === 'I'">Restaurar</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <pagination-controls *ngIf="totalPresentaciones > 4 && !errorAlCargar" (pageChange)="page = $event"></pagination-controls>
+
+      <!-- Mensaje de error -->
+      <ng-container *ngIf="errorAlCargar">
+        <div class="alert alert-warning" role="alert" style="padding-top: 5px; margin-top: 30px;">
+          Error al cargar las presentaciones. Intente nuevamente más tarde.
+        </div>
+      </ng-container>
+
+      <!-- Mensaje de no hay presentaciones -->
+      <ng-container *ngIf="!presentacionesFiltradas.length && !errorAlCargar">
+        <div class="alert alert-warning" role="alert" style="padding-top: 5px; margin-top: 30px;">
+          No hay presentaciones por mostrar.
+        </div>
+      </ng-container>
+
     </div>
   </div>
-  
+</div>

@@ -7,6 +7,7 @@ import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { AuthService } from '../../../services/auth/authService';
+import { RestauranteService } from '../../../services/restaurant/restaurante.service';
 
 @Component({
   selector: 'app-presentacion',
@@ -17,144 +18,135 @@ export class PresentacionComponent implements OnInit {
   private readonly baseUrl = 'http://localhost:9095/api/v1/presentacion';
 
   presentaciones: any[] = [];
+  presentacionesFiltradas: any[] = [];
   presentacion: any = {};
   modoEdicion = false;
 
   totalPresentaciones: number = 0;
-  page: number = 1; // Página actual inicializada en 1
+  page: number = 1;
   errorAlCargar = false;
-  filtroEstado: string = 'A'; // Filtro inicial para presentaciones disponibles
+  filtroEstado: string = 'A';
 
-  constructor(private http: HttpClient,
-    private authService: AuthService
+  restaurantes: any[] = [];
+  selectedRestauranteRuc: string = '';
+  restauranteSeleccionado: boolean = false;
+
+  constructor(
+    private http: HttpClient,
+    private authService: AuthService,
+    private restauranteService: RestauranteService
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    await this.getRestaurantesDelUsuario();
     this.getPresentaciones();
-    this.getTotalPresentaciones(); // Llamar aquí para asegurarse de obtener el total inicial
   }
 
-  buscarPresentaciones(event: Event) {
-    const termino = (event.target as HTMLInputElement).value.trim().toLowerCase();
-  
-    if (termino === '') {
-      this.getPresentaciones(); // Obtener todas las presentaciones nuevamente
-      
-    } else {
-      // Filtrar presentaciones según el término de búsqueda
-      this.presentaciones = this.presentaciones.filter(presentacion =>
-        presentacion.tipo.toLowerCase().includes(termino)
-        
-      );
-      this.totalPresentaciones = this.presentaciones.length; // Actualizar el total de presentaciones
+  getRestaurantesDelUsuario() {
+    return new Promise<void>((resolve, reject) => {
+      this.authService.getUserUid().then(uid => {
+        this.restauranteService.obtenerTodosPorGestor().subscribe(
+          restaurantes => {
+            this.restaurantes = restaurantes;
+            if (this.restaurantes.length > 0) {
+              this.selectedRestauranteRuc = this.restaurantes[0].ruc;
+              this.restauranteSeleccionado = true;
+            }
+            resolve();
+          },
+          error => {
+            console.error('Error al obtener restaurantes:', error);
+            this.errorAlCargar = true;
+            reject(error);
+          }
+        );
+      });
+    });
+  }
 
+  cambiarFiltroRestaurante() {
+    this.page = 1;
+    if (this.selectedRestauranteRuc) {
+      this.restauranteSeleccionado = true;
+      this.getPresentaciones();
+    } else {
+      this.restauranteSeleccionado = false;
+      this.presentaciones = [];
+      this.presentacionesFiltradas = [];
+      this.totalPresentaciones = 0;
     }
   }
 
+  buscarPresentaciones(event: Event) {
+    const termino = (event.target as HTMLInputElement).value.toLowerCase();
+    this.presentacionesFiltradas = this.presentaciones.filter(presentacion =>
+      presentacion.tipo.toLowerCase().includes(termino)
+    );
+    this.totalPresentaciones = this.presentacionesFiltradas.length;
+  }
+
   cambiarFiltroEstado() {
-    this.getPresentaciones(); // Llamar a la función para obtener presentaciones según el nuevo filtro seleccionado
+    this.page = 1;
+    this.getPresentaciones();
   }
 
   getPresentaciones() {
-    from(this.authService.getUserRUC()).pipe(
-      switchMap((ruc: string) => {
-        let url = `${this.baseUrl}/obtener/ruc/${ruc}/estado/${this.filtroEstado}`;
-        return this.http.get(url).pipe(
-          catchError((error: any) => {
-            console.error('Error al obtener presentaciones:', error);
-            this.errorAlCargar = true;
-            return throwError(error);
-          })
-        );
-      })
-    ).subscribe({
-      next: (data: any) => {
-        this.presentaciones = data.sort((a: any, b: any) => b.id - a.id); // Ordenar las presentaciones por ID de forma decreciente
-        this.totalPresentaciones = this.presentaciones.length; // Actualizar el total de presentaciones
-      },
-      error: (error: any) => {
-        console.error('Error al obtener presentaciones:', error);
-      }
-    });
-  }
-  
+    if (!this.selectedRestauranteRuc) {
+      console.error('No hay restaurante seleccionado');
+      return;
+    }
 
-  getTotalPresentaciones() {
-    from(this.authService.getUserRUC()).pipe(
-      switchMap((ruc: string) => {
-        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
-        return this.http.get(url).pipe(
-          catchError((error: any) => {
-            console.error('Error al obtener presentaciones:', error);
-            return throwError(error);
-          })
-        );
-      })
-    ).subscribe({
-      next: (data: any) => {
-        // Optionally handle data here if needed
-      },
-      error: (error: any) => {
-        console.error('Error al obtener presentaciones:', error);
+    this.authService.getUserUid().then(uid => {
+      let url = `${this.baseUrl}/obtener/uid/${uid}`;
+      if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
+        url += `/estado/${this.filtroEstado}`;
       }
+      this.http.get(url).subscribe({
+        next: (data: any) => {
+          this.presentaciones = data.filter((presentacion: any) => presentacion.ruc === this.selectedRestauranteRuc);
+          this.presentacionesFiltradas = this.presentaciones;
+          this.totalPresentaciones = this.presentaciones.length;
+          this.errorAlCargar = false;
+        },
+        error: (error: any) => {
+          console.error('Error al obtener presentaciones:', error);
+          this.errorAlCargar = true;
+        }
+      });
     });
   }
-  
 
   guardarPresentacion() {
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        this.presentacion.ruc = ruc;
-        if (this.modoEdicion) {
-          this.actualizarPresentacion();
-        } else {
-          this.crearPresentacion();
-        }
-      },
-      (error: any) => {
-        console.error('Error al obtener el RUC del usuario:', error);
+    this.authService.getUserUid().then(uid => {
+      this.presentacion.uid = uid;
+      this.presentacion.ruc = this.selectedRestauranteRuc;
+      if (this.modoEdicion) {
+        this.actualizarPresentacion();
+      } else {
+        this.crearPresentacion();
       }
-    );
+    });
   }
-  
-  crearPresentacion() {
-    // Asegurar que el RUC se asigna correctamente desde el AuthService
-    from(this.authService.getUserRUC()).subscribe(
-      (ruc: string) => {
-        this.presentacion.ruc = ruc; // Asignar el RUC obtenido del AuthService
-  
-        // Asumiendo que this.presentacion contiene todos los datos necesarios
-        this.http.post(`${this.baseUrl}/crear`, this.presentacion).subscribe(
-          (response: any) => {
-            console.log('Presentación creada:', response);
-            Swal.fire('¡Éxito!', 'La presentación ha sido creada exitosamente.', 'success');
-  
-            // Agregar la nueva presentación al inicio de la lista existente
-            this.presentaciones.unshift(response);
-  
-            // Actualizar el total de presentaciones
-            this.getTotalPresentaciones();
-  
-            // Resetear el formulario y modo de edición
-            this.resetPresentacionForm();
-          },
-          (error) => {
-            console.error('Error al crear la presentación:', error);
-            Swal.fire('¡Error!', 'No se pudo crear la presentación. Por favor, inténtelo de nuevo.', 'error');
-          }
-        );
-      },
-      (error: any) => {
-        console.error('Error al obtener el RUC del usuario:', error);
-      }
-    );
-  }
-  
-  
 
-    editarPresentacion(presentacion: any) {
-    this.presentacion = { ...presentacion }; // Copiar la presentación para editar
-    this.modoEdicion = true; // Activar el modo de edición
+  crearPresentacion() {
+    this.presentacion.estado = 'A';
+    this.http.post(`${this.baseUrl}/crear`, this.presentacion).subscribe(
+      (response: any) => {
+        console.log('Presentación creada:', response);
+        Swal.fire('¡Éxito!', 'La presentación ha sido creada exitosamente.', 'success');
+        this.getPresentaciones();
+        this.resetPresentacionForm();
+      },
+      (error) => {
+        console.error('Error al crear la presentación:', error);
+        Swal.fire('¡Error!', 'No se pudo crear la presentación. Por favor, inténtelo de nuevo.', 'error');
+      }
+    );
+  }
+
+  editarPresentacion(presentacion: any) {
+    this.presentacion = { ...presentacion };
+    this.modoEdicion = true;
   }
 
   actualizarPresentacion() {
@@ -177,7 +169,7 @@ export class PresentacionComponent implements OnInit {
       (response) => {
         console.log('Presentación archivada:', response);
         Swal.fire('¡Éxito!', 'La presentación ha sido archivada exitosamente.', 'success');
-        this.getPresentaciones(); // Volver a cargar las presentaciones después de desactivar
+        this.getPresentaciones();
       },
       (error) => {
         console.error('Error al archivar la presentación:', error);
@@ -191,7 +183,7 @@ export class PresentacionComponent implements OnInit {
       (response) => {
         console.log('Presentación restaurada:', response);
         Swal.fire('¡Éxito!', 'La presentación ha sido restaurada exitosamente.', 'success');
-        this.getPresentaciones(); // Volver a cargar las presentaciones después de restaurar
+        this.getPresentaciones();
       },
       (error) => {
         console.error('Error al restaurar la presentación:', error);

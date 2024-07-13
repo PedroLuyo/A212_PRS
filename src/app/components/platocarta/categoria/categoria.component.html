@@ -10,7 +10,9 @@
           <div *ngIf="categoriaForm.controls['nombre'].invalid && categoriaForm.controls['nombre'].touched" class="text-danger">Campo requerido</div>
         </div>
         
-        <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar' : 'Agregar' }}</button>
+        <button type="submit" class="btn btn-primary" [disabled]="!restauranteSeleccionado || categoriaForm.invalid">
+          {{ modoEdicion ? 'Guardar' : 'Agregar' }}
+        </button>
         <button type="button" class="btn btn-secondary ml-2" *ngIf="modoEdicion" (click)="cancelarEdicion()">Cancelar</button>
       </form>
     </div>
@@ -39,6 +41,16 @@
       <div class="d-flex justify-content-between align-items-center mb-3" style="padding-top: 20px;">
         <span class="badge badge-warning mr-3">Total de categorías: {{ totalCategorias }}</span>
 
+        <span style="margin-right: 10px;">Restaurante:</span>
+        <select class="form-control" id="restaurante" [(ngModel)]="selectedRestauranteRuc"
+          (change)="cambiarFiltroRestaurante()" class="form-control filtro-select"
+          style="width: 150px; margin-right: 10px;">
+          <option value="">Seleccione un restaurante</option>
+          <option *ngFor="let restaurante of restaurantes" [value]="restaurante.ruc">
+            {{restaurante.nombre}}
+          </option>
+        </select>
+
         <span style="margin-right: 10px;">Filtrar por:</span>
         <select id="filtroEstado" [(ngModel)]="filtroEstado" (change)="cambiarFiltroEstado()" class="form-control filtro-select" style="width: 150px; margin-right: 10px;">
           <option value="A">Disponibles</option>
@@ -48,7 +60,7 @@
         <input type="text" class="form-control ml-auto" placeholder="Buscar..." style="width: 200px;" (input)="buscarCategorias($event)">
       </div>
 
-      <div class="table-responsive" *ngIf="categorias.length && !errorAlCargar">
+      <div class="table-responsive" *ngIf="categoriasFiltradas.length && !errorAlCargar">
         <table class="table table-striped">
           <thead>
             <tr>
@@ -57,7 +69,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr *ngFor="let categoria of categorias | paginate: { itemsPerPage: 5, currentPage: page, totalItems: totalCategorias }">
+            <tr *ngFor="let categoria of categoriasFiltradas | paginate: { itemsPerPage: 5, currentPage: page, totalItems: totalCategorias }">
               <td>{{ categoria.nombre }}</td>
               <td class="text-center">
                 <div class="d-flex justify-content-between align-items-center">
@@ -69,7 +81,6 @@
                 </div>
               </td>
             </tr>
-            
           </tbody>
         </table>
       </div>
@@ -85,7 +96,7 @@
       </ng-container>
 
       <!-- Mensaje de no hay categorías -->
-      <ng-container *ngIf="!categorias.length && !errorAlCargar">
+      <ng-container *ngIf="!categoriasFiltradas.length && !errorAlCargar">
         <div class="alert alert-warning mt-3" role="alert">
           No hay categorías para mostrar.
         </div>
