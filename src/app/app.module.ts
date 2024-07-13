@@ -40,6 +40,8 @@ import { ReservasComponent } from './components/platocarta/reservas/reservas.com
 import { CategoriaComponent } from './components/platocarta/categoria/categoria.component';
 import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
 import { DetallesComponent } from './components/detalles/detalles.component';
+import { ReservasusuariosComponent } from './components/platocarta/reservasusuarios/reservasusuarios.component';
+import { ReservarconusuarioComponent } from './components/reservarconusuario/reservarconusuario.component';
 
 const firebaseUiAuthConfig: firebaseui.auth.Config = {
   signInFlow: 'popup',
@@ -80,6 +82,8 @@ class CustomErrorHandler implements ErrorHandler {
     CategoriaComponent,
     PresentacionComponent,
     DetallesComponent,
+    ReservasusuariosComponent,
+    ReservarconusuarioComponent,
   ],
   imports: [
     BrowserModule,

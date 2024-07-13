@@ -19,11 +19,13 @@ import { CategoriaComponent } from './components/platocarta/categoria/categoria.
 import { PresentacionComponent } from './components/platocarta/presentacion/presentacion.component';
 import { DetallesComponent } from './components/detalles/detalles.component';
 import { CrearMenu } from './components/menu/crear-menu/crear-menu';
+import { ReservarconusuarioComponent } from './components/reservarconusuario/reservarconusuario.component';
 
 
 const routes: Routes = [
   { path: '', redirectTo: 'main', pathMatch: 'full' },
   { path: 'monitorear', component: UsersComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin'] } },
+  { path: 'reservarconusuario', component: ReservarconusuarioComponent, canActivate: [authGuard, RoleGuard], data: { roles: ['admin', 'gestor', 'comensal'] } },
   { path: 'login', component: LoginComponent },
 
   { path: 'main', component: MainComponent },

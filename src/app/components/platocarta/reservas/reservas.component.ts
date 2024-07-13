@@ -4,6 +4,7 @@ import Swal from 'sweetalert2';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { AuthService } from '../../../services/auth/authService';
+import { RestauranteService } from '../../../services/restaurant/restaurante.service';
 
 
 declare var $: any;
@@ -16,293 +17,216 @@ declare var $: any;
 })
 export class ReservasComponent {
   private readonly baseUrl = 'http://localhost:9095/api/v1/reserva';
-  private readonly estadoActivo = 'A';
-  private readonly estadoInactivo = 'I';
+  private readonly platosUrl = 'http://localhost:9095/api/v1/plato-carta';
 
   reservas: any[] = [];
-  reserva: {
-    id?: number;
-    cliente_id: string;
-    restaurante_id: string;
-    email: string;
-    fecha_destino: string;
-    personas: number;
-    monto: number;
-    observacion: string;
-    situacion: string;
-    estado: string;
-    reserva_detalle: { id_carta: number; cantidad: number }[];
-  } = this.nuevaReservaObjeto();
+  reserva: any = {
+    uid: '',
+    ruc: '',
+    email: '',
+    fecha_destino: '',
+    personas: 0,
+    monto: 0,
+    observacion: '',
+    situacion: 'P',
+    reserva_detalle: []
+  };
   modoEdicion = false;
-  filtroReservas = '';
+  filtroSituacion = 'P';
+  restaurantes: any[] = [];
+  selectedRestauranteRuc: string = '';
+  platos: any[] = [];
+  selectedPlato: any = null;
+  platosCantidad: { [key: number]: number } = {};
 
-  @ViewChild('agregarReservaModal') agregarReservaModal!: ElementRef;
-  @ViewChild('editarReservaModal') editarReservaModal!: ElementRef;
-
-  constructor(private http: HttpClient,
+  constructor(
+    private http: HttpClient,
     private authService: AuthService,
-
+    private restauranteService: RestauranteService
   ) { }
-  
 
   ngOnInit() {
+    this.getRestaurantesDelUsuario();
     this.getReservas();
-    this.filtrarReservas('/activo');
   }
 
-  generarReportePDF(): void {
-    const doc = new jsPDF({
-      orientation: 'landscape'
+  getRestaurantesDelUsuario() {
+    this.authService.getUserUid().then(uid => {
+      this.restauranteService.obtenerTodosPorGestor().subscribe(
+        restaurantes => {
+          this.restaurantes = restaurantes;
+        },
+        error => console.error('Error al obtener restaurantes:', error)
+      );
     });
+  }
 
-    const img = new Image();
-    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
-    img.onload = () => {
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const pageHeight = doc.internal.pageSize.getHeight();
-      const logoWidth = pageWidth * 0.2;
-      const logoHeight = img.height * (logoWidth / img.width);
-      const logoX = (pageWidth - logoWidth) / 2;
-      doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+  onRestauranteChange() {
+    if (this.selectedRestauranteRuc) {
+      this.getPlatos();
+    } else {
+      this.platos = [];
+    }
+  }
 
-      const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
-      const sloganX = pageWidth / 2;
-      const sloganY = logoHeight + 20;
-      doc.setTextColor(31, 30, 30);
-      doc.setFontSize(12);
-      doc.text(slogan, sloganX, sloganY, { align: 'center' });
+  getPlatos() {
+    this.http.get(`${this.platosUrl}/obtener/ruc/${this.selectedRestauranteRuc}`).subscribe(
+      (data: any) => {
+        this.platos = data.filter((plato: any) => plato.estado === 'A');
+      },
+      error => console.error('Error al obtener platos:', error)
+    );
+  }
 
-      const fecha = new Date().toLocaleDateString('en-GB', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      }).replace(/ /g, '/').replace(/\//g, '-');
+  getNombrePlato(id_carta: number): string {
+    const plato = this.platos.find(p => p.id === id_carta);
+    return plato ? plato.nombre : '';
+  }
 
-      doc.setFont('courier', 'bold');
-      doc.setFontSize(20);
-      const titulo = 'Reporte de Reservas';
-      const tituloY = sloganY + 20;
-      doc.text(titulo, 14, tituloY);
-
-      doc.setFontSize(12);
-      const fechaX = pageWidth - 14;
-      doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
-
-      const head = [['ID', 'Cliente', 'Restaurante', 'Email', 'Fecha Destino', 'Personas', 'Monto', 'Observación', 'Situación', 'Detalle']];
-      const data = this.reservas.map((reserva) => {
-        let detalle = '';
-        reserva.reserva_detalle.forEach((item: { id_carta: number; cantidad: number }, idx: number) => {
-          detalle += `${idx + 1}. Plato: ${item.id_carta}, Cantidad: ${item.cantidad}\n`;
-        });
-
-        return [
-          reserva.id,
-          reserva.cliente_id,
-          reserva.restaurante_id,
-          reserva.email,
-          reserva.fecha_destino,
-          reserva.personas,
-          reserva.monto,
-          reserva.observacion,
-          reserva.situacion,
-          detalle
-        ];
-      });
-
-      (doc as any).autoTable({
-        head: head,
-        body: data,
-        startY: tituloY + 20,
-        styles: {
-          cellWidth: 'auto',
-          fontSize: 10,
-          lineColor: [0, 0, 0],
-          lineWidth: 0.1
-        },
-        headStyles: {
-          fillColor: [0, 0, 0],
-          textColor: 255,
-          fontStyle: 'bold'
-        },
-        bodyStyles: {
-          fillColor: [255, 255, 255],
-          textColor: 0
-        },
-        alternateRowStyles: {
-          fillColor: [235, 235, 235]
-        }
-      });
-
-      const pageCount = doc.getNumberOfPages();
-      for (let i = 1; i <= pageCount; i++) {
-        doc.setPage(i);
-        doc.setFont('courier', 'normal');
-        doc.setFontSize(10);
-        doc.setTextColor(31, 30, 30);
-        const pageNumberText = `Página ${i}`;
-        const pageSize = doc.internal.pageSize;
-        const pageWidth = pageSize.getWidth();
-        const pageHeight = pageSize.getHeight();
-        const footerY = pageHeight - 10;
-        doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY);
+  agregarPlato() {
+    if (this.selectedPlato && this.platosCantidad[this.selectedPlato.id] > 0) {
+      const platoExistente = this.reserva.reserva_detalle.find((detalle: any) => detalle.id_carta === this.selectedPlato.id);
+      if (platoExistente) {
+        Swal.fire('Error', 'Este plato ya está en la reserva', 'error');
+        return;
       }
 
-      doc.save('reporte_reservas.pdf');
-    };
-  }
-  
+      this.reserva.reserva_detalle.push({
+        id_carta: this.selectedPlato.id,
+        cantidad: this.platosCantidad[this.selectedPlato.id],
+        subtotal: this.selectedPlato.precio * this.platosCantidad[this.selectedPlato.id]
+      });
 
-  filtrarReservas(estado: string) {
-    this.filtroReservas = estado;
-    this.getReservas();
+      this.reserva.monto = this.reserva.reserva_detalle.reduce((total: number, detalle: any) => total + detalle.subtotal, 0);
+      this.selectedPlato = null;
+      this.platosCantidad = {};
+    }
+  }
+
+  eliminarPlato(index: number) {
+    this.reserva.reserva_detalle.splice(index, 1);
+    this.reserva.monto = this.reserva.reserva_detalle.reduce((total: number, detalle: any) => total + detalle.subtotal, 0);
   }
 
   getReservas() {
-    let url = `${this.baseUrl}/obtener`;
+    this.authService.getUserUid().then(uid => {
+      this.http.get(`${this.baseUrl}/obtener/cliente/${uid}/${this.filtroSituacion}`).subscribe(
+        (data: any) => {
+          this.reservas = data;
+        },
+        error => console.error('Error al obtener reservas:', error)
+      );
+    });
+  }
 
-    if (this.filtroReservas) {
-      url += `${this.filtroReservas}`;
-    }
+  formatearFecha(fecha: string): string {
+    const date = new Date(fecha);
+    const year = date.getFullYear();
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const seconds = date.getSeconds().toString().padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  }
 
-    url += '?sort=-id';
+  guardarReserva() {
+    this.authService.getUserUid().then(uid => {
+      this.reserva.uid = uid;
+      this.reserva.ruc = this.selectedRestauranteRuc;
+      this.reserva.fecha_destino = this.formatearFecha(this.reserva.fecha_destino);
 
-    this.http.get<any[]>(url).subscribe(
-      (data: any[]) => {
-        this.reservas = data.sort((a: any, b: any) => b.id - a.id);
+      if (this.modoEdicion) {
+        this.http.put(`${this.baseUrl}/editar/${this.reserva.id}`, this.reserva).subscribe(
+          response => {
+            Swal.fire('Éxito', 'Reserva actualizada correctamente', 'success');
+            this.resetForm();
+            this.getReservas();
+          },
+          error => {
+            console.error('Error al actualizar la reserva:', error);
+            Swal.fire('Error', 'No se pudo actualizar la reserva', 'error');
+          }
+        );
+      } else {
+        this.http.post(`${this.baseUrl}/crear`, this.reserva, { responseType: 'json' }).subscribe(
+          (response: any) => {
+            Swal.fire('Éxito', 'Reserva creada correctamente', 'success');
+            this.resetForm();
+            this.getReservas();
+          },
+          (error: any) => {
+            console.error('Error al crear la reserva:', error);
+            Swal.fire('Error', 'No se pudo crear la reserva', 'error');
+          }
+        );
+      }
+    });
+  }
+
+  confirmarReserva(id: number) {
+    this.http.post(`${this.baseUrl}/confirmar/${id}`, {}).subscribe(
+      response => {
+        Swal.fire('Éxito', 'Reserva confirmada correctamente', 'success');
+        this.getReservas();
       },
-      (error) => {
-        console.error('Error en la solicitud HTTP:', error);
-        this.showErrorAlert('Error', 'Hubo un error en la solicitud. Por favor, inténtelo de nuevo.');
+      error => {
+        console.error('Error al confirmar la reserva:', error);
+        Swal.fire('Error', 'No se pudo confirmar la reserva', 'error');
       }
     );
   }
 
-  nuevaReserva(): void {
-    this.reserva = this.nuevaReservaObjeto();
-    this.modoEdicion = false;
-    $('#agregarReservaModal').modal('show');
+  anularReserva(id: number) {
+    this.http.post(`${this.baseUrl}/anular/${id}`, {}).subscribe(
+      response => {
+        Swal.fire('Éxito', 'Reserva anulada correctamente', 'success');
+        this.getReservas();
+      },
+      error => {
+        console.error('Error al anular la reserva:', error);
+        Swal.fire('Error', 'No se pudo anular la reserva', 'error');
+      }
+    );
   }
 
-  nuevaReservaObjeto() {
-    return {
-      cliente_id: '',
-      restaurante_id: '',
+  verDetalles(reserva: any) {
+    Swal.fire({
+      title: 'Detalles de la Reserva',
+      html: `
+        <p><strong>Cliente:</strong> ${reserva.uid}</p>
+        <p><strong>Restaurante:</strong> ${reserva.ruc}</p>
+        <p><strong>Fecha:</strong> ${reserva.fecha_destino}</p>
+        <p><strong>Personas:</strong> ${reserva.personas}</p>
+        <p><strong>Monto:</strong> ${reserva.monto}</p>
+        <p><strong>Observación:</strong> ${reserva.observacion}</p>
+        <p><strong>Situación:</strong> ${reserva.situacion}</p>
+        <h4>Platos:</h4>
+        ${reserva.reserva_detalle.map((detalle: any) => 
+          `<p>${detalle.plato_carta.nombre} - Cantidad: ${detalle.cantidad} - Subtotal: ${detalle.subtotal}</p>`
+        ).join('')}
+      `,
+      width: 600,
+      confirmButtonText: 'Cerrar'
+    });
+  }
+
+  resetForm() {
+    this.reserva = {
+      uid: '',
+      ruc: '',
       email: '',
       fecha_destino: '',
       personas: 0,
       monto: 0,
       observacion: '',
-      situacion: '',
-      estado: this.estadoActivo,
-      reserva_detalle: [] as { id_carta: number; cantidad: number }[]
+      situacion: 'P',
+      reserva_detalle: []
     };
-  }
-
-  agregarDetalleReserva(): void {
-    this.reserva.reserva_detalle.push({ id_carta: 0, cantidad: 1 });
-  }
-
-  eliminarDetalleReserva(index: number): void {
-    this.reserva.reserva_detalle.splice(index, 1);
-  }
-
-  private camposVacios(): boolean {
-    return !this.reserva.cliente_id || !this.reserva.restaurante_id || !this.reserva.email || !this.reserva.fecha_destino || this.reserva.personas === null || this.reserva.personas === undefined || this.reserva.monto === null || this.reserva.monto === undefined || !this.reserva.observacion || !this.reserva.situacion || !this.reserva.reserva_detalle || this.reserva.reserva_detalle.length === 0 || this.reserva.reserva_detalle.some((detalle) => !detalle.id_carta || detalle.cantidad === null || detalle.cantidad === undefined);
-  }
-  formatoFechaHora(fecha: string): string {
-    const fechaHora = new Date(fecha);
-    const formato = `${fechaHora.getFullYear()}-${this.pad(fechaHora.getMonth() + 1)}-${this.pad(fechaHora.getDate())} ` +
-                  `${this.pad(fechaHora.getHours())}:${this.pad(fechaHora.getMinutes())}:${this.pad(fechaHora.getSeconds())}`;
-    return formato;
-  }
-
-  // Función auxiliar para añadir ceros a la izquierda si es necesario
-  pad(n: number): string {
-    return n < 10 ? '0' + n : '' + n;
-  }
-
-  guardarReserva(): void {
-    this.reserva.fecha_destino = this.formatoFechaHora(this.reserva.fecha_destino);
-    console.log('Intentando guardar la reserva:', this.reserva);
-    if (this.camposVacios()) {
-      this.showErrorAlert('Error', 'Por favor, complete todos los campos.');
-      return;
-    }
-
-    const url = this.modoEdicion ? `${this.baseUrl}/editar/${this.reserva.id}` : `${this.baseUrl}/crear`;
-
-    const httpCall = this.modoEdicion ? this.http.put(url, this.reserva) : this.http.post(url, this.reserva);
-
-    httpCall.subscribe(
-      (data: any) => {
-        if (!this.modoEdicion) {
-          this.reservas.push(data);
-        } else {
-          const indice = this.reservas.findIndex((e) => e.id === data.id);
-          if (indice !== -1) {
-            this.reservas[indice] = data;
-          }
-        }
-        this.reserva = this.nuevaReservaObjeto();
-        this.getReservas();
-        this.cerrarModal();
-        const mensaje = this.modoEdicion ? `Reserva '${data.id}' editada con éxito.` : `Reserva '${data.id}' creada con éxito.`;
-        this.showSuccessAlert('Éxito', mensaje);
-      },
-      (error) => {
-        console.error('Error al guardar la reserva:', error);
-        this.showErrorAlert('Error', 'Error al guardar la reserva. Por favor, inténtelo de nuevo.');
-      }
-    );
-  }
-
-  editarReserva(reserva: any): void {
-    this.reserva = JSON.parse(JSON.stringify(reserva));
-    this.modoEdicion = true;
-    $('#editarReservaModal').modal('show');
-  }
-
-  cerrarModal(): void {
-    $('#agregarReservaModal').modal('hide');
-    $('#editarReservaModal').modal('hide');
-  }
-
-  eliminarReserva(reserva: any): void {
-    const url = `${this.baseUrl}/desactivar/${reserva.id}`;
-    this.http.patch(url, {}).subscribe(
-      () => {
-        this.getReservas();
-        this.showSuccessAlert('Éxito', `Reserva '${reserva.id}' eliminada con éxito.`);
-      },
-      (error: any) => {
-        console.error('Error en la solicitud HTTP:', error);
-        this.showErrorAlert('Error', 'Error al eliminar la reserva.');
-      }
-    );
-  }
-
-  cambiarEstadoReserva(reserva: any): void {
-    const url = `${this.baseUrl}/restaurar/${reserva.id}`;
-    const nuevoEstado = reserva.estado === this.estadoActivo ? this.estadoInactivo : this.estadoActivo;
-
-    this.http.patch(url, {}).subscribe(
-      () => {
-        const mensaje = nuevoEstado === this.estadoActivo ? 'Activado' : 'Desactivado';
-        this.getReservas();
-        this.showSuccessAlert('Éxito', `Reserva '${reserva.id}' ${mensaje} con éxito.`);
-      },
-      (error: any) => {
-        console.error('Error en la solicitud HTTP:', error);
-        this.showErrorAlert('Error', 'Error al cambiar el estado de la reserva.');
-      }
-    );
-  }
-
-  private showSuccessAlert(title: string, message: string): void {
-    Swal.fire(title, message, 'success');
-  }
-
-  private showErrorAlert(title: string, message: string): void {
-    Swal.fire(title, message, 'error');
+    this.selectedRestauranteRuc = '';
+    this.selectedPlato = null;
+    this.platosCantidad = {};
+    this.modoEdicion = false;
   }
 }

@@ -1,291 +1,156 @@
-<div class="container">
-    <br>
+<div class="container-fluid mt-4">
+    <h2 class="text-center mb-4">Gestión de Reservas</h2>
+    
     <div class="row">
-        <div class="col-12">
-            <button class="btn btn-success float-right" data-toggle="modal" data-target="#agregarReservaModal"
-                (click)="nuevaReserva()">Agregar Reserva</button>
-            <div class="dropdown float-right mr-2">
-                <button class="btn btn-primary dropdown-toggle" type="button" id="filtroDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    <i class="fa fa-filter"></i> Filtrar
-                </button>
-                <button class="btn btn-warning float-left mr-2" (click)="generarReportePDF()">
-                    <i class="fa fa-file-alt"></i> Reporte
-                </button>                
-                <div class="dropdown-menu" aria-labelledby="filtroDropdown">
-                    <button class="dropdown-item" (click)="filtrarReservas('')"
-                        [class.active]="filtroReservas === ''">Todos</button>
-                    <button class="dropdown-item" (click)="filtrarReservas('/activo')"
-                        [class.active]="filtroReservas === '/activo'">Activos</button>
-                    <button class="dropdown-item" (click)="filtrarReservas('/inactivo')"
-                        [class.active]="filtroReservas === '/inactivo'">Inactivos</button>
+      <!-- Formulario de Reserva -->
+      <div class="col-md-5">
+        <div class="card">
+          <div class="card-header bg-primary text-white">
+            <h3 class="card-title mb-0">{{modoEdicion ? 'Editar' : 'Nueva'}} Reserva</h3>
+          </div>
+          <div class="card-body">
+            <form (ngSubmit)="guardarReserva()" #reservaForm="ngForm">
+              <div class="form-group">
+                <label for="restaurante">Restaurante:</label>
+                <select class="form-control" id="restaurante" [(ngModel)]="selectedRestauranteRuc" name="restaurante" (change)="onRestauranteChange()" required>
+                  <option value="">Seleccione un restaurante</option>
+                  <option *ngFor="let restaurante of restaurantes" [value]="restaurante.ruc">{{restaurante.nombre}}</option>
+                </select>
+              </div>
+          
+              <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" [(ngModel)]="reserva.email" name="email" required>
+              </div>
+          
+              <div class="form-group">
+                <label for="fecha_destino">Fecha de Reserva:</label>
+                <input type="datetime-local" class="form-control" id="fecha_destino" [(ngModel)]="reserva.fecha_destino" name="fecha_destino" required>
+              </div>
+          
+              <div class="form-group">
+                <label for="personas">Número de Personas:</label>
+                <input type="number" class="form-control" id="personas" [(ngModel)]="reserva.personas" name="personas" required>
+              </div>
+          
+              <div class="form-group">
+                <label for="observacion">Observación:</label>
+                <textarea class="form-control" id="observacion" [(ngModel)]="reserva.observacion" name="observacion"></textarea>
+              </div>
+          
+              <div class="form-group">
+                <label for="plato">Agregar Plato:</label>
+                <div class="input-group">
+                  <select class="form-control" id="plato" [(ngModel)]="selectedPlato" name="plato">
+                    <option [ngValue]="null">Seleccione un plato</option>
+                    <option *ngFor="let plato of platos" [ngValue]="plato">{{plato.nombre}}</option>
+                  </select>
+                  <input type="number" class="form-control" placeholder="Cantidad" [(ngModel)]="platosCantidad[selectedPlato?.id]" name="cantidad" min="1" *ngIf="selectedPlato">
+                  <div class="input-group-append">
+                    <button type="button" class="btn btn-secondary" (click)="agregarPlato()">Agregar</button>
+                  </div>
                 </div>
-            </div>
-            <h1>Listado de Reservas</h1>
+              </div>
+          
+              <table class="table table-sm mt-3" *ngIf="reserva.reserva_detalle.length > 0">
+                <thead>
+                  <tr>
+                    <th>Plato</th>
+                    <th>Cantidad</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let detalle of reserva.reserva_detalle; let i = index">
+                    <td>{{getNombrePlato(detalle.id_carta)}}</td>
+                    <td>{{detalle.cantidad}}</td>
+                    <td>{{detalle.subtotal | currency}}</td>
+                    <td>
+                      <button type="button" class="btn btn-danger btn-sm" (click)="eliminarPlato(i)">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="2">Total:</th>
+                    <th>{{reserva.monto | currency}}</th>
+                    <th></th>
+                  </tr>
+                </tfoot>
+              </table>
+          
+              <button type="submit" class="btn btn-primary btn-block" [disabled]="!reservaForm.form.valid">
+                {{modoEdicion ? 'Actualizar' : 'Crear'}} Reserva
+              </button>
+            </form>
+          </div>
         </div>
-    </div>
-    <div class="table-responsive">
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>Nro</th>
-                    <th>Cliente ID</th>
-                    <th>Restaurante ID</th>
-                    <th>Email</th>
-                    <th>Fecha de Destino</th>
+      </div>
+  
+      <!-- Lista de Reservas -->
+      <div class="col-md-7">
+        <div class="card">
+          <div class="card-header bg-info text-white d-flex justify-content-between align-items-center">
+            <h3 class="card-title mb-0">Listado de Reservas</h3>
+            <div class="form-group mb-0">
+              <select class="form-control" id="filtroSituacion" [(ngModel)]="filtroSituacion" (change)="getReservas()">
+                <option value="P">Pendientes</option>
+                <option value="C">Confirmadas</option>
+                <option value="A">Anuladas</option>
+              </select>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-striped table-hover">
+                <thead>
+                  <tr>
+                    <th>Fecha</th>
+                    <th>Restaurante</th>
                     <th>Personas</th>
                     <th>Monto</th>
-                    <th>Observación</th>
                     <th>Situación</th>
-                    <th>Estado</th>
-                    <th class="text-center">Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr *ngFor="let reserva of reservas">
-                    <td><strong>{{ reserva.id }}</strong></td>
-                    <td>{{ reserva.cliente_id }}</td>
-                    <td>{{ reserva.restaurante_id }}</td>
-                    <td>{{ reserva.email }}</td>
-                    <td>{{ reserva.fecha_destino }}</td>
-                    <td>{{ reserva.personas }}</td>
-                    <td>{{ reserva.monto }}</td>
-                    <td>{{ reserva.observacion }}</td>
-                    <td [ngSwitch]="reserva.situacion">
-                        <span *ngSwitchCase="'C'">CONFIRMADO</span>
-                        <span *ngSwitchCase="'P'">PENDIENTE</span>
-                        <span *ngSwitchCase="'S'">SERVIDO</span>
-                        <span *ngSwitchCase="'R'">RECHAZADO</span>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let reserva of reservas">
+                    <td>{{reserva.fecha_destino | date:'short'}}</td>
+                    <td>{{reserva.ruc}}</td>
+                    <td>{{reserva.personas}}</td>
+                    <td>{{reserva.monto | currency}}</td>
+                    <td>
+                      <span class="badge" [ngClass]="{
+                        'badge-warning': reserva.situacion === 'P',
+                        'badge-success': reserva.situacion === 'C',
+                        'badge-danger': reserva.situacion === 'A'
+                      }">
+                        {{reserva.situacion === 'P' ? 'Pendiente' : reserva.situacion === 'C' ? 'Confirmada' : 'Anulada'}}
+                      </span>
                     </td>
-                    <td class="text-center">
-                        <button class="btn"
-                            [ngClass]="{'btn-success': reserva.estado === 'A', 'btn-danger': reserva.estado === 'I'}"
-                            style="width: 65px; pointer-events: none;">
-                            {{ reserva.estado === 'A' ? 'Activo' : 'Inactivo' }}
-                        </button>
+                    <td>
+                      <button class="btn btn-info btn-sm" (click)="verDetalles(reserva)" title="Ver Detalles">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                      <button *ngIf="reserva.situacion === 'P'" class="btn btn-success btn-sm ml-1" (click)="confirmarReserva(reserva.id)" title="Confirmar">
+                        <i class="fas fa-check"></i>
+                      </button>
+                      <button *ngIf="reserva.situacion === 'C'" class="btn btn-warning btn-sm ml-1" (click)="anularReserva(reserva.id)" title="Anular">
+                        <i class="fas fa-times"></i>
+                      </button>
+                      <button *ngIf="reserva.situacion === 'A'" class="btn btn-primary btn-sm ml-1" (click)="confirmarReserva(reserva.id)" title="Volver a Confirmar">
+                        <i class="fas fa-redo"></i>
+                      </button>
                     </td>
-                    <td class="text-center">
-                        <button class="btn btn-primary mr-1" (click)="editarReserva(reserva)"
-                            data-target="#editarCategoriaModal" data-toggle="modal">Editar</button>
-                        <button class="btn"
-                            [ngClass]="{'btn-success': reserva.estado === 'I', 'btn-danger': reserva.estado === 'A'}"
-                            (click)="reserva.estado === 'I' ? cambiarEstadoReserva(reserva) : eliminarReserva(reserva)"
-                            style="width: 67px;">
-                            {{ reserva.estado === 'I' ? 'Activar' : 'Eliminar' }}
-                        </button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Cuadro de diálogo para agregar reserva -->
-    <div class="modal fade" id="agregarReservaModal" tabindex="-1" role="dialog"
-        aria-labelledby="agregarReservaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="agregarReservaModalLabel">{{ modoEdicion ? 'Editar' : 'Agregar' }}
-                        Reserva</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cerrarModal()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form (ngSubmit)="guardarReserva()" #reservaForm="ngForm">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="cliente_id">Cliente ID:</label>
-                                    <input type="text" class="form-control" id="cliente_id" name="cliente_id"
-                                        [(ngModel)]="reserva.cliente_id" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="restaurante_id">Restaurante ID:</label>
-                                    <input type="text" class="form-control" id="restaurante_id" name="restaurante_id"
-                                        [(ngModel)]="reserva.restaurante_id" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="email">Email:</label>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        [(ngModel)]="reserva.email" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fecha_destino">Fecha Destino:</label>
-                                    <input type="datetime-local" class="form-control" id="fecha_destino"
-                                        name="fecha_destino" [(ngModel)]="reserva.fecha_destino" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="personas">Personas:</label>
-                                    <input type="number" class="form-control" id="personas" name="personas"
-                                        [(ngModel)]="reserva.personas" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="monto">Monto:</label>
-                                    <input type="number" class="form-control" id="monto" name="monto"
-                                        [(ngModel)]="reserva.monto" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="observacion">Observación:</label>
-                            <input type="text" class="form-control" id="observacion" name="observacion"
-                                [(ngModel)]="reserva.observacion" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="situacion">Situación:</label>
-                            <input type="text" class="form-control" id="situacion" name="situacion"
-                                [(ngModel)]="reserva.situacion" required>
-                        </div>
-                        <!-- Detalles de la reserva -->
-                        <div class="form-group">
-                            <h5>Detalles de la Reserva</h5>
-                            <button type="button" class="btn btn-secondary mb-2"
-                                (click)="agregarDetalleReserva()">Añadir Plato</button>
-                        </div>
-                        <div *ngFor="let detalle of reserva.reserva_detalle; let i = index"
-                            class="form-row align-items-end">
-                            <div class="form-group col-md-4">
-                                <label for="id_carta_{{ i }}">ID Carta:</label>
-                                <input type="number" class="form-control" id="id_carta_{{ i }}"
-                                    [(ngModel)]="detalle.id_carta" name="id_carta_{{ i }}" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="cantidad_{{ i }}">Cantidad:</label>
-                                <input type="number" class="form-control" id="cantidad_{{ i }}"
-                                    [(ngModel)]="detalle.cantidad" name="cantidad_{{ i }}" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <button type="button" class="btn btn-danger mt-4"
-                                    (click)="eliminarDetalleReserva(i)">Eliminar</button>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                (click)="cerrarModal()">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">{{ modoEdicion ? 'Guardar Cambios' : 'Agregar
-                                Reserva' }}</button>
-                        </div>
-                    </form>
-                </div>
+                  </tr>
+                </tbody>
+              </table>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-    <!-- Cuadro de diálogo para editar reserva -->
-    <div class="modal fade" id="editarReservaModal" tabindex="-1" role="dialog"
-        aria-labelledby="editarReservaModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editarReservaModalLabel">Editar Reserva</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="cerrarModal()">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <form (ngSubmit)="guardarReserva()" #reservaForm="ngForm">
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="cliente_id">Cliente ID:</label>
-                                    <input type="text" class="form-control" id="cliente_id" name="cliente_id"
-                                        [(ngModel)]="reserva.cliente_id" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="restaurante_id">Restaurante ID:</label>
-                                    <input type="text" class="form-control" id="restaurante_id" name="restaurante_id"
-                                        [(ngModel)]="reserva.restaurante_id" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="email">Email:</label>
-                                    <input type="email" class="form-control" id="email" name="email"
-                                        [(ngModel)]="reserva.email" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="fecha_destino">Fecha Destino:</label>
-                                    <input type="datetime-local" class="form-control" id="fecha_destino"
-                                        name="fecha_destino" [(ngModel)]="reserva.fecha_destino" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="personas">Personas:</label>
-                                    <input type="number" class="form-control" id="personas" name="personas"
-                                        [(ngModel)]="reserva.personas" required>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="monto">Monto:</label>
-                                    <input type="number" class="form-control" id="monto" name="monto"
-                                        [(ngModel)]="reserva.monto" required>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="observacion">Observación:</label>
-                            <input type="text" class="form-control" id="observacion" name="observacion"
-                                [(ngModel)]="reserva.observacion" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="situacion">Situación:</label>
-                            <input type="text" class="form-control" id="situacion" name="situacion"
-                                [(ngModel)]="reserva.situacion" required>
-                        </div>
-                        <!-- Detalles de la reserva -->
-                        <div class="form-group">
-                            <h5>Detalles de la Reserva</h5>
-                            <button type="button" class="btn btn-secondary mb-2"
-                                (click)="agregarDetalleReserva()">Cambiar Plato</button>
-                        </div>
-                        <div *ngFor="let detalle of reserva.reserva_detalle; let i = index"
-                            class="form-row align-items-end">
-                            <div class="form-group col-md-4">
-                                <label for="id_carta_{{ i }}">ID Carta:</label>
-                                <input type="number" class="form-control" id="id_carta_{{ i }}"
-                                    [(ngModel)]="detalle.id_carta" name="id_carta_{{ i }}" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <label for="cantidad_{{ i }}">Cantidad:</label>
-                                <input type="number" class="form-control" id="cantidad_{{ i }}"
-                                    [(ngModel)]="detalle.cantidad" name="cantidad_{{ i }}" required>
-                            </div>
-                            <div class="form-group col-md-4">
-                                <button type="button" class="btn btn-danger mt-4"
-                                    (click)="eliminarDetalleReserva(i)">Eliminar</button>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal"
-                                (click)="cerrarModal()">Cerrar</button>
-                            <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
+  </div>

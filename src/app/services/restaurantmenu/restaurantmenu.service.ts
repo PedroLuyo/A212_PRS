@@ -8,7 +8,7 @@ import { catchError } from 'rxjs/operators';
 })
 export class RestauranteMenuService {
 
-  private apiUrl = 'http://ms-restaurantmenu-service:8086/api/v1/products/obtener';
+  private apiUrl = 'http://localhost:8086/api/v1/products';
   private apiUrlAngelo = 'http://35.192.163.133:8086/api/v1/products/obtener';
   
   constructor(private http: HttpClient) { }
