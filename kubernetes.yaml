@@ -21,7 +21,7 @@ spec:
         - name: letterplate
           value: "http://ms-letterplate-service"  
         - name: restaurantmenu
-          value: "ms-restaurantmenu-service"  
+          value: "http://ms-restaurantmenu-service"  
 ---
 apiVersion: v1
 kind: Service
