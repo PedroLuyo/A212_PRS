@@ -87,7 +87,7 @@ export class CrearComidaComponent implements OnInit {
   uploadImageToCloudinary(file: File): Promise<string> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('upload_preset', 'cloudinary-product');
+    formData.append('upload_preset', 'cloudinary-menuplates');
 
     return new Promise((resolve, reject) => {
       this.cloudinaryService.uploadImg(formData).subscribe(

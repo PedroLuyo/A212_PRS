@@ -1,16 +1,24 @@
 import { AuthService } from '../services/auth/authService';
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, enableProdMode, OnInit } from '@angular/core';
 import { RestauranteMenuService } from '../services/restaurantmenu/restaurantmenu.service';
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { RestauranteService } from '../services/restaurant/restaurante.service';
 import { Router } from '@angular/router';
+import { take } from 'rxjs';
+import { AppModule } from '../app.module';
+import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
 
 declare module 'jspdf' {
   interface jsPDF {
     autoTable: (columnas: string[], filas: any[], opciones?: any) => void;
   }
 }
+
+enableProdMode();
+
+platformBrowserDynamic().bootstrapModule(AppModule)
+  .catch(err => console.error(err));
 
 @Component({
   selector: 'app-main',
@@ -44,8 +52,8 @@ export class MainComponent implements OnInit {
     private authService: AuthService, 
     private restauranteMenuService: RestauranteMenuService,
     private restauranteService: RestauranteService,
-    private router: Router 
-
+    private router: Router,
+    private cdr: ChangeDetectorRef
   ) { }
 
   async ngOnInit(): Promise<void> {
@@ -53,18 +61,21 @@ export class MainComponent implements OnInit {
     this.initCarousel();
     this.listarRestaurantes();
 
-    this.restauranteMenuService.getCartas().subscribe((platos: any[]) => {
+    this.restauranteMenuService.getCartas().pipe(take(1)).subscribe((platos: any[]) => {
       this.platoscarta = platos.filter((plato: { estado: string }) => plato.estado === 'A');
       this.updatePaginatedPlatosCarta();
+      this.cdr.detectChanges();
     });
 
-    this.restauranteMenuService.getMenus().subscribe((platos: any[]) => {
+    this.restauranteMenuService.getMenus().pipe(take(1)).subscribe((platos: any[]) => {
       this.platosmenu = platos.filter((plato: { estado: string }) => plato.estado === 'A');
       this.updatePaginatedPlatosMenu();
+      this.cdr.detectChanges();
     });
 
-    this.restauranteMenuService.getPlatos().subscribe((platos: any[]) => {
+    this.restauranteMenuService.getPlatos().pipe(take(1)).subscribe((platos: any[]) => {
       this.allPlatos = platos.filter((plato: { estado: string }) => plato.estado === 'A');
+      this.cdr.detectChanges();
     });
   }
   verRestauranteDetalle(restaurante: any): void {

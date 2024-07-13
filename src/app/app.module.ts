@@ -1,5 +1,5 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
+import { ErrorHandler, NgModule } from '@angular/core';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
@@ -49,6 +49,14 @@ const firebaseUiAuthConfig: firebaseui.auth.Config = {
   ],
   credentialHelper: firebaseui.auth.CredentialHelper.NONE
 };
+
+class CustomErrorHandler implements ErrorHandler {
+  handleError(error: any): void {
+    if (!(error instanceof Error) || error.message.indexOf('ExpressionChangedAfterItHasBeenCheckedError') === -1) {
+      console.error(error);
+    }
+  }
+}
 
 @NgModule({
   declarations: [
