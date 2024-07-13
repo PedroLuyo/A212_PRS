@@ -3,6 +3,8 @@ import { ActivatedRoute } from '@angular/router';
 import { RestauranteService } from '../../services/restaurant/restaurante.service';
 import { FormBuilder } from '@angular/forms';
 import { RestauranteMenuService } from '../../services/restaurantmenu/restaurantmenu.service';
+import jsPDF from 'jspdf';
+import 'jspdf-autotable';
 
 @Component({
   selector: 'app-detalles',
@@ -29,10 +31,10 @@ export class DetallesComponent implements OnInit {
     private restauranteService: RestauranteService,
     private restauranteMenuService: RestauranteMenuService,
     private fb: FormBuilder,
-  ) {}
+  ) { }
 
   ngOnInit(): void {
-    const restauranteId = +this.route.snapshot.params['id']; 
+    const restauranteId = +this.route.snapshot.params['id'];
     this.obtenerRestaurante(restauranteId);
     this.actualizarEstadoApertura();
     setInterval(() => this.actualizarEstadoApertura(), 60000);
@@ -169,4 +171,96 @@ export class DetallesComponent implements OnInit {
   getPaginationArray(totalPages: number): number[] {
     return Array.from({ length: totalPages }, (_, i) => i + 1);
   }
-}
+
+  exportarPDF(): void {
+    const doc = new jsPDF({
+      orientation: 'portrait'
+    });
+  
+    const img = new Image();
+    img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+    const fondoImg = new Image();
+    fondoImg.src = 'assets/img/fondo.jpg';
+  
+    Promise.all([
+      new Promise<void>((resolve) => { img.onload = () => resolve(); }),
+      new Promise<void>((resolve) => { fondoImg.onload = () => resolve(); })
+    ]).then(() => {
+      const pageWidth = doc.internal.pageSize.getWidth();
+      const pageHeight = doc.internal.pageSize.getHeight();
+      const logoWidth = pageWidth * 0.2;
+      const logoHeight = img.height * (logoWidth / img.width);
+      const logoX = (pageWidth - logoWidth) / 2;
+  
+      // Función para agregar el fondo, logo y título a cada página
+      const addBackgroundLogoAndTitle = (pageNumber: number) => {
+        doc.setPage(pageNumber);
+        
+        // Agregar imagen de fondo
+        doc.addImage(fondoImg, 'JPEG', 0, 0, pageWidth, pageHeight);
+  
+        // Agregar logo
+        doc.addImage(img, 'PNG', logoX, 20, logoWidth, logoHeight);
+  
+        // Agregar título
+        const titulo = "Carta de Platos";
+        doc.setFontSize(22);
+        doc.setTextColor(40, 40, 40);
+        doc.text(titulo, pageWidth / 2, logoHeight + 40, { align: 'center' });
+      };
+  
+      // Agregar fondo, logo y título a la primera página
+      addBackgroundLogoAndTitle(1);
+  
+      const data = this.platoscarta.map((plato) => [
+        plato.nombre,
+        plato.descripcion,
+        `S/. ${plato.precio}`
+      ]);
+  
+      const marginTop = logoHeight + 60;
+      const marginBottom = 40;
+      const availableHeight = pageHeight - marginTop - marginBottom;
+      const rowHeight = availableHeight / 6;
+  
+      let currentPage = 1;
+      let startY = marginTop;
+  
+      data.forEach((plato, index) => {
+        if (index > 0 && index % 6 === 0) {
+          doc.addPage();
+          currentPage++;
+          startY = marginTop;
+          // Agregar fondo, logo y título a la nueva página
+          addBackgroundLogoAndTitle(currentPage);
+        }
+  
+        // Agregar los datos del plato a la tabla
+        doc.setFontSize(14);
+        doc.text(plato[0], 30, startY + 10);
+        doc.setFontSize(12);
+        doc.text(plato[1], 30, startY + 20, { maxWidth: 150 });
+        doc.setFontSize(14);
+        doc.text(plato[2], pageWidth - 30, startY + 20, { align: 'right' });
+  
+        startY += rowHeight;
+      });
+  
+      // Agregar el número de página en cada página
+      for (let i = 1; i <= currentPage; i++) {
+        doc.setPage(i);
+        doc.setFont('courier', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(40, 40, 40);
+        const pageNumberText = `Página ${i} / ${currentPage}`;
+        const footerY = pageHeight - 20;
+        doc.text(pageNumberText, pageWidth - doc.getTextWidth(pageNumberText) - 10, footerY, { align: 'right' });
+      }
+  
+      doc.save('carta_de_platos.pdf');
+    }).catch((error) => {
+      console.error('Error al cargar las imágenes:', error);
+    });
+  }
+  
+}  

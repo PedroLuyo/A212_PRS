@@ -26,7 +26,8 @@
           <ul class="list-unstyled">
             <li><i class="fas fa-map-marker-alt"></i> {{ restauranteSeleccionado.direccion }}</li>
             <li><i class="fas fa-phone"></i> {{ restauranteSeleccionado.telefono }}</li>
-            <li><i class="fas fa-clock"></i> {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'apertura') }} - {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}</li>
+            <li><i class="fas fa-clock"></i> {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento,
+              'apertura') }} - {{ formatearHorario(restauranteSeleccionado.horarioFuncionamiento, 'cierre') }}</li>
             <li>
               <span class="status-badge" [ngClass]="{'open': estaAbierto, 'closed': !estaAbierto}">
                 {{ estaAbierto ? 'Abierto' : 'Cerrado' }}
@@ -61,9 +62,12 @@
                     <div class="mt-auto">
                       <div class="d-flex justify-content-between align-items-center mb-2">
                         <div style="color: #ffb03b; font-weight: 600;">S/ {{ platocarta.precio.toFixed(2) }}</div>
-                        <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(platocarta.precio).toFixed(2) }}</div>
-                        <span *ngIf="platocarta.stock >= 1" class="badge" style="background-color: green;">• Disponible</span>
-                        <span *ngIf="platocarta.stock < 1" class="badge" style="background-color: red;">• No disponible</span>
+                        <div style="color: grey; text-decoration: line-through;">S/ {{
+                          getPrecioTachado(platocarta.precio).toFixed(2) }}</div>
+                        <span *ngIf="platocarta.stock >= 1" class="badge" style="background-color: green;">•
+                          Disponible</span>
+                        <span *ngIf="platocarta.stock < 1" class="badge" style="background-color: red;">• No
+                          disponible</span>
                       </div>
                     </div>
                   </div>
@@ -84,7 +88,8 @@
                     <span aria-hidden="true">&laquo;</span>
                   </a>
                 </li>
-                <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesCarta)" [class.active]="page === currentCartaPage">
+                <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesCarta)"
+                  [class.active]="page === currentCartaPage">
                   <a class="page-link" (click)="onCartaPageChange(page)">{{ page }}</a>
                 </li>
                 <li class="page-item" [class.disabled]="currentCartaPage === totalPagesCarta">
@@ -117,9 +122,12 @@
                 <div class="mt-auto">
                   <div class="d-flex justify-content-between align-items-center mb-2">
                     <div style="color: #ffb03b; font-weight: 600;">S/ {{ platomenu.precio.toFixed(2) }}</div>
-                    <div style="color: grey; text-decoration: line-through;">S/ {{ getPrecioTachado(platomenu.precio).toFixed(2) }}</div>
-                    <span *ngIf="platomenu.stock >= 1" class="badge" style="background-color: green;">• Disponible</span>
-                    <span *ngIf="platomenu.stock < 1" class="badge" style="background-color: red;">• No disponible</span>
+                    <div style="color: grey; text-decoration: line-through;">S/ {{
+                      getPrecioTachado(platomenu.precio).toFixed(2) }}</div>
+                    <span *ngIf="platomenu.stock >= 1" class="badge" style="background-color: green;">•
+                      Disponible</span>
+                    <span *ngIf="platomenu.stock < 1" class="badge" style="background-color: red;">• No
+                      disponible</span>
                   </div>
                 </div>
               </div>
@@ -140,7 +148,8 @@
                 <span aria-hidden="true">&laquo;</span>
               </a>
             </li>
-            <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesMenu)" [class.active]="page === currentMenuPage">
+            <li class="page-item" *ngFor="let page of getPaginationArray(totalPagesMenu)"
+              [class.active]="page === currentMenuPage">
               <a class="page-link" (click)="onMenuPageChange(page)">{{ page }}</a>
             </li>
             <li class="page-item" [class.disabled]="currentMenuPage === totalPagesMenu">
@@ -161,7 +170,9 @@
           <div class="menu-card">
             <h3>Platos a la Carta</h3>
             <p>Descubre nuestra selección de platos preparados con los mejores ingredientes.</p>
-            <button class="btn">Ver Carta</button>
+            <button class="btn btn-generar-reporte" (click)="exportarPDF()">
+              <i class="bi bi-file-earmark-pdf-fill"></i> Ver Platos
+            </button>
           </div>
         </div>
         <div class="col-md-6">
@@ -173,10 +184,9 @@
         </div>
       </div>
     </section>
-  </main>
 
-  <!-- Footer -->
-  <footer class="mt-5 py-3 bg-light text-center">
-    <p>© 2024 {{ restauranteSeleccionado.nombre }} | RUC: {{ restauranteSeleccionado.ruc }}</p>
-  </footer>
-</div>
+
+    <!-- Footer -->
+    <footer class="mt-5 py-3 bg-light text-center">
+      <p>© 2024 {{ restauranteSeleccionado.nombre }} | RUC: {{ restauranteSeleccionado.ruc }}</p>
+    </footer>
