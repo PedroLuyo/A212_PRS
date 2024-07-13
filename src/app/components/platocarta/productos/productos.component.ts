@@ -16,9 +16,8 @@ import * as XLSX from 'xlsx';
   styleUrls: ['./productos.component.css']
 })
 export class ProductosComponent implements OnInit {
-  private readonly baseUrl = 'http://localhost:9095/api/v1/plato-carta';
-  private readonly baseUrlPresentacion = 'http://localhost:9095/api/v1/presentacion';
-  private readonly baseUrlCategoria = 'http://localhost:9095/api/v1/categoria';
+  private readonly baseUrl = 'http://localhost:9095/api/v1';
+
 
   platos: any[] = [];
   plato: any = {};
@@ -121,7 +120,7 @@ export class ProductosComponent implements OnInit {
   getPresentacionesActivas() {
     from(this.authService.getUserRUC()).subscribe(
       (ruc: string) => {
-        this.http.get(`${this.baseUrlPresentacion}/obtener/ruc/${ruc}`).subscribe(
+        this.http.get(`${this.baseUrl}/presentacion/obtener/ruc/${ruc}`).subscribe(
           (data: any) => {
             this.presentaciones = data;
           },
@@ -139,7 +138,7 @@ export class ProductosComponent implements OnInit {
   getCategoriasActivas() {
     from(this.authService.getUserRUC()).subscribe(
       (ruc: string) => {
-        this.http.get(`${this.baseUrlCategoria}/obtener/ruc/${ruc}`).subscribe(
+        this.http.get(`${this.baseUrl}/categoria/obtener/ruc/${ruc}`).subscribe(
           (data: any) => {
             this.categorias = data;
           },
@@ -154,19 +153,10 @@ export class ProductosComponent implements OnInit {
     );
   }
 
-  cambiarFiltroEstado() {
-    this.page = 1; // Reiniciar página al cambiar filtro
-    this.getPlatos(); // Llamar a la función para obtener platos según el nuevo filtro seleccionado
-  }
-
-
-
-
-
   gettotalidad() {
     from(this.authService.getUserRUC()).subscribe({
       next: (ruc: string) => {
-        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+        let url = `${this.baseUrl}/plato-carta/obtener/ruc/${ruc}`;
 
         this.http.get(url).pipe(
           catchError((error: any) => {
@@ -175,7 +165,7 @@ export class ProductosComponent implements OnInit {
           })
         ).subscribe({
           next: (data: any) => {
-            this.totalidad = data.length; // Actualizar el total de platos
+            this.totalidad = data.length;
           },
           error: (error: any) => {
             console.error('Error al obtener platos:', error);
@@ -188,11 +178,22 @@ export class ProductosComponent implements OnInit {
     });
   }
 
+  cambiarFiltroEstado() {
+    this.page = 1; // Reiniciar página al cambiar filtro
+    this.getPlatos(); // Llamar a la función para obtener platos según el nuevo filtro seleccionado
+  }
+
+
+
+
+
+ 
+
 
   getPlatos() {
     from(this.authService.getUserRUC()).subscribe(
       (ruc: string) => {
-        let url = `${this.baseUrl}/obtener/ruc/${ruc}`;
+        let url = `${this.baseUrl}/plato-carta/obtener/ruc/${ruc}`;
         if (this.filtroEstado === 'A' || this.filtroEstado === 'I') {
           url += `/estado/${this.filtroEstado}`;
         }
@@ -203,10 +204,9 @@ export class ProductosComponent implements OnInit {
           })
         ).subscribe({
           next: (data: any) => {
-            // Ordenar los platos por ID de forma decreciente
             this.platos = data.sort((a: any, b: any) => b.id - a.id);
-            this.totalPlatos = this.platos.length; // Actualizar el total de platos
-            this.platosFiltrados = this.platos; // Asignar platos filtrados al cargar
+            this.totalPlatos = this.platos.length;
+            this.platosFiltrados = this.platos;
           },
           error: (error: any) => {
             console.error('Error al obtener platos:', error);
@@ -240,8 +240,8 @@ export class ProductosComponent implements OnInit {
   }
 
   crearPlato() {
-    this.plato.estado = 'A'; // Nuevo plato siempre activo por defecto
-    this.http.post(this.baseUrl + '/crear', this.plato).subscribe(
+    this.plato.estado = 'A';
+    this.http.post(`${this.baseUrl}/plato-carta/crear`, this.plato).subscribe(
       (response) => {
         console.log('Plato creado:', response);
         Swal.fire('¡Éxito!', 'El plato ha sido creado exitosamente.', 'success');
@@ -259,8 +259,9 @@ export class ProductosComponent implements OnInit {
     this.modoEdicion = true;
     this.plato = { ...plato };
   }
+  
   actualizarPlato() {
-    this.http.put(`${this.baseUrl}/editar/${this.plato.id}`, this.plato).subscribe(
+    this.http.put(`${this.baseUrl}/plato-carta/editar/${this.plato.id}`, this.plato).subscribe(
       (response) => {
         console.log('Plato actualizado:', response);
         Swal.fire('¡Éxito!', 'El plato ha sido actualizado exitosamente.', 'success');
@@ -277,11 +278,11 @@ export class ProductosComponent implements OnInit {
 
   restaurarplato(plato: any) {
     const nuevoEstado = plato.estado === 'A' ? 'I' : 'A';
-    this.http.patch(`${this.baseUrl}/restaurar/${plato.id}`, { estado: nuevoEstado }, { responseType: 'text' }).subscribe(
+    this.http.patch(`${this.baseUrl}/plato-carta/restaurar/${plato.id}`, { estado: nuevoEstado }, { responseType: 'text' }).subscribe(
       (response: any) => {
         console.log('Estado del plato cambiado:', response);
-        Swal.fire('¡Éxito!', response, 'success'); // Mostrar el texto de la respuesta como éxito
-        this.getPlatos(); // Volver a cargar los platos después del cambio de estado
+        Swal.fire('¡Éxito!', response, 'success');
+        this.getPlatos();
       },
       (error) => {
         console.error('Error al cambiar el estado del plato:', error);
@@ -295,19 +296,20 @@ export class ProductosComponent implements OnInit {
   desactivarPlato(plato: any) {
     const nuevoEstado = plato.estado === 'I' ? 'A' : 'I';
 
-    this.http.patch(`${this.baseUrl}/desactivar/${plato.id}`, { estado: nuevoEstado }, { responseType: 'text' }).subscribe(
+    this.http.patch(`${this.baseUrl}/plato-carta/desactivar/${plato.id}`, { estado: nuevoEstado }, { responseType: 'text' }).subscribe(
       (response) => {
         console.log('Plato eliminado:', response);
         Swal.fire('¡Éxito!', 'El plato ha sido eliminado exitosamente.', 'success');
-        this.getPlatos(); // Volver a cargar los platos después de eliminar/archivar
+        this.getPlatos();
       },
       (error) => {
         console.error('Error al eliminar el plato:', error);
         Swal.fire('¡Error!', 'No se pudo eliminar el plato. Por favor, inténtelo de nuevo.', 'error');
-        this.getPlatos(); // Volver a cargar los platos en caso de error
+        this.getPlatos();
       }
     );
   }
+
 
 
   resetPlatoForm() {

@@ -184,7 +184,7 @@ export class UsersComponent implements OnInit {
   }
 
   exportCSV(): void {
-    let csvData = 'DNI,Nombre,Rol,Correo,Dirección,RUC,Estado\n';
+    let csvData = 'DNI,Nombre,Rol,Correo,Estado\n';
     this.filteredUsers.forEach(user => {
       // csvData += `${user.dni},${user.name},${user.role},${user.email},${user.direccion},${user.ruc},${user.estado}\n`;
       csvData += `${user.dni},${user.name},${user.role},${user.email},${user.estado}\n`;
@@ -245,7 +245,7 @@ export class UsersComponent implements OnInit {
 
       doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' }); // Posición de la fecha
 
-      const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Dirección', 'RUC', 'Estado']];
+      const head = [['DNI', 'Nombre', 'Rol', 'Correo', 'Estado']];
       const data = this.filteredUsers.map((user: Users) => [
         user.dni ? user.dni : 'null',
         user.name ? user.name : 'null',
