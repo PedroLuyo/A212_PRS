@@ -5,6 +5,7 @@ import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { AuthService } from '../../../services/auth/authService';
 import { RestauranteService } from '../../../services/restaurant/restaurante.service';
+import * as XLSX from 'xlsx'; // Importa XLSX para trabajar con archivos Excel
 
 
 declare var $: any;
@@ -127,7 +128,7 @@ export class ReservasComponent {
     const hours = date.getHours().toString().padStart(2, '0');
     const minutes = date.getMinutes().toString().padStart(2, '0');
     const seconds = date.getSeconds().toString().padStart(2, '0');
-    
+
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   }
 
@@ -195,15 +196,17 @@ export class ReservasComponent {
     Swal.fire({
       title: 'Detalles de la Reserva',
       html: `
+        <p><strong>Cliente:</strong> ${reserva.uid}</p>
         <p><strong>Restaurante:</strong> ${reserva.ruc}</p>
         <p><strong>Fecha:</strong> ${reserva.fecha_destino}</p>
         <p><strong>Personas:</strong> ${reserva.personas}</p>
         <p><strong>Monto:</strong> ${reserva.monto}</p>
         <p><strong>Observación:</strong> ${reserva.observacion}</p>
+        <p><strong>Situación:</strong> ${reserva.situacion}</p>
         <h4>Platos:</h4>
-        ${reserva.reserva_detalle.map((detalle: any) => 
-          `<p>${detalle.plato_carta.nombre} - Cantidad: ${detalle.cantidad} - Subtotal: ${detalle.subtotal}</p>`
-        ).join('')}
+        ${reserva.reserva_detalle.map((detalle: any) =>
+        `<p>${detalle.plato_carta.nombre} - Cantidad: ${detalle.cantidad} - Subtotal: ${detalle.subtotal}</p>`
+      ).join('')}
       `,
       width: 600,
       confirmButtonText: 'Cerrar'
@@ -227,4 +230,129 @@ export class ReservasComponent {
     this.platosCantidad = {};
     this.modoEdicion = false;
   }
+
+  // Función para exportar a Excel
+  exportarAExcel(): void {
+    // Crear un array de objetos con solo las propiedades que deseas exportar
+    const dataToExport = this.reservas.map(reserva => ({
+      'Fecha': reserva.fecha_destino,
+      'Restaurante': reserva.ruc,
+      'Personas': reserva.personas,
+      'Monto': reserva.monto,
+      'Situación': reserva.situacion
+    }));
+
+    // Crear una hoja de cálculo usando el método json_to_sheet de XLSX
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+
+    // Crear un libro de trabajo y agregar la hoja de cálculo
+    const workbook = { Sheets: { 'data': worksheet }, SheetNames: ['data'] };
+
+    // Convertir el libro de trabajo a un blob binario
+    const excelBuffer: any = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+
+    // Crear un Blob y guardar el archivo
+    const blob = new Blob([excelBuffer], { type: 'application/octet-stream' });
+    const fileName = 'reporte_reservas.xlsx';
+
+    // Crear un link para descargar el archivo
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    link.click();
+    window.URL.revokeObjectURL(url); // Liberar el objeto URL creado
+  }
+
+// Método para exportar a PDF
+exportarAPDF(): void {
+  const doc = new jsPDF({
+    orientation: 'portrait'
+  });
+
+  const img = new Image();
+  img.src = 'assets/img/Logo Transparente Gastro Connect.png';
+  img.onload = () => {
+    const pageWidth = doc.internal.pageSize.getWidth();
+    const logoWidth = pageWidth * 0.2;
+    const logoHeight = img.height * (logoWidth / img.width);
+    const logoX = (pageWidth - logoWidth) / 2;
+    doc.addImage(img, 'PNG', logoX, 10, logoWidth, logoHeight);
+
+    const slogan = "Disfruta de la mejor gastronomía con Gastro Connect";
+    const sloganX = pageWidth / 2;
+    const sloganY = logoHeight + 20;
+    doc.setTextColor(31, 30, 30);
+    doc.setFontSize(12);
+    doc.text(slogan, sloganX, sloganY, { align: 'center' });
+
+    const fecha = new Date().toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric'
+    }).replace(/ /g, '/').replace(/\//g, '-');
+
+    doc.setFont('courier', 'bold');
+    doc.setFontSize(20);
+    const titulo = 'Reporte de Reservas';
+    const tituloY = sloganY + 20;
+    doc.text(titulo, 14, tituloY);
+
+    doc.setFontSize(12);
+    const fechaX = pageWidth - 14;
+    doc.text(`Fecha: ${fecha}`, fechaX, tituloY, { align: 'right' });
+
+    const head = [['Cliente', 'Restaurante', 'Fecha', 'Personas', 'Monto', 'Observación', 'Situación']];
+    const data = this.reservas.map(reserva => [
+      reserva.uid,
+      reserva.ruc,
+      reserva.fecha_destino,
+      reserva.personas,
+      reserva.monto,
+      reserva.observacion,
+      reserva.situacion
+    ]);
+
+    (doc as any).autoTable({
+      head: head,
+      body: data,
+      startY: tituloY + 20,
+      styles: {
+        cellWidth: 'auto',
+        fontSize: 10,
+        lineColor: [0, 0, 0],
+        lineWidth: 0.1
+      },
+      headStyles: {
+        fillColor: [0, 0, 0],
+        textColor: 255,
+        fontStyle: 'bold'
+      },
+      bodyStyles: {
+        fillColor: [255, 255, 255],
+        textColor: 0
+      },
+      alternateRowStyles: {
+        fillColor: [235, 235, 235]
+      }
+    });
+
+    const pageCount = doc.getNumberOfPages();
+    for (let i = 1; i <= pageCount; i++) {
+      doc.setPage(i);
+      doc.setFont('courier', 'normal');
+      doc.setFontSize(10);
+      doc.setTextColor(31, 30, 30);
+      const pageNumberText = `Página ${i} de ${pageCount}`;
+      const pageSize = doc.internal.pageSize;
+      const pageWidth = pageSize.getWidth();
+      const pageHeight = pageSize.getHeight();
+      const footerX = pageWidth - 10;
+      const footerY = pageHeight - 10;
+      doc.text(pageNumberText, footerX, footerY, { align: 'right' });
+    }
+
+    doc.save('reporte_reservas.pdf');
+  };
+}
 }
