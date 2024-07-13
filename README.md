@@ -8,7 +8,7 @@ git clone -b wiki https://github.com/PedroLuyo/A212_PRS.git
 
 ## 1️⃣ Dockerfile Estándar 📄
 
-Para nuestras aplicaciones, utilizamos un Dockerfile adaptado y optimizado. Puedes encontrar el Dockerfile en el siguiente enlace: [Dockerfile optimizado](https://github.com/AngeloLaMadrid/DockerfileLiviano-JAVA-PYTHON-ANGULAR/blob/Dockerfile/Dockerfile_javaSpringBootLiviano).
+Para nuestras aplicaciones, estaremos utilizamos un Dockerfile adaptado y optimizado o si en caso de que no sea compatible con su JAR, pueden usar una imagen creado por ustedes mismos. Este Dockerfile se puede encontrar en el siguiente enlace: [Dockerfile optimizado](https://github.com/AngeloLaMadrid/DockerfileLiviano-JAVA-PYTHON-ANGULAR/blob/Dockerfile/Dockerfile_javaSpringBootLiviano).
 
 Aquí tienes un ejemplo de cómo se ve:
 
