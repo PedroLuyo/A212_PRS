@@ -32,29 +32,29 @@ export class LoginComponent {
   ngOnDestroy() {
     this.appComponent.showMenu = true;
   }
-  ngOnInit(): void {}
+  ngOnInit(): void { }
 
-async onSubmit() {
-  try {
-    await this.authService.login(this.formLogin.value);
-    console.log('Usuario logueado, datos:');
-    const userName = await this.authService.getUserName();
-    this.toastr.success('Inicio de sesión exitoso', 'Correcto');
-    console.log('Inicio de sesión exitoso');
-    console.log(userName);
-    this.router.navigate(['/main']);
-  } catch (error: any) {
-    if (error.code === 'auth/user-not-found') {
-      this.toastr.error('No existe un usuario con ese correo electrónico', 'Error');
-    } else if (error.code === 'auth/wrong-password') {
-      this.toastr.error('Contraseña incorrecta', 'Error');
-    } else if (error.code === 'auth/user-disabled') {
-      this.toastr.error('El usuario ha sido deshabilitado', 'Error');
-    } else {
-      this.toastr.error('Error al iniciar sesión', 'Error');
+  async onSubmit() {
+    try {
+      await this.authService.login(this.formLogin.value);
+      console.log('Usuario logueado, datos:');
+      const userName = await this.authService.getUserName();
+      this.toastr.success('Inicio de sesión exitoso', 'Correcto');
+      console.log('Inicio de sesión exitoso');
+      console.log(userName);
+      this.router.navigate(['/main']);
+    } catch (error: any) {
+      if (error.code === 'auth/user-not-found') {
+        this.toastr.error('No existe un usuario con ese correo electrónico', 'Error');
+      } else if (error.code === 'auth/wrong-password') {
+        this.toastr.error('Contraseña incorrecta', 'Error');
+      } else if (error.code === 'auth/user-disabled') {
+        this.toastr.error('El usuario ha sido deshabilitado', 'Error');
+      } else {
+        this.toastr.error('Error al iniciar sesión', 'Error');
+      }
     }
   }
-}
 
   async onClick() {
     try {
@@ -136,8 +136,16 @@ async onSubmit() {
     try {
       await this.afAuth.sendPasswordResetEmail(email);
       console.log('Correo de restablecimiento de contraseña enviado');
+      this.toastr.success('Correo de restablecimiento de contraseña enviado. Por favor, revisa tu bandeja de entrada.', 'Correo Enviado');
     } catch (error) {
       console.error('Error al enviar el correo de restablecimiento de contraseña', error);
+      let errorMessage = 'Error al enviar el correo de restablecimiento de contraseña. Por favor, intenta de nuevo.';
+      if ((error as any).code === 'auth/invalid-email') {
+        errorMessage = 'La dirección de correo electrónico no es válida.';
+      } else if ((error as any).code === 'auth/user-not-found') {
+        errorMessage = 'No se encontró una cuenta con esa dirección de correo electrónico.';
+      }
+      this.toastr.error(errorMessage, 'Error');
     }
   }
   navigateToLoginBlock(): void {
