@@ -17,7 +17,11 @@ spec:
         image: angelolm/unificado:latest
         ports:
         - containerPort: 4200
-
+        env:
+        - name: letterplate
+          value: "http://ms-letterplate-service"  
+        - name: restaurantmenu
+          value: "ms-restaurantmenu-service"  
 ---
 apiVersion: v1
 kind: Service
