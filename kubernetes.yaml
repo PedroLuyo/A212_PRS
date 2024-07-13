@@ -36,20 +36,20 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: ms-menurestaurant-deployment
+  name: ms-restaurantmenu-deployment
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: ms-menurestaurant
+      app: ms-restaurantmenu
   template:
     metadata:
       labels:
-        app: ms-menurestaurant
+        app: ms-restaurantmenu
     spec:
       containers:
-      - name: ms-menurestaurant
-        image: pedroluyo/ms-menurestaurant:latest
+      - name: ms-restaurantmenu
+        image: pedroluyo/ms-restaurantmenu:latest
         ports:
         - containerPort: 8086
 
@@ -57,11 +57,11 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ms-menurestaurant-service
+  name: ms-restaurantmenu-service
 spec:
   type: LoadBalancer
   selector:
-    app: ms-menurestaurant
+    app: ms-restaurantmenu
   ports:
   - protocol: TCP
     port: 8086
