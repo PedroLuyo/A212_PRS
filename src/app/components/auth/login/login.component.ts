@@ -133,10 +133,14 @@ export class LoginComponent {
   }
 
   async sendPasswordResetEmail(email: string): Promise<void> {
+    this.toastr.success('Solicitud de restablecimiento de contraseña recibida. Si el correo electrónico existe en nuestro sistema, recibirás un enlace para restablecer tu contraseña.', 'Solicitud Recibida');
     try {
-      await this.afAuth.sendPasswordResetEmail(email);
-      console.log('Correo de restablecimiento de contraseña enviado');
-      this.toastr.success('Correo de restablecimiento de contraseña enviado. Por favor, revisa tu bandeja de entrada.', 'Correo Enviado');
+      await this.authService.login(this.formLogin.value);
+      console.log('Usuario logueado, datos:');
+      const userName = await this.authService.getUserName();
+      this.toastr.success('Inicio de sesión exitoso', 'Correcto');
+      console.log('Inicio de sesión exitoso');
+      console.log(userName);
     } catch (error) {
       console.error('Error al enviar el correo de restablecimiento de contraseña', error);
       let errorMessage = 'Error al enviar el correo de restablecimiento de contraseña. Por favor, intenta de nuevo.';
