@@ -195,13 +195,11 @@ export class ReservasComponent {
     Swal.fire({
       title: 'Detalles de la Reserva',
       html: `
-        <p><strong>Cliente:</strong> ${reserva.uid}</p>
         <p><strong>Restaurante:</strong> ${reserva.ruc}</p>
         <p><strong>Fecha:</strong> ${reserva.fecha_destino}</p>
         <p><strong>Personas:</strong> ${reserva.personas}</p>
         <p><strong>Monto:</strong> ${reserva.monto}</p>
         <p><strong>Observación:</strong> ${reserva.observacion}</p>
-        <p><strong>Situación:</strong> ${reserva.situacion}</p>
         <h4>Platos:</h4>
         ${reserva.reserva_detalle.map((detalle: any) => 
           `<p>${detalle.plato_carta.nombre} - Cantidad: ${detalle.cantidad} - Subtotal: ${detalle.subtotal}</p>`
