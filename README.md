@@ -227,4 +227,3 @@ http://localhost:30001/api/v1/presentacion/obtener/activo
 ## 6️⃣ Conexión Localhost 🌐
 Para conectar a la aplicación desde localhost cuando se ejecuta en un contenedor Docker, puedes usar la dirección localhost seguida del puerto en el que se está ejecutando el servicio. Por ejemplo, si el servicio se está ejecutando en el puerto 30001, puedes acceder a él en http://localhost:30001.
 
->este readme aún está en mejora
